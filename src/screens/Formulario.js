@@ -6,29 +6,57 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import axios from 'axios';
 import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 
+//asi se envia para POST (server recibe modelo)
+async function insertFormulario(val) {
+  const formulario = {
+    idTienda: 26,
+    idViaje: 1,
+    cant: val,
+    idArticulo: 3,
+    idUsuario: 2000433,
+  };
+  const result = await axios.post(
+    'http://localhost:63745/api/Sitios/InsertaFormCapt',
+    formulario,
+  );
+  if (result.data == 'ok') {
+    alert(result.data);
+  } else {
+    alert('error');
+  }
+
+  console.log(result.data);
+  return result;
+}
+
 export default function Formulario({navigation}) {
   const [cantidad, setCantidad] = useState(0);
+  const [cantidad2, setCantidad2] = useState(0);
 
-  async function  aumentaCant ()  {
-    console.log('antes:'+cantidad);
-
-   await  setCantidad(parseInt(cantidad) + 1);
-    console.log('ahora:'+cantidad);
-  };
-  const disminuyeCant = () => {
-    console.log('antes:' +cantidad);
-
-    setCantidad(cantidad - 1);
-
-    console.log('ahora:'+cantidad);
-  };
-
-  const handlecantidad=(cant)=>{
-      setCantidad(cant)
+  function aumentaCant() {
+    setCantidad(parseInt(cantidad) + 1);
   }
+
+  const disminuyeCant = () => {
+    setCantidad(cantidad - 1);
+  };
+
+  function aumentaCant2() {
+    setCantidad2(parseInt(cantidad2) + 1);
+  }
+
+  const disminuyeCant2 = () => {
+    setCantidad2(cantidad2 - 1);
+  };
+
+  const handlecantidad = (cant) => {
+    setCantidad(cant);
+  };
+
   return (
     <SafeAreaView>
       <View style={styles.headerContainer}>
@@ -50,7 +78,13 @@ export default function Formulario({navigation}) {
             color="blue"
             onPress={() => disminuyeCant()}
           />
-          <TextInput placeholder="0" value={cantidad.toString()} onChangeText={(cant)=> setCantidad(cant)} keyboardType="number-pad"></TextInput>
+          <TextInput
+            style={{fontSize: 20, marginHorizontal: 20}}
+            value={cantidad.toString()}
+            placeholder="0"
+            keyboardType="number-pad"
+            onChangeText={(cant) => setCantidad(cant)}
+            keyboardType="number-pad"></TextInput>
           <Icon
             raised
             name="plus"
@@ -75,25 +109,29 @@ export default function Formulario({navigation}) {
           name="minus"
           type="font-awesome"
           color="blue"
-          onPress={() => console.log('hello')}
+          onPress={(cant) => disminuyeCant2(cant)}
         />
         <TextInput
-          style={{fontSize: 20}}
+          style={{fontSize: 20, marginHorizontal: 20}}
+          value={cantidad2.toString()}
           placeholder="0"
-          keyboardType="number-pad"></TextInput>
+          keyboardType="number-pad"
+          onChangeText={(cant) => setCantidad2(cant)}></TextInput>
         <Icon
           raised
           name="plus"
           type="font-awesome"
           color="blue"
-          onPress={() => console.log('hello')}
+          onPress={(cant) => aumentaCant2(cant)}
         />
       </View>
 
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={() => navigation.navigate('TerminaViaje')}>
+          onPress={() => insertFormulario(cantidad, cantidad2)}
+          // onPress={() => navigation.navigate('TerminaViaje')}
+        >
           <Text style={styles.btnSubmitText}>Siguiente</Text>
         </TouchableOpacity>
       </View>

@@ -24,12 +24,21 @@ export function useAuth() {
                         ...state,
                         loading: action.payload,
                     };
+                case 'BEGIN_ROUTE':
+                    console.log(action.payload)
+                    return {
+                        ...state,
+                        loading: action.payload,
+                     };
                 default:
                     return state;
             }
         },
         {
-            user: undefined,
+            user: {
+                Nombre: "FAubrisio"
+
+            },
             loading: true,
         },
     );
@@ -68,7 +77,12 @@ export function useAuth() {
                 IdLink: '57E17CA4-F402-4BBF-8A36-3CF11BCC7E06'
             });
 
-        }
+        },
+        //
+        iniciar: async () => {
+            const estado = true;
+            dispatch(createAction('BEGIN_ROUTE', estado));
+          },
 
     }))
     return { auth, state }
