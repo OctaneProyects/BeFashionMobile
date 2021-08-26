@@ -50,7 +50,7 @@ export function MostradorAntesServicio({ navigation }) {
                         Imagen mostrador:
                     </Text>
                     <Icon
-                        name="logout"
+                        name="camera"
                         size={25}
                         color="gray"
                         padding={20}
@@ -82,7 +82,8 @@ const styles = StyleSheet.create({
 
     },
     row: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignContent:'flex-start'
     },
     title: {
         paddingBottom: 50,
