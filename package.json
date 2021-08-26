@@ -17,7 +17,12 @@
     "@react-navigation/stack": "^5.12.8",
     "axios": "^0.21.1",
     "react": "16.13.1",
+<<<<<<< HEAD
     "react-native": "^0.65.1",
+=======
+    "react-native": "0.63.3",
+    "react-native-chart-kit": "^6.11.0",
+>>>>>>> 103531030d8c806631d399f36dfc3696bf770519
     "react-native-elements": "^3.0.0-alpha.1",
     "react-native-floating-label-input": "^1.2.9",
     "react-native-gesture-handler": "^1.10.3",
@@ -26,6 +31,8 @@
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0",
+    "react-native-step-indicator": "^1.0.3",
+    "react-native-svg": "^12.1.1",
     "react-native-vector-icons": "^7.1.0"
   },
   "devDependencies": {

@@ -20,8 +20,8 @@ export function LoginScreen({ navigation }) {
   const [error, setError] = React.useState('');
 
   return (
-    <View>
-      <Heading style={styles.title}>LOGIN</Heading>
+    <View style={styles.container} >
+      <Heading style={styles.title}>BeFashion</Heading>
       <Error error={error} />
       <Input
         style={styles.input}
@@ -56,7 +56,7 @@ export function LoginScreen({ navigation }) {
         }}
       />
       <Loading loading={loading} />
-    </View>
+    </ View>
   );
 
 }

@@ -3,8 +3,11 @@ import { StyleSheet, View, ActivityIndicator, Text } from 'react-native'
 
 export function Loading({ loading }) {
 
+<<<<<<< HEAD
     // console.log(loading);
 
+=======
+>>>>>>> 103531030d8c806631d399f36dfc3696bf770519
     if (!loading) {
         return <View />;
     }
