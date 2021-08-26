@@ -50,7 +50,7 @@ export function LoginScreen({ navigation }) {
         }}
       />
       <TextButton
-        title={'Have u an account? Create one'}
+        title={'Recuperar contraseña'}
         onPress={() => {
           navigation.navigate('Register');
         }}

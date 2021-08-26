@@ -29,7 +29,7 @@ export function useAuth() {
             }
         },
         {
-            user: undefined,
+            user: undefined,//{user:'Daly'},//undefined
             loading: true,
         },
     );
