@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
-import {AuthContext} from '../context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import * as ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -39,13 +39,9 @@ async function insertkm(km) {
   return result;
 }
 
-const navegador = (navigation) => {
-  navigation.navigate('Formulario');
-};
-
-export default function CapturaKilometraje({navigation}) {
+export default function CapturaKilometraje({ navigation }) {
   // const {iniciar} = React.useContext(UserContext);
-  const {iniciar} = React.useContext(AuthContext);
+  const { iniciar } = React.useContext(AuthContext);
 
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
@@ -86,8 +82,10 @@ export default function CapturaKilometraje({navigation}) {
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Iniciar Ruta</Text>
       </View>
-      <View style={{alignItems:'center', }}>
-      <Text style={{fontStyle:'italic'}}><Icon name='info-circle' size={15} color='blue'></Icon> Captura los Siguientes datos antes de iniciar tu ruta</Text>
+      <Text style={{ padding: 20, fontWeight: 'bold' }}>Primer paso: Captura kilometraje inicial</Text>
+
+      <View style={{ alignItems: 'center', }}>
+        <Text style={{ fontStyle: 'italic' }}><Icon name='info-circle' size={15} color='blue'></Icon> Captura los Siguientes datos antes de iniciar tu ruta</Text>
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.etiqueta}>Ingresa kilometraje inicial</Text>
@@ -110,33 +108,30 @@ export default function CapturaKilometraje({navigation}) {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={{fontStyle: 'italic', fontSize:11}}>
+          <Text style={{ fontStyle: 'italic', fontSize: 11 }}>
             toma una foto del odometro de tu vehiculo
           </Text>
         </View>
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{justifyContent: 'center', width: 150, height: 150}}
-            source={{uri: imagen}}></Image>
+            style={{ justifyContent: 'center', width: 150, height: 150 }}
+            source={{ uri: imagen }}></Image>
         </View>
       </View>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={() => navigation.navigate('Formulario Captura')}
-
-          // onPress={async () => {
-          //   try {
-          //     await iniciar();
-          //     console.log('se incio')
-          //   } catch (e) {
-          //     console.log(e)
-          //   }
-          // }}
+          onPress={() => {
+            navigation.navigate('Home');
+          }}
         >
-          <Text style={styles.btnSubmitText}>Iniciar ruta</Text>
+          <Text
+            style={styles.btnSubmitText}
+
+          >Iniciar viaje
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

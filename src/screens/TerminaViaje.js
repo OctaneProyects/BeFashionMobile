@@ -62,7 +62,11 @@ export default function TerminaViaje({navigation}) {
           numberOfLines={5}></TextInput>
       </View>
       <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity style={styles.btnSubmit}>
+        <TouchableOpacity style={styles.btnSubmit}
+        onPress={()=>{
+          navigation.navigate('Home')
+        }}
+        >
           <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>

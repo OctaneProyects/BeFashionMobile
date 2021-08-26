@@ -110,7 +110,7 @@ export function LandingScreen({ navigation }) {
                 currentPosition={stepValue}
                 labels={labels}
                 onPress={(pos) => {
-                    Alert.alert(`Validación geocerca: ${pos}`);
+                    navigation.navigate('MostradorAntes');
                 }}
             />
 

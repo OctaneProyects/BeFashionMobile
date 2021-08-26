@@ -79,7 +79,7 @@ export function MostradorDespuesServicio({ navigation }) {
                 <FilledButton
                     title='Siguiente'
                     style={{ marginVertical: 20, alignContent: 'center', width: '100%' }}
-                    onPress={enviar === 0 ? ()=>alert('Carga imagenes') : () => {/*Llamada api para guardar*/ }}
+                    onPress={enviar === 0 ? ()=> navigation.navigate('TerminaTienda') : () => {/*Llamada api para guardar*/ }}
                 />
             </View>
 

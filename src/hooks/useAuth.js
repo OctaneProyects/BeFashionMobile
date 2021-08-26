@@ -35,7 +35,7 @@ export function useAuth() {
             }
         },
         {
-            user: undefined,//{user:'Daly'},//undefined
+            user:'Daly',//undefined
             loading: true,
         },
     );

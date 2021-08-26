@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -8,8 +8,8 @@ import {
   View,
 } from 'react-native';
 import axios from 'axios';
-import {Icon} from 'react-native-elements';
-import {TextInput} from 'react-native-gesture-handler';
+import { Icon } from 'react-native-elements';
+import { TextInput } from 'react-native-gesture-handler';
 
 
 //asi se envia para POST (server recibe modelo)
@@ -30,7 +30,7 @@ async function insertFormulario(cant) {
       "Listo",
       "Se han registrado correctamente",
       [
-        
+
         { text: "Aceptar", onPress: () => console.log("OK Pressed") }
       ]
     );
@@ -42,7 +42,7 @@ async function insertFormulario(cant) {
   return result;
 }
 
-export default function Formulario({navigation}) {
+export default function Formulario({ navigation }) {
   const [cantidad, setCantidad] = useState(0);
   const [cantidad2, setCantidad2] = useState(0);
 
@@ -69,10 +69,15 @@ export default function Formulario({navigation}) {
   return (
     <SafeAreaView>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>oxxo {}</Text>
+        <Text style={styles.header}>oxxo { }</Text>
       </View>
-      <View style={{alignItems:'center', }}>
-      <Text style={{fontStyle:'italic'}}><Icon name='info-circle' type='font-awesome' size={15} color='blue'></Icon> Captura las cantidades entregadas de cada modelo</Text>
+
+      <Text style={{ padding: 20, fontWeight: 'bold' }}>
+        Tercer paso: Deja productos a tienda
+      </Text>
+
+      <View style={{ alignItems: 'center', }}>
+        <Text style={{ fontStyle: 'italic' }}><Icon name='info-circle' type='font-awesome' size={15} color='blue'></Icon> Captura las cantidades entregadas de cada modelo</Text>
       </View>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>modelo befashion 1</Text>
@@ -91,7 +96,7 @@ export default function Formulario({navigation}) {
             onPress={() => disminuyeCant()}
           />
           <TextInput
-            style={{fontSize: 20, marginHorizontal: 20}}
+            style={{ fontSize: 20, marginHorizontal: 20 }}
             value={cantidad.toString()}
             placeholder="0"
             keyboardType="number-pad"
@@ -124,7 +129,7 @@ export default function Formulario({navigation}) {
           onPress={(cant) => disminuyeCant2(cant)}
         />
         <TextInput
-          style={{fontSize: 20, marginHorizontal: 20}}
+          style={{ fontSize: 20, marginHorizontal: 20 }}
           value={cantidad2.toString()}
           placeholder="0"
           keyboardType="number-pad"
@@ -142,7 +147,7 @@ export default function Formulario({navigation}) {
         <TouchableOpacity
           style={styles.btnSubmit}
           // onPress={() => insertFormulario(cantidad)}
-          onPress={() =>  navigation.navigate('Termina Visita Tienda')}
+          onPress={() => navigation.navigate('MostradorDespues')}
         >
           <Text style={styles.btnSubmitText}>Siguiente</Text>
         </TouchableOpacity>
