@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet, Text, Alert } from 'react-native'
 import { HeaderIconButton } from '../components/HeaderIconButton';
 import { AuthContext } from '../context/AuthContext';
 import { UserContext } from '../context/UserContext'
@@ -12,16 +12,16 @@ import { FilledButton } from '../components/Button'
 
 const data = [
     {
-        name: "Seoul",
+        name: "Terminados",
         population: 21500000,
-        color: "rgba(131, 167, 234, 0.5)",
+        color: "rgba(29,160,51, 0.85)",
         legendFontColor: "#7F7F7F",
         legendFontSize: 15
     },
     {
-        name: "Toronto",
+        name: "Pendientes",
         population: 2800000,
-        color: "#F00",
+        color: "rgba(255,0,0,0.8)",
         legendFontColor: "#7F7F7F",
         legendFontSize: 15
     },
@@ -37,7 +37,7 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
-const labels = ["Cart", "Delivery Address", "Order Summary", "Payment Method", "Track"];
+const labels = ["Oxxo 1", "Oxxo 2", "Oxxo 3", "Oxxo 4"];
 const customStyles = {
     stepIndicatorSize: 25,
     currentStepIndicatorSize: 30,
@@ -84,8 +84,14 @@ export function LandingScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text>Welcome to landing</Text>
-            <Text>{user.name}</Text>
+
+            <View style={styles.rightText}>
+                <Text style={{color:'blue'}}>+ Agregar ubicación</Text>
+            </View>
+
+            <Text>Welcome to landing,</Text>
+            <Text>{user.name}!</Text>
+
             <View style={styles.containerCenter}>
                 <PieChart
                     data={data}
@@ -94,7 +100,8 @@ export function LandingScreen({ navigation }) {
                     chartConfig={chartConfig}
                     accessor={"population"}
                     backgroundColor={"transparent"}
-                    hasLegend={0}
+                    hasLegend={1}
+
                 />
             </View>
 
@@ -102,6 +109,9 @@ export function LandingScreen({ navigation }) {
                 customStyles={customStyles}
                 currentPosition={stepValue}
                 labels={labels}
+                onPress={(pos) => {
+                    navigation.navigate('MostradorAntes');
+                }}
             />
 
             <FilledButton
@@ -112,7 +122,7 @@ export function LandingScreen({ navigation }) {
                 }}
             />
 
-        </View>
+        </View >
     )
 
 }
@@ -129,5 +139,9 @@ const styles = StyleSheet.create({
     },
     containerCenter: {
         alignItems: 'center',
+    },
+    rightText: {
+        alignSelf: 'flex-end',
+        marginVertical: 2,
     }
 });

@@ -35,7 +35,7 @@ export function useAuth() {
             }
         },
         {
-            user: undefined,//{user:'Daly'},//undefined
+            user:'Daly',//undefined
             loading: true,
         },
     );
@@ -45,6 +45,7 @@ export function useAuth() {
 
         login: async (user, password) => {
 
+            // const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
             const { data } = await axios.post(`${BASE_URL}/ValidaAcceso`, {
                 Usr: user,
                 Pwd: password,

@@ -38,9 +38,9 @@ export function MostradorAntesServicio({ navigation }) {
         <SafeAreaView>
 
             <View
-                style={{ styles.container }}>
-                <Text>
-                    Primer paso: al llegar a la tienda tomar foto con caracteristicas X
+                style={ styles.container }>
+                <Text style={{ padding: 20, fontWeight: 'bold' }}>
+                    Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
                 </Text>
                 <Text>
                     Tome una foto antes de comenzar a surtir el exibidor
@@ -63,7 +63,7 @@ export function MostradorAntesServicio({ navigation }) {
                 <FilledButton
                     title='Siguiente'
                     style={{ marginVertical: 20, alignContent: 'center', width: '100%' }}
-                    onPress={enviar === 0 ? () => alert('Carga imagenes') : () => {/*Llamada api para guardar*/ }}
+                    onPress={enviar === 0 ? () => navigation.navigate('Formulario') : () => {/*Llamada api para guardar*/ }}
                 />
             </View>
 

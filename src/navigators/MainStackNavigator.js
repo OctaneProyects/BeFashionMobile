@@ -14,12 +14,12 @@ export function MainStackNavigator() {
 
     return (
         <MainStack.Navigator>
-            <MainStack.Screen name={'Home'} component={MostradorDespuesServicio}></MainStack.Screen>
-            {/*<MainStack.Screen name={'Home'} component={LandingScreen}></MainStack.Screen> 
             <MainStack.Screen name={'Inicio'} component={CapturaKilometraje}></MainStack.Screen>
+            <MainStack.Screen name={'Home'} component={LandingScreen}></MainStack.Screen>
+            <MainStack.Screen name={'MostradorDespues'} component={MostradorDespuesServicio}></MainStack.Screen> 
             <MainStack.Screen name={'Formulario'} component={Formulario}></MainStack.Screen>
-            <MainStack.Screen name={'TerminaViaje'} component={TerminaViaje}></MainStack.Screen> 
-            <MainStack.Screen name={'Home'} component={MostradorAntesServicio}></MainStack.Screen>*/}
+            <MainStack.Screen name={'TerminaTienda'} component={TerminaViaje}></MainStack.Screen> 
+            <MainStack.Screen name={'MostradorAntes'} component={MostradorAntesServicio}></MainStack.Screen>
         </MainStack.Navigator>
 
     )
