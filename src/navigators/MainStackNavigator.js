@@ -12,9 +12,9 @@ export function MainStackNavigator() {
     return (
         <MainStack.Navigator>
             {/* <MainStack.Screen name={'Home'} component={LandingScreen}></MainStack.Screen> */}
-            <MainStack.Screen name={'Inicio'} component={CapturaKilometraje}></MainStack.Screen>
-            <MainStack.Screen name={'Formulario'} component={Formulario}></MainStack.Screen>
-            <MainStack.Screen name={'TerminaViaje'} component={TerminaViaje}></MainStack.Screen>
+            <MainStack.Screen name={'Captura Kilometraje'} component={CapturaKilometraje}></MainStack.Screen>
+            <MainStack.Screen name={'Formulario Captura'} component={Formulario}></MainStack.Screen>
+            <MainStack.Screen name={'Termina Visita Tienda'} component={TerminaViaje}></MainStack.Screen>
         </MainStack.Navigator>
 
     )

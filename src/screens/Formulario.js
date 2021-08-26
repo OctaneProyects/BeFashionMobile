@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -10,12 +11,13 @@ import axios from 'axios';
 import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 
+
 //asi se envia para POST (server recibe modelo)
-async function insertFormulario(val) {
+async function insertFormulario(cant) {
   const formulario = {
     idTienda: 26,
     idViaje: 1,
-    cant: val,
+    cant: cant,
     idArticulo: 3,
     idUsuario: 2000433,
   };
@@ -24,7 +26,14 @@ async function insertFormulario(val) {
     formulario,
   );
   if (result.data == 'ok') {
-    alert(result.data);
+    Alert.alert(
+      "Listo",
+      "Se han registrado correctamente",
+      [
+        
+        { text: "Aceptar", onPress: () => console.log("OK Pressed") }
+      ]
+    );
   } else {
     alert('error');
   }
@@ -62,8 +71,11 @@ export default function Formulario({navigation}) {
       <View style={styles.headerContainer}>
         <Text style={styles.header}>oxxo {}</Text>
       </View>
+      <View style={{alignItems:'center', }}>
+      <Text style={{fontStyle:'italic'}}><Icon name='info-circle' type='font-awesome' size={15} color='blue'></Icon> Captura las cantidades entregadas de cada modelo</Text>
+      </View>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>modelo befashion 1 {cantidad}</Text>
+        <Text style={styles.header}>modelo befashion 1</Text>
         <View
           style={{
             alignItems: 'center',
@@ -95,7 +107,7 @@ export default function Formulario({navigation}) {
         </View>
       </View>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>modelo befashion 2 {}</Text>
+        <Text style={styles.header}>modelo befashion 2</Text>
       </View>
       <View
         style={{
@@ -129,8 +141,8 @@ export default function Formulario({navigation}) {
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={() => insertFormulario(cantidad, cantidad2)}
-          // onPress={() => navigation.navigate('TerminaViaje')}
+          // onPress={() => insertFormulario(cantidad)}
+          onPress={() =>  navigation.navigate('Termina Visita Tienda')}
         >
           <Text style={styles.btnSubmitText}>Siguiente</Text>
         </TouchableOpacity>
@@ -146,7 +158,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   header: {
-    fontSize: 28,
+    fontSize: 24,
   },
   btnSubmit: {
     marginTop: 40,
