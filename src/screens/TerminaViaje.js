@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import {TextInput} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TerminaViaje({navigation}) {
   const [isSelected1, setSelection1] = useState(false);
@@ -11,6 +12,16 @@ export default function TerminaViaje({navigation}) {
 
   return (
     <View style={styles.container}>
+      <View style={{alignItems: 'center'}}>
+        <Text style={{fontStyle: 'italic'}}>
+          <Icon
+            name="info-circle"
+            type="font-awesome-5"
+            size={15}
+            color="blue"></Icon>{' '}
+          Completa el checklist para finalizar esta Visita
+        </Text>
+      </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Exh, colocado al alcance publico </Text>
         <CheckBox
@@ -52,7 +63,7 @@ export default function TerminaViaje({navigation}) {
       </View>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity style={styles.btnSubmit}>
-          <Text style={styles.btnSubmitText}>Siguiente</Text>
+          <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>
     </View>
