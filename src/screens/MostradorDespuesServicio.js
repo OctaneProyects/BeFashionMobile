@@ -45,71 +45,79 @@ export function MostradorDespuesServicio({ navigation }) {
     return (
         <SafeAreaView>
             <View
-                style={styles.container1}>
-
-                <IconButton
-                    name='camera'
-                    onPress={() => launchCamera(1)}
-                />
-                <Image
-                    resizeMode="cover"
-                    resizeMethod="scale"
-                    style={{ width: "10%", height: "50%", marginLeft: 20 }}
-                    source={{ uri: filePathM }}>
-                </Image>
-            </View>
-
-            <View
                 style={styles.container}>
+                <Text style={{ padding: 20, fontWeight: 'bold' }}>
+                    Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
+                </Text>
+                <Text>
+                    Tome una foto antes de comenzar a surtir el exibidor
+                </Text>
+                <View style={styles.row}>
+                    <Text style={{ paddingRight: 8 }}>
+                        Imagen mostrador:
+                    </Text>
+                    <Icon
+                        style={{ paddingLeft: 2 }}
+                        size={20}
+                        name='camera'
+                        onPress={() => launchCamera(1)}
+                    />
+                    <Image
+                        resizeMode="cover"
+                        resizeMethod="scale"
+                        style={{ width: "10%", height: "50%", marginLeft: 20 }}
+                        source={{ uri: filePathM }}>
+                    </Image>
+                </View>
+                <Text>
+                    Tome una foto antes de comenzar a surtir el exibidor
+                </Text>
+                <View style={styles.row}>
+                    <Text style={{ paddingRight: 8 }}>
+                        Imagen mostrador a 3 metros:
+                    </Text>
+                    <Icon
+                        style={{ paddingLeft: 2 }}
+                        size={20}
+                        name='camera'
+                        onPress={() => launchCamera(2)}
+                    />
+                    <Image
+                        resizeMode="cover"
+                        resizeMethod="scale"
+                        style={{ width: '10%', height: '50%', marginLeft: 20 }}
+                        source={{ uri: filePathM3 }}>
 
-                <IconButton
-                    style={styles.button}
-                    title={'Mostrador 3 metros'}
-                    onPress={() => launchCamera(2)}
-                />
-                <Image
-                    resizeMode="cover"
-                    resizeMethod="scale"
-                    style={{ width: '10%', height: '50%', marginLeft: 20 }}
-                    source={{ uri: filePathM3 }}>
+                    </Image>
+                </View>
 
-                </Image>
+                <View style={styles.row}>
+                    <FilledButton
+                        title='Siguiente'
+                        style={{ paddingLeft: 10, marginVertical: 20, alignContent: 'center', width: '80%' }}
+                        onPress={enviar === 0 ? () => navigation.navigate('TerminaTienda') : () => {/*Llamada api para guardar*/ }}
+                    />
+                </View>
             </View>
-            <View style={styles.container2}>
-                <FilledButton
-                    title='Siguiente'
-                    style={{ marginVertical: 20, alignContent: 'center', width: '100%' }}
-                    onPress={enviar === 0 ? ()=> navigation.navigate('TerminaTienda') : () => {/*Llamada api para guardar*/ }}
-                />
-            </View>
 
 
-        </SafeAreaView>
+
+        </SafeAreaView >
     );
 }
 
 
 
 const styles = StyleSheet.create({
-    container1: {
-        flexDirection: 'row',
+    container: {
         padding: 32,
         paddingTop: 120,
         alignItems: 'center',
 
     },
-    container2: {
-
-        padding: 5,
-
-        alignItems: 'center',
-
-    },
-    container: {
+    row: {
         flexDirection: 'row',
-        padding: 32,
-        alignItems: 'center',
-
+        alignContent: 'flex-start',
     },
     title: {
         paddingBottom: 50,
@@ -123,6 +131,6 @@ const styles = StyleSheet.create({
     {
         alignContent: 'center',
         marginVertical: 20,
-        width: '80%'
+        width: '100%'
     }
 })
