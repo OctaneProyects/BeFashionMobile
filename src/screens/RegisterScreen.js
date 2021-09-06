@@ -24,23 +24,16 @@ export function RegisterScreen({ navigation }) {
             }}
             />
 
-            <Heading style={styles.title}>Register</Heading>
+            <Heading style={styles.title}>Recuperar contraseña</Heading>
             <Error error={error} />
             <Input
-                placeholder={'Usuario'}
+                placeholder={'Correo'}
                 style={styles.input}
                 value={user}
                 onChangeText={setUser}
             />
-            <Input
-                placeholder={'Contraseña'}
-                style={styles.input}
-                value={pass}
-                onChangeText={setPass}
-                secureTextEntry
-            />
             <FilledButton
-                title={'Registrarse'}
+                title={'Recuperar'}
                 style={styles.loginButton}
                 onPress={async () => {
 

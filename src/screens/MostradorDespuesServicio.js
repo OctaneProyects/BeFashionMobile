@@ -47,7 +47,7 @@ export function MostradorDespuesServicio({ navigation }) {
             <View
                 style={styles.container}>
                 <Text style={{ padding: 20, fontWeight: 'bold' }}>
-                    Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
+                    Cuarto paso: Tomar capturar con caracteristicas x
                 </Text>
                 <Text>
                     Tome una foto antes de comenzar a surtir el exibidor

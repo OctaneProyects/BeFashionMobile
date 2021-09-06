@@ -46,16 +46,14 @@ export function useAuth() {
         login: async (user, password) => {
 
             // const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
-            const { data } = await axios.post(`${BASE_URL}/ValidaAcceso`, {
-                Usr: user,
+            const { data } = await axios.post(`${BASE_URL}/validaAcceso`, {
+                Usuario: user,
                 Pwd: password,
-                IdLink: '57E17CA4-F402-4BBF-8A36-3CF11BCC7E06'
+                // IdLink: '57E17CA4-F402-4BBF-8A36-3CF11BCC7E06'
             });
-
             const usr = {
-                noemp: data[0].NoEmp,
-                name: data[0].NombreCompleto,
-                puesto: data[0].Puesto,
+                name: data.Nombre,
+                puesto: data.Id,
             }
             dispatch(createAction('SET_USER', usr));
         },
