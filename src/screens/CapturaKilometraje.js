@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,39 +9,67 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
+import {AuthContext} from '../context/AuthContext';
 import * as ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Alert } from 'react-native';
 
 //asi se envia para POST (server recibe modelo)
-async function insertkm(km) {
-  console.log(km);
+async function insertkm(km, imagen) {
 
-  const viaje = {
-    IdRuta: 2,
-    IdVehiculo: 2,
-    IdUsuario: 3,
-    KmInicial: km,
-    IdEstatus: 1,
-    Imagen: 'sadasd546654',
-  };
-  const result = await axios.post(
-    'http://localhost:63745/api/vehiculos/InsertaKmInicial',
-    viaje,
-  );
-  if (result.data == 'okay') {
-    navegador();
-  } else {
-    alert('error');
+  if (!km) {
+    Alert.alert(
+      "Verifique los datos",
+      "Agregue un kilometraje inicial",
+      [
+
+        { text: "Aceptar",}
+      ]
+    );
+    return;
+  }
+  if (!imagen) {
+    Alert.alert(
+      "Verifique los datos",
+      "Adjunte una imagen del odómetro",
+      [
+
+        { text: "Aceptar",}
+      ]
+    );
+    return;
   }
 
-  console.log(result.data);
-  return result;
+
+    const viaje = {
+      IdRuta: 2, //agregar
+      IdVehiculo: 2, //agregar
+      IdUsuario: 3, // agregar
+      KmInicial: km,
+      IdEstatus: 1, //agregar
+      Imagen: imagen,
+    };
+    console.log(viaje);
+
+    const result = await axios.post(
+      'http://localhost:63745/api/vehiculos/InsertaKmInicial',
+      viaje,
+    );
+    if (result.data == 'okay') {
+      Alert.alert('agregado')
+    } else {
+      alert('error');
+    }
+    console.log(result.data);
+
+    return result;
+
+
 }
 
-export default function CapturaKilometraje({ navigation }) {
+export default function CapturaKilometraje({navigation}) {
   // const {iniciar} = React.useContext(UserContext);
-  const { iniciar } = React.useContext(AuthContext);
+  const {iniciar} = React.useContext(AuthContext);
 
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
@@ -82,16 +110,21 @@ export default function CapturaKilometraje({ navigation }) {
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Iniciar Ruta</Text>
       </View>
-      <Text style={{ padding: 20, fontWeight: 'bold' }}>Primer paso: Captura kilometraje inicial</Text>
+      <Text style={{padding: 20, fontWeight: 'bold'}}>
+        Primer paso: Captura kilometraje inicial
+      </Text>
 
-      <View style={{ alignItems: 'center', }}>
-        <Text style={{ fontStyle: 'italic' }}><Icon name='info-circle' size={15} color='blue'></Icon> Captura los Siguientes datos antes de iniciar tu ruta</Text>
+      <View style={{alignItems: 'center'}}>
+        <Text style={{fontStyle: 'italic'}}>
+          <Icon name="info-circle" size={15} color="blue"></Icon> Captura los
+          Siguientes datos antes de iniciar tu ruta
+        </Text>
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.etiqueta}>Ingresa kilometraje inicial</Text>
         <TextInput
           style={styles.textInput}
-          keyboardType='numeric'
+          keyboardType="numeric"
           onChangeText={(text) => setkm(text)}></TextInput>
       </View>
       <View style={styles.inputContainer}>
@@ -108,30 +141,26 @@ export default function CapturaKilometraje({ navigation }) {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={{ fontStyle: 'italic', fontSize: 11 }}>
+          <Text style={{fontStyle: 'italic', fontSize: 11}}>
             toma una foto del odometro de tu vehiculo
           </Text>
         </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ justifyContent: 'center', width: 150, height: 150 }}
-            source={{ uri: imagen }}></Image>
+            style={{justifyContent: 'center', width: 150, height: 150}}
+            source={{uri: imagen}}></Image>
         </View>
       </View>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => {
-            navigation.navigate('Home');
-          }}
-        >
-          <Text
-            style={styles.btnSubmitText}
-
-          >Iniciar viaje
-          </Text>
+            // navigation.navigate('Home');
+            insertkm(km, imagen);
+          }}>
+          <Text style={styles.btnSubmitText}>Iniciar viaje</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
