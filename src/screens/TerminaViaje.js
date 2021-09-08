@@ -7,8 +7,29 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 export default function TerminaViaje({navigation}) {
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
-  const [isSelected3, setSelection3] = useState(false);
+  const [cantNoFashion, setCantNoFashion] = useState("");
   const [isSelected4, setSelection4] = useState(false);
+  const [comentarios, setComentarios] = useState("");
+
+
+  const terminaTienda= () =>{
+
+     if (cantNoFashion>=0) {
+
+      
+     }
+    else{
+      alert('Cantidad de lentes no fahion invalida')
+    }
+  console.log(isSelected1);
+  console.log(isSelected2);
+  console.log(cantNoFashion);
+  console.log(isSelected4);
+  console.log(comentarios);
+
+  }
+
+
 
   return (
     <View style={styles.container}>
@@ -40,10 +61,13 @@ export default function TerminaViaje({navigation}) {
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Lentes no fashion en el exh Cantidad </Text>
-        <CheckBox
-          value={isSelected3}
-          onValueChange={setSelection3}
-          style={styles.checkbox}
+        <TextInput
+          keyboardType="numeric"
+          textAlign="center"
+          style={styles.ipCantNoFashion}
+          placeholder="0"
+          value={cantNoFashion}
+          onChangeText={(text) => setCantNoFashion(text)}
         />
       </View>
       <View style={styles.checkboxContainer}>
@@ -59,14 +83,18 @@ export default function TerminaViaje({navigation}) {
         <TextInput
           style={styles.textInput}
           multiline
-          numberOfLines={5}></TextInput>
+          numberOfLines={5}
+          value={comentarios}
+          onChangeText={(val) => setComentarios(val)}></TextInput>
       </View>
       <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity style={styles.btnSubmit}
-        onPress={()=>{
-          navigation.navigate('Home')
-        }}
-        >
+        <TouchableOpacity
+          style={styles.btnSubmit}
+          onPress={()=> terminaTienda()}
+          // onPress={() => {
+          //   navigation.navigate('Home');
+          // }}
+          >
           <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>
@@ -113,5 +141,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  ipCantNoFashion: {
+    borderColor: 'gray',
+    borderWidth: 2,
+    fontSize: 10,
+    height: 35,
   },
 });

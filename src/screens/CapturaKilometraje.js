@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Alert } from 'react-native';
 
 //asi se envia para POST (server recibe modelo)
-async function insertkm(km, imagen) {
+async function insertkm(km, imagen64) {
 
   if (!km) {
     Alert.alert(
@@ -28,7 +28,7 @@ async function insertkm(km, imagen) {
     );
     return;
   }
-  if (!imagen) {
+  if (!imagen64) {
     Alert.alert(
       "Verifique los datos",
       "Adjunte una imagen del odómetro",
@@ -47,7 +47,7 @@ async function insertkm(km, imagen) {
       IdUsuario: 3, // agregar
       KmInicial: km,
       IdEstatus: 1, //agregar
-      Imagen: imagen,
+      Imagen: imagen64,
     };
     console.log(viaje);
 
@@ -55,7 +55,7 @@ async function insertkm(km, imagen) {
       'http://localhost:63745/api/vehiculos/InsertaKmInicial',
       viaje,
     );
-    if (result.data == 'okay') {
+    if (result.data == 'ok') {
       Alert.alert('agregado')
     } else {
       alert('error');
@@ -73,15 +73,18 @@ export default function CapturaKilometraje({navigation}) {
 
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
+  const [imagen64, setImagen64] = useState();
   const [IdRuta, setIdRuta] = useState(null);
   const [IdVehiculo, setIdVehiculo] = useState(null);
   const [IdEstatus, setIdEstatus] = useState(null);
 
   launchCamera = () => {
     let options = {
+      includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
+        fileName: 'imagenmuestra'
       },
     };
     ImagePicker.launchCamera(options, (response) => {
@@ -95,11 +98,11 @@ export default function CapturaKilometraje({navigation}) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        // const source = {uri: response.uri};
-        console.log('response', JSON.stringify(response));
         const source = response.assets[0].uri;
-
-        console.log(JSON.stringify(response.assets[0].uri));
+        const base64 = response.assets[0].base64;
+        // console.log(JSON.stringify(response.assets[0].base64));
+        // console.log(JSON.stringify(response.assets[0].uri));
+        setImagen64(base64);
         setImagen(source);
       }
     });
@@ -158,7 +161,7 @@ export default function CapturaKilometraje({navigation}) {
           style={styles.btnSubmit}
           onPress={() => {
             // navigation.navigate('Home');
-            insertkm(km, imagen);
+            insertkm(km, imagen64);
           }}>
           <Text style={styles.btnSubmitText}>Iniciar viaje</Text>
         </TouchableOpacity>

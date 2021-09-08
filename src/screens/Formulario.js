@@ -13,13 +13,25 @@ import { TextInput } from 'react-native-gesture-handler';
 
 
 //asi se envia para POST (server recibe modelo)
-async function insertFormulario(cant) {
+async function insertFormulario(navigation, cant) {
+
+if (cant<=0 ) {
+  Alert.alert(
+    "Verifique datos",
+    "Ingrese cantidad valida",
+    [
+      { text: "Aceptar" }
+    ]
+  );
+  return;
+}
+ 
   const formulario = {
-    idTienda: 26,
-    idViaje: 1,
-    cant: cant,
-    idArticulo: 3,
-    idUsuario: 2000433,
+    idTienda: 26, // agregar
+    idViaje: 1, //agregar
+    cant: cant, //agregar
+    idArticulo: 3, //agregar
+    idUsuario: 2000433, //agregar
   };
   const result = await axios.post(
     'http://localhost:63745/api/Sitios/InsertaFormCapt',
@@ -31,7 +43,7 @@ async function insertFormulario(cant) {
       "Se han registrado correctamente",
       [
 
-        { text: "Aceptar", onPress: () => console.log("OK Pressed") }
+        { text: "Aceptar", onPress:() => navigation.navigate('MostradorDespues') }
       ]
     );
   } else {
@@ -146,8 +158,8 @@ export default function Formulario({ navigation }) {
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          // onPress={() => insertFormulario(cantidad)}
-          onPress={() => navigation.navigate('MostradorDespues')}
+          onPress={() => insertFormulario(navigation, cantidad)}
+          // onPress={() => navigation.navigate('MostradorDespues')}
         >
           <Text style={styles.btnSubmitText}>Siguiente</Text>
         </TouchableOpacity>
