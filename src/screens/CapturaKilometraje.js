@@ -10,20 +10,23 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import {AuthContext} from '../context/AuthContext';
+import { BASE_URL } from '../config';
 import * as ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Alert } from 'react-native';
+import { UserContext } from '../context/UserContext';
+import { ScrollView } from 'react-native-gesture-handler';
+
 
 //asi se envia para POST (server recibe modelo)
-async function insertkm(km, imagen64) {
+async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
 
   if (!km) {
     Alert.alert(
       "Verifique los datos",
       "Agregue un kilometraje inicial",
       [
-
-        { text: "Aceptar",}
+        { text: "Aceptar",onPress:() => navigation.navigate('Home')}
       ]
     );
     return;
@@ -34,17 +37,16 @@ async function insertkm(km, imagen64) {
       "Adjunte una imagen del odómetro",
       [
 
-        { text: "Aceptar",}
+        { text: "Aceptar" }
       ]
     );
     return;
   }
 
-
     const viaje = {
-      IdRuta: 2, //agregar
-      IdVehiculo: 2, //agregar
-      IdUsuario: 3, // agregar
+      IdRuta: 1, //agregar
+      IdVehiculo: idvehiculo, 
+      IdUsuario: IdUsuario, 
       KmInicial: km,
       IdEstatus: 1, //agregar
       Imagen: imagen64,
@@ -52,11 +54,18 @@ async function insertkm(km, imagen64) {
     console.log(viaje);
 
     const result = await axios.post(
-      'http://localhost:63745/api/vehiculos/InsertaKmInicial',
+      `${BASE_URL}vehiculos/InsertaKmInicial`,
       viaje,
     );
     if (result.data == 'ok') {
-      Alert.alert('agregado')
+      Alert.alert(
+        "Listo",
+        "Se han registrado correctamente",
+        [
+  
+          { text: "Continuar", onPress:() => navigation.navigate('Home') }
+        ]
+      );
     } else {
       alert('error');
     }
@@ -68,15 +77,18 @@ async function insertkm(km, imagen64) {
 }
 
 export default function CapturaKilometraje({navigation}) {
-  // const {iniciar} = React.useContext(UserContext);
   const {iniciar} = React.useContext(AuthContext);
+  const user = React.useContext(UserContext);
 
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
   const [imagen64, setImagen64] = useState();
+  const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
   const [IdRuta, setIdRuta] = useState(null);
-  const [IdVehiculo, setIdVehiculo] = useState(null);
+  const [IdVehiculo, setIdVehiculo] = useState(user.idvehiculo);
   const [IdEstatus, setIdEstatus] = useState(null);
+
+
 
   launchCamera = () => {
     let options = {
@@ -108,12 +120,20 @@ export default function CapturaKilometraje({navigation}) {
     });
   };
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+    });
+  }, []);
+
   return (
     <SafeAreaView>
+      <ScrollView style={{height:'100%'}}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Iniciar Ruta</Text>
+        <Text>Placas: </Text><Text style={styles.placasText}>{user.vehiculo}</Text>
       </View>
-      <Text style={{padding: 20, fontWeight: 'bold'}}>
+      <Text style={{paddingHorizontal: 20, fontWeight: 'bold'}}>
         Primer paso: Captura kilometraje inicial
       </Text>
 
@@ -152,7 +172,7 @@ export default function CapturaKilometraje({navigation}) {
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{justifyContent: 'center', width: 150, height: 150}}
+            style={{justifyContent: 'center', width: 100, height: 100}}
             source={{uri: imagen}}></Image>
         </View>
       </View>
@@ -161,11 +181,12 @@ export default function CapturaKilometraje({navigation}) {
           style={styles.btnSubmit}
           onPress={() => {
             // navigation.navigate('Home');
-            insertkm(km, imagen64);
+            insertkm(km, imagen64,IdVehiculo, IdUsuario, navigation);
           }}>
-          <Text style={styles.btnSubmitText}>Iniciar viaje</Text>
+          <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -198,7 +219,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
-    backgroundColor: 'blue',
+    backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
     padding: 20,
@@ -208,4 +229,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  placasText: {
+    fontSize: 14,
+    color: 'blue'
+  }
 });

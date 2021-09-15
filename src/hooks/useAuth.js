@@ -3,6 +3,7 @@ import axios from 'axios';
 import { BASE_URL } from '../config';
 import { sleep } from '../utils/sleep';
 import { createAction } from '../utils/createAction';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function useAuth() {
 
@@ -35,7 +36,7 @@ export function useAuth() {
             }
         },
         {
-            user:'Daly',//undefined
+            user:undefined,
             loading: true,
         },
     );
@@ -46,15 +47,21 @@ export function useAuth() {
         login: async (user, password) => {
 
             // const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
-            const { data } = await axios.post(`${BASE_URL}/validaAcceso`, {
+            const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
                 Usuario: user,
                 Pwd: password,
                 // IdLink: '57E17CA4-F402-4BBF-8A36-3CF11BCC7E06'
             });
             const usr = {
                 name: data.Nombre,
-                puesto: data.Id,
+                IdUsuario: data.Id,
+                idvehiculo: data.Vehiculo.split('|')[0],
+                vehiculo: data.Vehiculo.split('|')[2]
             }
+            
+            // await AsyncStorage.setItem('@usrdata_Key',JSON.stringify(usr) )
+
+            console.log(usr);
             dispatch(createAction('SET_USER', usr));
         },
 

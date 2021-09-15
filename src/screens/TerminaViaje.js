@@ -3,33 +3,33 @@ import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {UserContext} from '../context/UserContext';
 
 export default function TerminaViaje({navigation}) {
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
-  const [cantNoFashion, setCantNoFashion] = useState("");
+  const [cantNoFashion, setCantNoFashion] = useState('');
   const [isSelected4, setSelection4] = useState(false);
-  const [comentarios, setComentarios] = useState("");
+  const [comentarios, setComentarios] = useState('');
+  const user = React.useContext(UserContext);
 
-
-  const terminaTienda= () =>{
-
-     if (cantNoFashion>=0) {
-
-      
-     }
-    else{
-      alert('Cantidad de lentes no fahion invalida')
+  const terminaTienda = () => {
+    if (cantNoFashion >= 0) {
+    } else {
+      alert('Cantidad de lentes no fahion invalida');
     }
-  console.log(isSelected1);
-  console.log(isSelected2);
-  console.log(cantNoFashion);
-  console.log(isSelected4);
-  console.log(comentarios);
+    console.log(isSelected1);
+    console.log(isSelected2);
+    console.log(cantNoFashion);
+    console.log(isSelected4);
+    console.log(comentarios);
+  };
 
-  }
-
-
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -48,6 +48,7 @@ export default function TerminaViaje({navigation}) {
         <CheckBox
           value={isSelected1}
           onValueChange={setSelection1}
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         />
       </View>
@@ -56,6 +57,7 @@ export default function TerminaViaje({navigation}) {
         <CheckBox
           value={isSelected2}
           onValueChange={setSelection2}
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         />
       </View>
@@ -75,6 +77,7 @@ export default function TerminaViaje({navigation}) {
         <CheckBox
           value={isSelected4}
           onValueChange={setSelection4}
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         />
       </View>
@@ -90,11 +93,11 @@ export default function TerminaViaje({navigation}) {
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={()=> terminaTienda()}
-          // onPress={() => {
-          //   navigation.navigate('Home');
-          // }}
-          >
+          // onPress={() => terminaTienda()}
+          onPress={() => {
+            navigation.navigate('Home');
+          }}
+        >
           <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
-    backgroundColor: 'blue',
+    backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
     padding: 20,

@@ -1,27 +1,29 @@
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { FilledButton } from '../components/Button'
-import { Error } from '../components/Error'
-import { Heading } from '../components/Heading'
-import { Input } from '../components/Input'
-import { TextButton } from '../components/TextButton'
-import { AuthContext } from '../context/AuthContext'
-import { Loading } from '../components/Loading'
-import { UserContext } from '../context/UserContext'
+import React from 'react';
+import {StyleSheet, View, Image} from 'react-native';
+import {FilledButton} from '../components/Button';
+import {Error} from '../components/Error';
+import {Heading} from '../components/Heading';
+import {Input} from '../components/Input';
+import {TextButton} from '../components/TextButton';
+import {AuthContext} from '../context/AuthContext';
+import {Loading} from '../components/Loading';
+import {UserContext} from '../context/UserContext';
 
-export function LoginScreen({ navigation }) {
+export function LoginScreen({navigation}) {
+  const {login} = React.useContext(AuthContext);
+  // const user = React.useContext(UserContext);
 
-  const { login } = React.useContext(AuthContext);
-  const user = React.useContext(UserContext);
-
-  const [usr, setUser] = React.useState('');
-  const [pass, setPass] = React.useState('');
+  const [usr, setUser] = React.useState('admin');
+  const [pass, setPass] = React.useState('G3nerico01');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
 
   return (
-    <View style={styles.container} >
-      <Heading style={styles.title}>BeFashion</Heading>
+    <View style={styles.container}>
+      {/* <Heading style={styles.title}>BeFashion</Heading> */}
+      <Image
+        style={styles.tinyLogo}
+        source={require('../../Images/BEFASHION_LOGO.png')}></Image>
       <Error error={error} />
       <Input
         style={styles.input}
@@ -36,8 +38,14 @@ export function LoginScreen({ navigation }) {
         value={pass}
         onChangeText={setPass}
       />
+      <TextButton style={styles.labelResetPwd}
+        title={'Recuperar contraseña'}
+        onPress={() => {
+          navigation.navigate('Register');
+        }}
+      />
       <FilledButton
-        title={'Login'}
+        title={'Iniciar Sesión'}
         style={styles.loginButton}
         onPress={async () => {
           try {
@@ -49,16 +57,10 @@ export function LoginScreen({ navigation }) {
           }
         }}
       />
-      <TextButton
-        title={'Recuperar contraseña'}
-        onPress={() => {
-          navigation.navigate('Register');
-        }}
-      />
-      <Loading loading={loading} />
-    </ View>
-  );
 
+      <Loading loading={loading} />
+    </View>
+  );
 }
 const styles = StyleSheet.create({
   container: {
@@ -66,18 +68,28 @@ const styles = StyleSheet.create({
     padding: 32,
     paddingTop: 120,
     alignItems: 'center',
-    backgroundColor: '#0F212E',
+    backgroundColor: 'rgb(27,67,136)',
+    // backgroundColor: '#0F212E',
   },
   title: {
     paddingBottom: 50,
-    color: 'white'
-
+    color: 'white',
   },
   input: {
     marginVertical: 8,
+    backgroundColor: 'rgb(201,202,206)',
   },
-  loginButton:
-  {
+  loginButton: {
     marginVertical: 20,
-  }
-})
+    backgroundColor: 'white',
+    color: 'black',
+    borderWidth: 4,
+    borderColor:'black',
+  },
+  tinyLogo: {
+    resizeMode: 'stretch',
+    width: '80%',
+    height: '15%',
+    marginBottom: '15%',
+  },
+});

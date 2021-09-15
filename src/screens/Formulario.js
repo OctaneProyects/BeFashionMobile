@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -8,24 +8,20 @@ import {
   View,
 } from 'react-native';
 import axios from 'axios';
-import { Icon } from 'react-native-elements';
-import { TextInput } from 'react-native-gesture-handler';
-
+import {BASE_URL} from '../config';
+import {Icon} from 'react-native-elements';
+import {TextInput} from 'react-native-gesture-handler';
+import {UserContext} from '../context/UserContext';
 
 //asi se envia para POST (server recibe modelo)
 async function insertFormulario(navigation, cant) {
+  if (cant <= 0) {
+    Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
+      {text: 'Aceptar'},
+    ]);
+    return;
+  }
 
-if (cant<=0 ) {
-  Alert.alert(
-    "Verifique datos",
-    "Ingrese cantidad valida",
-    [
-      { text: "Aceptar" }
-    ]
-  );
-  return;
-}
- 
   const formulario = {
     idTienda: 26, // agregar
     idViaje: 1, //agregar
@@ -34,18 +30,13 @@ if (cant<=0 ) {
     idUsuario: 2000433, //agregar
   };
   const result = await axios.post(
-    'http://localhost:63745/api/Sitios/InsertaFormCapt',
+    `${BASE_URL}Sitios/InsertaFormCapt`,
     formulario,
   );
   if (result.data == 'ok') {
-    Alert.alert(
-      "Listo",
-      "Se han registrado correctamente",
-      [
-
-        { text: "Aceptar", onPress:() => navigation.navigate('MostradorDespues') }
-      ]
-    );
+    Alert.alert('Listo', 'Se han registrado correctamente', [
+      {text: 'Aceptar', onPress: () => navigation.navigate('MostradorDespues')},
+    ]);
   } else {
     alert('error');
   }
@@ -54,9 +45,12 @@ if (cant<=0 ) {
   return result;
 }
 
-export default function Formulario({ navigation }) {
+export default function Formulario({route,navigation}) {
   const [cantidad, setCantidad] = useState(0);
   const [cantidad2, setCantidad2] = useState(0);
+  const {idTienda, nombreTienda} = route.params;
+
+  const user = React.useContext(UserContext);
 
   function aumentaCant() {
     setCantidad(parseInt(cantidad) + 1);
@@ -78,18 +72,31 @@ export default function Formulario({ navigation }) {
     setCantidad(cant);
   };
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+    });
+  }, []);
+
   return (
     <SafeAreaView>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>oxxo { }</Text>
+        <Text style={styles.header}>{nombreTienda}</Text>
       </View>
 
-      <Text style={{ padding: 20, fontWeight: 'bold' }}>
+      <Text style={{padding: 20, fontWeight: 'bold'}}>
         Tercer paso: Deja productos a tienda
       </Text>
 
-      <View style={{ alignItems: 'center', }}>
-        <Text style={{ fontStyle: 'italic' }}><Icon name='info-circle' type='font-awesome' size={15} color='blue'></Icon> Captura las cantidades entregadas de cada modelo</Text>
+      <View style={{alignItems: 'center'}}>
+        <Text style={{fontStyle: 'italic'}}>
+          <Icon
+            name="info-circle"
+            type="font-awesome"
+            size={15}
+            color="blue"></Icon>{' '}
+          Captura las cantidades entregadas de cada modelo
+        </Text>
       </View>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>modelo befashion 1</Text>
@@ -108,7 +115,7 @@ export default function Formulario({ navigation }) {
             onPress={() => disminuyeCant()}
           />
           <TextInput
-            style={{ fontSize: 20, marginHorizontal: 20 }}
+            style={{fontSize: 20, marginHorizontal: 20}}
             value={cantidad.toString()}
             placeholder="0"
             keyboardType="number-pad"
@@ -141,7 +148,7 @@ export default function Formulario({ navigation }) {
           onPress={(cant) => disminuyeCant2(cant)}
         />
         <TextInput
-          style={{ fontSize: 20, marginHorizontal: 20 }}
+          style={{fontSize: 20, marginHorizontal: 20}}
           value={cantidad2.toString()}
           placeholder="0"
           keyboardType="number-pad"
@@ -182,7 +189,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
-    backgroundColor: 'blue',
+    backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
     padding: 20,

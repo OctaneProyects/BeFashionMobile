@@ -5,7 +5,7 @@ PARA VERIFICAR SI LA IMAGEN SI SE GUARDO CORRECTAMENTE
 
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Image, StyleSheet, View} from 'react-native';
-
+import { BASE_URL } from '../config';
 export function ImageScreenExample() {
   const [Imagen64, setImagen64] = useState();
   const [isLoading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ export function ImageScreenExample() {
   const GetImagen = async () => {
     try {
       const response = await fetch(
-        'http://localhost:63745/api/vehiculos/GetImagen',
+        BASE_URL+"vehiculos/GetImagen",
       );
       const json = await response.json();
       console.log(JSON.parse(json)[0]);
