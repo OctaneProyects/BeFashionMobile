@@ -86,7 +86,7 @@ export function LandingScreen({navigation}) {
   //fucnion para regresar las tiendas
   const GetTiendas = async (IdUsuario) => {
     const params = {
-      IdUsuario: IdUsuario, //agregar id usuario REAL
+      idRuta:  1, //agregar id usuario REAL
     };
 
     try {
@@ -157,8 +157,8 @@ export function LandingScreen({navigation}) {
           </View>
 
           <ScrollView horizontal={true} >
-            <View style={{flex:1, flexDirection: 'row',justifyContent:'space-between' }}>
-            <StepIndicator style={{}}
+            <View style={{alignContent:'center'}}>
+            <StepIndicator 
               customStyles={customStyles}
               currentPosition={stepValue}
               stepCount={stepCant}
@@ -172,7 +172,7 @@ export function LandingScreen({navigation}) {
               }}
             />
             </View>
-          </ScrollView>
+            </ScrollView>
           <View>
           <FilledButton
                 title={'Aumentar'}
