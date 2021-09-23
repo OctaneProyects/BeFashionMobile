@@ -79,6 +79,7 @@ export default function Formulario({route, navigation}) {
     const params = {
       idTienda: idTienda, //agregar id usuario REAL
     };
+    console.log(idTienda);
 
     try {
       await axios
@@ -133,7 +134,7 @@ export default function Formulario({route, navigation}) {
         data={articulos}
         keyExtractor={({id}, index) => id}
         renderItem={({item}) => (
-          <LentesHandler nombre={item.Nombre}></LentesHandler>
+          <LentesHandler key={item.id} nombre={item.Nombre}></LentesHandler>
           // <View style={styles.headerContainer}>
           //   <Text style={styles.header}>{item.Nombre}</Text>
           //   <View
