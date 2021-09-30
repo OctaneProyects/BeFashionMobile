@@ -15,7 +15,7 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
-      <MainStack.Screen
+      {/* <MainStack.Screen
         name={'Inicio'}
         component={CapturaKilometraje}
         options={{
@@ -82,6 +82,18 @@ export function MainStackNavigator() {
       <MainStack.Screen
         name={'MostradorAntes'}
         component={MostradorAntesServicio}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen> */}
+        <MainStack.Screen
+        name={'FinalizarRuta'}
+        component={FinalizaRuta}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
