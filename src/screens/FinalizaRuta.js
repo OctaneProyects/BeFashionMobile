@@ -28,7 +28,7 @@ async function insertkm(km, imagen64, IdUsuario) {
 
     const viaje = {
         IdRuta: 1, //agregar
-        
+
         IdUsuario: IdUsuario,
         KmFinal: km,
         IdEstatus: 1, //agregar
