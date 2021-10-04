@@ -16,7 +16,7 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
-       <MainStack.Screen
+       {/* <MainStack.Screen
         name={'Inicio'}
         component={CapturaKilometraje}
         options={{
@@ -28,7 +28,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen>*/}
       <MainStack.Screen
         name={'Home'}
         component={LandingScreen}
@@ -43,7 +43,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
         
-      <MainStack.Screen
+     {/*} <MainStack.Screen
         name={'MostradorDespues'}
         component={MostradorDespuesServicio}
         options={{
@@ -55,7 +55,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen>*/}
       <MainStack.Screen
         name={'Formulario'}
         component={Formulario}
@@ -67,8 +67,8 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
-      <MainStack.Screen
+        }}></MainStack.Screen> 
+      {/* <MainStack.Screen
         name={'TerminaTienda'}
         component={TerminaViaje}
         options={{
@@ -79,7 +79,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen> */}
       <MainStack.Screen
         name={'MostradorAntes'}
         component={MostradorAntesServicio}
@@ -92,7 +92,7 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-      <MainStack.Screen
+     {/*  <MainStack.Screen
         name={'maps'}
         component={mapScreen}
         options={{
@@ -103,7 +103,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen> */}
     </MainStack.Navigator>
   );
 }

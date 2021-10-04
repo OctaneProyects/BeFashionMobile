@@ -14,6 +14,7 @@ export function useAuth() {
                     return {
                         ...state,
                         user: { ...action.payload },
+                        estatus: 'okay'
                     };
                 case 'REMOVE_USER':
                     return {
@@ -46,7 +47,6 @@ export function useAuth() {
 
         login: async (user, password) => {
 
-            // const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
             const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
                 Usuario: user,
                 Pwd: password,
@@ -58,10 +58,8 @@ export function useAuth() {
                 idvehiculo: data.Vehiculo.split('|')[0],
                 vehiculo: data.Vehiculo.split('|')[2]
             }
-            
-            // await AsyncStorage.setItem('@usrdata_Key',JSON.stringify(usr) )
 
-            console.log(usr);
+            // console.log(usr);
             dispatch(createAction('SET_USER', usr));
         },
 

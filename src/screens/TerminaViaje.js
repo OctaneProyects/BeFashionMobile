@@ -4,25 +4,45 @@ import CheckBox from '@react-native-community/checkbox';
 import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {UserContext} from '../context/UserContext';
+import axios from 'axios';
+import {BASE_URL} from '../config';
 
 export default function TerminaViaje({navigation}) {
-  const [isSelected1, setSelection1] = useState(false);
-  const [isSelected2, setSelection2] = useState(false);
+  const [idTienda, setIdTienda] = useState(1);
+  const [idUsuario, setIdUsuario] = useState(1);
+
+  const [isExhibido, setExhibido] = useState(false);
+  const [isSurtido, setSurtido] = useState(false);
   const [cantNoFashion, setCantNoFashion] = useState('');
-  const [isSelected4, setSelection4] = useState(false);
+  const [isAlcance, setAlcance] = useState(false);
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
 
   const terminaTienda = () => {
-    if (cantNoFashion >= 0) {
+    if (cantNoFashion == 0) {
     } else {
-      alert('Cantidad de lentes no fahion invalida');
+      alert('Cantidad de lentes no fashion invalida');
     }
-    console.log(isSelected1);
-    console.log(isSelected2);
-    console.log(cantNoFashion);
-    console.log(isSelected4);
-    console.log(comentarios);
+
+    const form = {
+      idVisita: 1,
+      idTienda: idTienda,
+      idUsuario: user.IdUsuario,
+      isExhibido: isExhibido,
+      isSurtido: isSurtido,
+      cant: cantNoFashion,
+      isAlcance: isAlcance,
+      comentarios: comentarios,
+    };
+
+    try {
+      const res = axios.post(`${BASE_URL}Sitios/InsertaChecklistSitio`, form);
+      console.log(JSON.stringify(user));
+    } catch (error) {
+      alert(error);
+    }
+
+    console.log(JSON.stringify(form));
   };
 
   React.useLayoutEffect(() => {
@@ -46,18 +66,18 @@ export default function TerminaViaje({navigation}) {
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Exh, colocado al alcance publico </Text>
         <CheckBox
-          value={isSelected1}
-          onValueChange={setSelection1}
-          tintColors={{ true: 'rgb(27,67,136)' }}
+          value={isExhibido}
+          onValueChange={setExhibido}
+          tintColors={{true: 'rgb(27,67,136)'}}
           style={styles.checkbox}
         />
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}> No permitido surtir al 100% </Text>
         <CheckBox
-          value={isSelected2}
-          onValueChange={setSelection2}
-          tintColors={{ true: 'rgb(27,67,136)' }}
+          value={isSurtido}
+          onValueChange={setSurtido}
+          tintColors={{true: 'rgb(27,67,136)'}}
           style={styles.checkbox}
         />
       </View>
@@ -68,16 +88,16 @@ export default function TerminaViaje({navigation}) {
           textAlign="center"
           style={styles.ipCantNoFashion}
           placeholder="0"
-          value={cantNoFashion}
+          value={cantNoFashion.toString()}
           onChangeText={(text) => setCantNoFashion(text)}
         />
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Lentes al alcance para el cliente S/N</Text>
         <CheckBox
-          value={isSelected4}
-          onValueChange={setSelection4}
-          tintColors={{ true: 'rgb(27,67,136)' }}
+          value={isAlcance}
+          onValueChange={setAlcance}
+          tintColors={{true: 'rgb(27,67,136)'}}
           style={styles.checkbox}
         />
       </View>
@@ -88,16 +108,13 @@ export default function TerminaViaje({navigation}) {
           multiline
           numberOfLines={5}
           value={comentarios}
+          placeholder="Agregue comentarios"
           onChangeText={(val) => setComentarios(val)}></TextInput>
       </View>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          // onPress={() => terminaTienda()}
-          onPress={() => {
-            navigation.navigate('Home');
-          }}
-        >
+          onPress={() => terminaTienda()}>
           <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>

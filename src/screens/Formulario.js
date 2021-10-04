@@ -15,71 +15,108 @@ import {TextInput} from 'react-native-gesture-handler';
 import {UserContext} from '../context/UserContext';
 import {LentesHandler} from '../components/LentesHandler';
 
-//asi se envia para POST (server recibe modelo)
-async function insertFormulario(navigation, cant) {
-  if (cant <= 0) {
-    Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
-      {text: 'Aceptar'},
-    ]);
-    return;
-  }
-
-  const formulario = {
-    idTienda: 26, // agregar
-    idViaje: 1, //agregar
-    cant: cant, //agregar
-    idArticulo: 3, //agregar
-    idUsuario: 2000433, //agregar
-  };
-  const result = await axios.post(
-    `${BASE_URL}Sitios/InsertaFormCapt`,
-    formulario,
-  );
-  if (result.data == 'ok') {
-    Alert.alert('Listo', 'Se han registrado correctamente', [
-      {text: 'Aceptar', onPress: () => navigation.navigate('MostradorDespues')},
-    ]);
-  } else {
-    alert('error');
-  }
-
-  console.log(result.data);
-  return result;
-}
-
 export default function Formulario({route, navigation}) {
-  const [cantidad, setCantidad] = useState(0);
-  const [cantidad2, setCantidad2] = useState(0);
+  // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
-  const {idTienda, nombreTienda} = route.params;
-
+  const [entregas] = useState([]);
+  // const {idTienda, nombreTienda} = route.params;
+  const idTienda = 26;
   const user = React.useContext(UserContext);
 
-  function aumentaCant() {
-    setCantidad(parseInt(cantidad) + 1);
+  //asi se envia para POST (server recibe modelo)
+  async function insertFormulario(navigation, cant) {
+    if (cant <= 0) {
+      Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
+        {text: 'Aceptar'},
+      ]);
+      return;
+    }
+
+    const formulario = {
+      idTienda: 26, // agregar
+      entregas: entregas,
+      idViaje: 1, //agregar
+      cant: cant, //agregar
+      idArticulo: 3, //agregar
+      idUsuario: 2000433, //agregar
+    };
+
+    console.log(formulario);
+
+    const result = await axios.post(
+      `${BASE_URL}Sitios/InsertaFormCapt`,
+      formulario,
+    );
+    
+    if (result.data == 'ok') {
+      Alert.alert('Listo', 'Se han registrado correctamente', [
+        {
+          text: 'Aceptar',
+          // onPress: () => navigation.navigate('MostradorDespues'),
+        },
+      ]);
+    } else {
+      alert('error');
+    }
+
+    console.log(result.data);
+    return result;
   }
 
-  const disminuyeCant = () => {
-    setCantidad(cantidad - 1);
-  };
+  const handleCant = (id, cant) => {
+    if (entregas.length > 0) {
+      for (var i = 0; i < entregas.length; i++) {
+        if (entregas[i].id == id) {
+          entregas[i].cant = cant;
+          console.log(`Actualiza: ${JSON.stringify(entregas)}`);
 
-  function aumentaCant2() {
-    setCantidad2(parseInt(cantidad2) + 1);
-  }
+          break;
+        }
+      }
+      //   for(var i = 0; i < entregas.length; i++) {
+      //     if (entregas[i].id== id) {
+      //           alert("se encuentra objeto!.");
+      //         break;
+      //     }
+      // }
 
-  const disminuyeCant2 = () => {
-    setCantidad2(cantidad2 - 1);
-  };
+      //   entregas.map(function (dato) {
+      //     if (dato.id == id) {
+      //       dato.cant = cant;
+      //       console.log(`Actualiza`);
+      //     } else {
+      //     }
+      //   });
+      //   console.log(entregas);
+    } else {
+      for (let i = 0; i < articulos.length; i++) {
+        entregas.push({id: articulos[i].Id, cant: 0});
+      }
+      console.log(entregas);
+    }
 
-  const handlecantidad = (cant) => {
-    setCantidad(cant);
+    // if (existe) {
+    //   const updateEntregas = [
+    //     // copy the current users state
+    //     ...entregas,
+    //     // now you can add a new object to add to the array
+    //     {
+    //       // using the length of the array for a unique id
+    //       id: id,
+    //       // adding a new user name
+    //       cant: cant,
+    //     },
+    //   ];
+    //   // update the state to the updatedUsers
+    //   setEntregas(updateEntregas);
+    // }
   };
 
   const GetArticulos = async (idTienda) => {
     const params = {
       idTienda: idTienda, //agregar id usuario REAL
     };
-    console.log(idTienda);
+    // console.log(idTienda);
 
     try {
       await axios
@@ -89,8 +126,8 @@ export default function Formulario({route, navigation}) {
           let jsonArticulos = JSON.parse(result);
 
           setArticulos(jsonArticulos);
-          console.log('articulos');
-          console.log(jsonArticulos);
+          // console.log('articulos');
+          // console.log(jsonArticulos);
 
           // setIsLoading(false);
         });
@@ -100,9 +137,15 @@ export default function Formulario({route, navigation}) {
   };
 
   useEffect(() => {
+    entregas.length = 0;
     GetArticulos(idTienda);
+
     return () => {};
   }, []);
+
+  useEffect(() => {
+    console.log(`Entregas: ${JSON.stringify(entregas)}`);
+  }, [entregas]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -113,7 +156,9 @@ export default function Formulario({route, navigation}) {
   return (
     <SafeAreaView>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>{nombreTienda}</Text>
+        <Text style={styles.header}>OXXO</Text>
+
+        {/* <Text style={styles.header}>{nombreTienda}</Text> */}
       </View>
 
       <Text style={{padding: 20, fontWeight: 'bold'}}>
@@ -134,7 +179,11 @@ export default function Formulario({route, navigation}) {
         data={articulos}
         keyExtractor={({id}, index) => id}
         renderItem={({item}) => (
-          <LentesHandler key={item.id} nombre={item.Nombre}></LentesHandler>
+          <LentesHandler
+            handleCant={handleCant}
+            key={item.id}
+            id={item.Id}
+            nombre={item.Nombre}></LentesHandler>
           // <View style={styles.headerContainer}>
           //   <Text style={styles.header}>{item.Nombre}</Text>
           //   <View
@@ -200,7 +249,7 @@ export default function Formulario({route, navigation}) {
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={() => insertFormulario(navigation, cantidad)}
+          onPress={() => insertFormulario(navigation)}
           // onPress={() => navigation.navigate('MostradorDespues')}
         >
           <Text style={styles.btnSubmitText}>Siguiente</Text>

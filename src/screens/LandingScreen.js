@@ -18,16 +18,14 @@ import {FilledButton} from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import {BASE_URL} from '../config';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import {getDistance, getPreciseDistance} from 'geolib';
-import { set } from 'react-native-reanimated';
+import { EstatusContext } from '../context/EstatusContext';
 
 const screenWidth = Dimensions.get('window').width;
-
-// const labels = ['Oxxo 1', 'Oxxo 2', 'Oxxo 3', 'Oxxo 4', 'oxxo 5'];
 
 const customStyles = {
   stepIndicatorSize: 25,
@@ -61,19 +59,19 @@ export function LandingScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
   const {logout} = React.useContext(AuthContext);
   const user = React.useContext(UserContext);
+  const estatus = React.useContext(EstatusContext);
   const [stepValue, setStep] = useState(0);
   const [stepCant, setStepCant] = useState(0);
+  const [statusViaje, setStatusViaje] = useState(0);
 
   const [ruta, setRuta] = useState([]);
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState({latitude: 0, longitude: 0});
   const [contar, setContar] = useState(0);
   const [cantTiendas, setCanTiendas] = useState(0);
   const [latAct, setLatAct] = useState(0);
   const [longAct, setLongAct] = useState(0);
-  var latActual = 0;
-  var longActual = 0;
 
   async function validateDistance(latTienda, longTienda) {
     await getLocation();
@@ -81,11 +79,13 @@ export function LandingScreen({navigation}) {
     console.log(`${latTienda} y  ${longTienda}`);
     console.log('actual location');
     console.log(`${location.latitude} y  ${location.longitude}`);
-    console.log(`actual lat: ${latActual}, actual Long: ${longActual}`);
+    console.log(
+      `actual lat: ${location.latitude}, actual Long: ${location.longitude}`,
+    );
 
     var dis = getDistance(
       {latitude: latTienda, longitude: longTienda},
-      {latitude: latActual, longitude: longActual},
+      {latitude: location.latitude, longitude: location.longitude},
     );
 
     console.log(`idTienda>>>>>>>>>>>>: ${tiendas[stepValue].Id}`);
@@ -105,6 +105,24 @@ export function LandingScreen({navigation}) {
           );
     }
   }
+
+  const getStatusViaje = async () => {
+    const params = {
+      idUsuario: 1, //agregar id usuario REAL
+    };
+
+    try {
+      await axios
+        .get(`${BASE_URL}viajes/GetEstatusViajeUsuario`, {params})
+        .then((res) => {
+          const result = res.data;
+          let jsonStatus = JSON.parse(result);
+          setRuta(jsonStatus[0]);
+        });
+    } catch (e) {
+      alert(`Ocurrio un error ${e}`);
+    }
+  };
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -132,15 +150,14 @@ export function LandingScreen({navigation}) {
     // setStepCant();
     await GetRuta();
     await getLocation();
-    //esta funcion tiene que completarse y despues ejecutar las que estan dentro del .Then 
-    await GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
-    
-    console.log("SI LLEGA PARIENTE")
+    getStatusViaje();
+    GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
   }, []);
 
   //ESTE es para la GRafica
   useEffect(() => {
     chartConstructor();
+    getLocation();
   }, [stepValue]);
 
   //Este Est para la cantiendas
@@ -148,8 +165,7 @@ export function LandingScreen({navigation}) {
     chartConstructor();
   }, [cantTiendas]);
 
-  
-
+  //constructor de la grafica
   function chartConstructor() {
     console.log(`Terminados: ${stepValue}`);
     console.log(`Tiendas: ${cantTiendas}`);
@@ -176,56 +192,46 @@ export function LandingScreen({navigation}) {
 
   //obtiene ubicacion actual del dispositivo fisico
   async function getLocation() {
-    console.log(`GETLOCATION`)
-    await new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const {latitude, longitude} = position.coords;
-          console.log(`${latitude}`);
-          console.log(`${longitude}`);
-          setLocation({latitude, longitude});
-          latActual = latitude;
-          longActual = longitude;
-
-          console.log(`latitud: ${latitude} y longitud: ${longitude}`);
-          // console.log(`location: ${location.latitude}`);
-          return resolve();
-        },
-        (error) => {
-          console.log(error.code, error.message);
-          return reject(error);
-        },
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
-    });
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const {latitude, longitude} = position.coords;
+        console.log(`lat:: ${latitude}`);
+        console.log(`long::${longitude}`);
+        setLocation({latitude, longitude});
+      },
+      (error) => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+    console.log(`ESTATUS: ${estatus}`)
   }
   //fucnion para regresar las tiendas
   const GetTiendas = (idRuta) => {
-      labels.length = 0;
-      const params = {
-        idRuta: 1, //agregar id usuario REAL
-      };
-      try {
-        axios.get(`${BASE_URL}rutas/GetTiendas`, {params}).then((res) => {
-          const result = res.data;
-          let jsontiendas = JSON.parse(result);
-          console.log(`Josntiendas: ${jsontiendas.length}`);
-          //inserta los nombres de las tiendas en el arreglo labels
-          labels = jsontiendas.map(function (t) {
-            return t.Nombre;
-          });
-          setIsLoading(false);
-          setCanTiendas(jsontiendas.length);
-          setTiendas(jsontiendas);
+    labels.length = 0;
+    const params = {
+      idRuta: 1, //agregar id usuario REAL
+    };
+    try {
+      axios.get(`${BASE_URL}rutas/GetTiendas`, {params}).then((res) => {
+        const result = res.data;
+        let jsontiendas = JSON.parse(result);
+        console.log(`Josntiendas: ${jsontiendas.length}`);
+        //inserta los nombres de las tiendas en el arreglo labels
+        labels = jsontiendas.map(function (t) {
+          return t.Nombre;
         });
-      } catch (e) {
-        alert(`Ocurrio un error ${e}`);
-      }
+        setIsLoading(false);
+        setCanTiendas(jsontiendas.length);
+        setTiendas(jsontiendas);
+      });
+    } catch (e) {
+      alert(`Ocurrio un error ${e}`);
+    }
   };
 
   //fucnion para regresar las tiendas
   const GetRuta = async (opc, idUsuario) => {
-    console.log(`GETRUTA`);
     const params = {
       opc: 3,
       idUsuario: 1, //agregar id usuario REAL
@@ -247,6 +253,19 @@ export function LandingScreen({navigation}) {
       alert(`Ocurrio un error ${e}`);
     }
   };
+
+  //Metodo para saltar tienda
+  function skipTienda() {
+    Alert.alert('Omitir tienda', 'Esta seguro de omitir esta tienda?', [
+      {
+        text: 'Aceptar',
+        onPress: () => {
+          stepValue == cantTiendas ? setStep(0) : setStep(stepValue + 1);
+        },
+      },
+      {text: 'cancelar'},
+    ]);
+  }
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -286,52 +305,101 @@ export function LandingScreen({navigation}) {
               </View>
               <View>
                 <Text>Ruta:</Text>
-                <Text>
-                  {ruta.Nombre}! {cantTiendas}
-                </Text>
+                {ruta ? (
+                  <Text> {ruta.Nombre}!</Text>
+                ) : (
+                  <Text>Sin ruta Asignada!</Text>
+                )}
               </View>
             </View>
 
-            <View style={styles.containerCenter}>
-              <PieChart
-                data={dataGraph}
-                width={screenWidth}
-                height={220}
-                chartConfig={chartConfig}
-                accessor={'population'}
-                backgroundColor={'transparent'}
-                hasLegend={1}
-              />
-            </View>
-
-            <View>
-              <ScrollView horizontal={true}>
-                <View style={{alignContent: 'center'}}>
-                  <StepIndicator
-                    customStyles={customStyles}
-                    currentPosition={stepValue}
-                    stepCount={cantTiendas}
-                    labels={labels}
-                    onPress={(pos) =>
-                      validateDistance(
-                        tiendas[pos].Latitud,
-                        tiendas[pos].Longitud,
-                      )
-                    }
-                    // onPress={(pos) => {
-                    //   stepValue == pos
-                    //     ? navigation.navigate('maps', {
-                    //         idTienda: tiendas[pos].id,
-                    //         nombreTienda: tiendas[pos].Nombre,
-                    //         latitud: tiendas[pos].Latitud,
-                    //         longitud: tiendas[pos].Longitud,
-                    //       })
-                    //     : alert('Aun no puede ingresar a esta tienda');
-                    // }}
+            {ruta ? (
+              <View>
+                <View style={styles.containerCenter}>
+                  <PieChart
+                    data={dataGraph}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={chartConfig}
+                    accessor={'population'}
+                    backgroundColor={'transparent'}
+                    hasLegend={1}
                   />
                 </View>
-              </ScrollView>
-            </View>
+
+                <View>
+                  <View style={{alignItems: 'flex-end'}}>
+                    <TouchableOpacity
+                      style={styles.skipTienda}
+                      onPress={() => skipTienda()}>
+                      <Text style={{fontSize: 12, color: 'black'}}>
+                        Omitir tienda{' '}
+                        <Icon name="ban" size={15} color="red"></Icon>
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <ScrollView horizontal={true}>
+                    <View style={{alignContent: 'center'}}>
+                      <StepIndicator
+                        customStyles={customStyles}
+                        currentPosition={stepValue}
+                        stepCount={cantTiendas}
+                        labels={labels}
+                        onPress={(pos) =>
+                          validateDistance(
+                            tiendas[pos].Latitud,
+                            tiendas[pos].Longitud,
+                          )
+                        }
+                        // onPress={(pos) => {
+                        //   stepValue == pos
+                        //     ? navigation.navigate('maps', {
+                        //         idTienda: tiendas[pos].id,
+                        //         nombreTienda: tiendas[pos].Nombre,
+                        //         latitud: tiendas[pos].Latitud,
+                        //         longitud: tiendas[pos].Longitud,
+                        //       })
+                        //     : alert('Aun no puede ingresar a esta tienda');
+                        // }}
+                      />
+                    </View>
+                  </ScrollView>
+                </View>
+                <View style={{flex: 1, padding: 0, margin: 0}}>
+                  <SafeAreaView style={styles.containermap}>
+                    <StatusBar barStyle="dark-content" />
+                    {location && (
+                      <MapView
+                        style={styles.map}
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                          latitude: location.latitude,
+                          longitude: location.longitude,
+                          latitudeDelta: 0.001,
+                          longitudeDelta: 0.0,
+                        }}
+                        showsUserLocation={true}
+                        onUserLocationChange={(locationChangedResult) =>
+                          getLocation()
+                        }
+                      />
+                    )}
+                  </SafeAreaView>
+                </View>
+
+                {/* <View>
+                  <FilledButton
+                    title={'Aumentar'}
+                    style={styles.loginButton}
+                    onPress={() => {
+                      stepValue == cantTiendas
+                        ? setStep(0)
+                        : setStep(stepValue + 1);
+                    }}
+                  />
+                </View> */}
+              </View>
+            ) : null}
           </View>
           <View style={{flex: 1, padding: 0, margin: 0}}>
             <SafeAreaView style={styles.containermap}>
@@ -347,19 +415,12 @@ export function LandingScreen({navigation}) {
                     longitudeDelta: 0.0,
                   }}
                   showsUserLocation={true}
+                  onUserLocationChange={(locationChangedResult) =>
+                    getLocation()
+                  }
                 />
               )}
             </SafeAreaView>
-          </View>
-
-          <View>
-          <FilledButton
-                title={'Aumentar'}
-                style={styles.loginButton}
-                onPress={() => {
-                    (stepValue == cantTiendas ? (setStep(0)) : (setStep(stepValue + 1) ));
-                }}
-            /> 
           </View>
         </View>
       )}
@@ -401,5 +462,11 @@ const styles = StyleSheet.create({
   rightText: {
     alignSelf: 'flex-end',
     marginVertical: 2,
+  },
+  skipTienda: {
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
   },
 });
