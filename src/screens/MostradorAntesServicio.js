@@ -75,7 +75,7 @@ export function MostradorAntesServicio({route, navigation}) {
         <TouchableOpacity
           style={styles.btnSubmit}
           onPress={
-            enviar === 0 ? () => navigation.navigate('Formulario', {idTienda: idTienda, nombreTienda: nombreTienda}) : () => {}
+            enviar === 0 ? () => navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda}) : () => {}
           }>
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity>

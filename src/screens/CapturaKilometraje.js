@@ -21,22 +21,24 @@ import { ScrollView } from 'react-native-gesture-handler';
 //asi se envia para POST (server recibe modelo)
 async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
 
+
+  //valida que se ingrese km
   if (!km) {
     Alert.alert(
       "Verifique los datos",
       "Agregue un kilometraje inicial",
       [
-        { text: "Aceptar",onPress:() => navigation.navigate('Home')}
+        { text: "Aceptar",onPress:() => navigation.navigate('LandingScreen')}
       ]
     );
     return;
   }
+  //valida que se adjunte imagen
   if (!imagen64) {
     Alert.alert(
       "Verifique los datos",
       "Adjunte una imagen del odómetro",
       [
-
         { text: "Aceptar" }
       ]
     );

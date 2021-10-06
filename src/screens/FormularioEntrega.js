@@ -14,11 +14,14 @@ import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 import {UserContext} from '../context/UserContext';
 import {LentesHandler} from '../components/LentesHandler';
+import { EstatusContext } from '../context/EstatusContext';
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
   const [entregas] = useState([]);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
   // const {idTienda, nombreTienda} = route.params;
   const idTienda = 26;
   const user = React.useContext(UserContext);
@@ -73,43 +76,12 @@ export default function Formulario({route, navigation}) {
           break;
         }
       }
-      //   for(var i = 0; i < entregas.length; i++) {
-      //     if (entregas[i].id== id) {
-      //           alert("se encuentra objeto!.");
-      //         break;
-      //     }
-      // }
-
-      //   entregas.map(function (dato) {
-      //     if (dato.id == id) {
-      //       dato.cant = cant;
-      //       console.log(`Actualiza`);
-      //     } else {
-      //     }
-      //   });
-      //   console.log(entregas);
     } else {
       for (let i = 0; i < articulos.length; i++) {
         entregas.push({id: articulos[i].Id, cant: 0});
       }
       console.log(entregas);
     }
-
-    // if (existe) {
-    //   const updateEntregas = [
-    //     // copy the current users state
-    //     ...entregas,
-    //     // now you can add a new object to add to the array
-    //     {
-    //       // using the length of the array for a unique id
-    //       id: id,
-    //       // adding a new user name
-    //       cant: cant,
-    //     },
-    //   ];
-    //   // update the state to the updatedUsers
-    //   setEntregas(updateEntregas);
-    // }
   };
 
   const GetArticulos = async (idTienda) => {

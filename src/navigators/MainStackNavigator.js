@@ -2,8 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LandingScreen } from '../screens/LandingScreen';
 import CapturaKilometraje from '../screens/CapturaKilometraje';
-import Formulario from '../screens/Formulario';
-import TerminaViaje from '../screens/TerminaViaje';
+import FormularioEntrega from '../screens/FormularioEntrega';
+import ChecklistTienda from '../screens/ChecklistTienda';
 import { FinalizaRuta } from '../screens/FinalizaRuta';
 import { MostradorAntesServicio } from '../screens/MostradorAntesServicio';
 import { MostradorDespuesServicio } from '../screens/MostradorDespuesServicio';
@@ -17,8 +17,8 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
-      {/* <MainStack.Screen
-        name={'Inicio'}
+      <MainStack.Screen
+        name={'CapturaKilometraje'}
         component={CapturaKilometraje}
         options={{
           title: 'Be Fashion Eyewear',
@@ -29,9 +29,9 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>*/}
+        }}></MainStack.Screen>
       <MainStack.Screen
-        name={'Home'}
+        name={'LandingScreen'}
         component={LandingScreen}
         options={{
           title: 'Be Fashion Eyewear',
@@ -44,7 +44,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
         
-     {/*} <MainStack.Screen
+      <MainStack.Screen
         name={'MostradorDespues'}
         component={MostradorDespuesServicio}
         options={{
@@ -56,10 +56,10 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>*/}
+        }}></MainStack.Screen>
       <MainStack.Screen
-        name={'Formulario'}
-        component={Formulario}
+        name={'FormularioEntrega'}
+        component={FormularioEntrega}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
@@ -69,9 +69,9 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen> 
-      {/* <MainStack.Screen
-        name={'TerminaTienda'}
-        component={TerminaViaje}
+      <MainStack.Screen
+        name={'ChecklistTienda'}
+        component={ChecklistTienda}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
@@ -80,7 +80,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> */}
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'MostradorAntes'}
         component={MostradorAntesServicio}
@@ -105,19 +105,7 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-     {/*  <MainStack.Screen
-        name={'maps'}
-        component={mapScreen}
-        options={{
-          title: 'maps',
-          headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen> */}
-      <MainStack.Screen
+       <MainStack.Screen
         name={'addSite'}
         component={AgregarUbicacion}
         options={{
@@ -129,6 +117,18 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
+            {/*  <MainStack.Screen
+        name={'maps'}
+        component={mapScreen}
+        options={{
+          title: 'maps',
+          headerLeft: () => null,
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen> */}
     </MainStack.Navigator>
   );
 }
