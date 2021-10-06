@@ -23,8 +23,8 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerRight: () => <Text style={{color: 'white'}}> usuario</Text>,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerRight: () => <Text style={{ color: 'white' }}> usuario</Text>,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
@@ -37,7 +37,7 @@ export function MainStackNavigator() {
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
           headerRight: () => <Text> usuario</Text>,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
@@ -50,8 +50,7 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
@@ -63,7 +62,7 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
@@ -75,7 +74,7 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
@@ -87,19 +86,19 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> 
-        <MainStack.Screen
+        }}></MainStack.Screen>
+      <MainStack.Screen
         name={'FinalizarRuta'}
         component={FinalizaRuta}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,

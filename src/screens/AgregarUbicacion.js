@@ -204,8 +204,8 @@ export function AgregarUbicacion({ navigation }) {
                         <View style={styles.rowView}>
 
                             <Input
+                                style={{ borderWidth: 1.3 }}
                                 placeholder="CR"
-
                                 onChangeText={setCR} />
                         </View>
                     ) : (<></>)
