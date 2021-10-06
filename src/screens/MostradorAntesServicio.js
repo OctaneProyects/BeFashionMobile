@@ -1,29 +1,37 @@
-import React, {useState, useEffect} from 'react';
-import {SafeAreaView, View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
-import {FilledButton} from '../components/Button';
+import { FilledButton } from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
+import axios from 'axios';
+import { BASE_URL } from '../config';
 
-export function MostradorAntesServicio({route, navigation}) {
+export function MostradorAntesServicio({ /*route,*/ navigation }) {
   const [filePath, setFilePath] = useState(null);
+  const [file64, setFile64] = useState();
+  const [contentType, setContentType] = useState('')
   const [enviar, setEnviar] = useState(0);
-  const {idTienda, nombreTienda} = route.params;
+  //const { idTienda, nombreTienda } = route.params;
   const user = React.useContext(UserContext);
 
   // De forma similar a componentDidMount y componentDidUpdate
   useEffect(() => {
-    console.log(route.params);
+
   });
 
   launchCamera = () => {
     let options = {
+      includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
     ImagePicker.launchCamera(options, (response) => {
+
+
+
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -34,27 +42,60 @@ export function MostradorAntesServicio({route, navigation}) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = {uri: response.uri};
+        const source = { uri: response.uri };
         console.log('response', JSON.stringify(response));
-        setFilePath(response.uri);
+        setFilePath(response.assets[0].uri);
+        setFile64(response.assets[0].base64);
+        setContentType(response.assets[0].type);
       }
     });
   };
 
+  guardarImagen = async () => {
+    let img = {
+      idTipo: 3,
+      contenido: file64,
+      contentType: contentType,
+      UsuarioRegistro: 0
+    }
+    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagen`, img)
+    try {
+      await axios
+        .post(`${BASE_URL}Tiendas/InsertImagen`
+          , img
+        )
+        .then((res) => {
+          const result = res.data;
+          let jsonMostradorResulto = JSON.parse(result);
+
+
+          Alert.alert('Listo', 'Se ha guardado la imagen', [
+            { text: 'Aceptar', onPress: () => navigation.navigate('Formulario', { /*idTienda: idTienda, nombreTienda: nombreTienda*/ }) },
+          ]);
+
+          console.log('Resultado');
+          console.log(jsonMostradorResulto)
+          // setIsLoading(false);
+        });
+    } catch (error) {
+      console.log(`valio verga pariente`, error)
+    }
+  };
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
     });
   }, []);
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X {idTienda}, {nombreTienda}
+        <Text style={{ padding: 20, fontWeight: 'bold' }}>
+          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
         </Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
+          <Text style={{ paddingRight: 8 }}>Imagen mostrador:</Text>
           <Icon
             name="camera"
             size={25}
@@ -62,6 +103,13 @@ export function MostradorAntesServicio({route, navigation}) {
             padding={20}
             onPress={() => launchCamera()}
           />
+        </View>
+        <View style={styles.row}>
+          <Image
+            resizeMode="cover"
+            resizeMethod="scale"
+            style={{ justifyContent: 'center', width: 100, height: 100 }}
+            source={{ uri: filePath }}></Image>
         </View>
       </View>
       <View style={styles.row}>
@@ -74,13 +122,11 @@ export function MostradorAntesServicio({route, navigation}) {
 
         <TouchableOpacity
           style={styles.btnSubmit}
-          onPress={
-            enviar === 0 ? () => navigation.navigate('Formulario', {idTienda: idTienda, nombreTienda: nombreTienda}) : () => {}
-          }>
+          onPress={() => guardarImagen()}>
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -111,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     padding: 10,
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
     borderWidth: 1,
     backgroundColor: 'rgb(27,67,136)',
   },

@@ -23,13 +23,13 @@ export function MainStackNavigator() {
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerRight: () => <Text style={{color: 'white'}}> usuario</Text>,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerRight: () => <Text style={{ color: 'white' }}> usuario</Text>,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>*/}
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'Home'}
         component={LandingScreen}
@@ -37,86 +37,85 @@ export function MainStackNavigator() {
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
           headerRight: () => <Text> usuario</Text>,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen>
-        
-     {/*} <MainStack.Screen
-        name={'MostradorDespues'}
-        component={MostradorDespuesServicio}
-        options={{
-          title: 'Be Fashion Eyewear',
-          headerLeft: () => null,
-
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen>*/}
-      <MainStack.Screen
-        name={'Formulario'}
-        component={Formulario}
-        options={{
-          title: 'Be Fashion Eyewear',
-          headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen> 
-      {/* <MainStack.Screen
-        name={'TerminaTienda'}
-        component={TerminaViaje}
-        options={{
-          title: 'Be Fashion Eyewear',
-          headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
           },
         }}></MainStack.Screen> */}
+
+      <MainStack.Screen
+        name={'MostradorDespues'}
+        component={MostradorDespuesServicio}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
+      {/* <MainStack.Screen
+        name={'Formulario'}
+        component={Formulario}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
+      <MainStack.Screen
+        name={'TerminaTienda'}
+        component={TerminaViaje}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'MostradorAntes'}
         component={MostradorAntesServicio}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen> 
-        <MainStack.Screen
-        name={'FinalizarRuta'}
-        component={FinalizaRuta}
-        options={{
-          title: 'Be Fashion Eyewear',
-          headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-     {/*  <MainStack.Screen
+      <MainStack.Screen
+        name={'FinalizarRuta'}
+        component={FinalizaRuta}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
+      <MainStack.Screen
         name={'maps'}
         component={mapScreen}
         options={{
           title: 'maps',
           headerLeft: () => null,
-          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> */}
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'addSite'}
         component={AgregarUbicacion}
@@ -128,7 +127,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen> */}
     </MainStack.Navigator>
   );
 }
