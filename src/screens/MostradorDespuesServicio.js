@@ -132,6 +132,7 @@ export function MostradorDespuesServicio({ navigation }) {
             style={{ width: '10%', height: '50%', marginLeft: 20 }}
             source={{ uri: filePathM }}></Image>
         </View>
+        <Text>{filePathM}</Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
           <Text style={{ paddingRight: 8 }}>Imagen mostrador a 3 metros:</Text>

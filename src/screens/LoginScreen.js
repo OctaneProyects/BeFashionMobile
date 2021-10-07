@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState, useContext} from 'react';
 import {StyleSheet, View, Image} from 'react-native';
 import {FilledButton} from '../components/Button';
 import {Error} from '../components/Error';
@@ -10,13 +10,13 @@ import {Loading} from '../components/Loading';
 import {UserContext} from '../context/UserContext';
 
 export function LoginScreen({navigation}) {
-  const {login} = React.useContext(AuthContext);
+  const {login} = useContext(AuthContext);
   // const user = React.useContext(UserContext);
 
-  const [usr, setUser] = React.useState('admin');
-  const [pass, setPass] = React.useState('G3nerico01');
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
+  const [usr, setUser] = useState('admin');
+  const [pass, setPass] = useState('G3nerico01');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   return (
     <View style={styles.container}>

@@ -1,24 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {
+  Alert,
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
-import { FilledButton } from '../components/Button';
+import {FilledButton} from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { UserContext } from '../context/UserContext';
+import {UserContext} from '../context/UserContext';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import {BASE_URL} from '../config';
+import {EstatusContext} from '../context/EstatusContext';
+import { CommonActions } from '@react-navigation/native';
 
-export function MostradorAntesServicio({ /*route,*/ navigation }) {
+
+export function MostradorAntesServicio({/*route,*/ navigation}) {
   const [filePath, setFilePath] = useState(null);
   const [file64, setFile64] = useState();
-  const [contentType, setContentType] = useState('')
+  const [contentType, setContentType] = useState('');
   const [enviar, setEnviar] = useState(0);
+  //AuthFlow
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
   //const { idTienda, nombreTienda } = route.params;
   const user = React.useContext(UserContext);
 
-  // De forma similar a componentDidMount y componentDidUpdate
-  useEffect(() => {
 
-  });
+  // De forma similar a componentDidMount y componentDidUpdate
+  useEffect(() => {});
 
   launchCamera = () => {
     let options = {
@@ -29,9 +42,6 @@ export function MostradorAntesServicio({ /*route,*/ navigation }) {
       },
     };
     ImagePicker.launchCamera(options, (response) => {
-
-
-
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -42,7 +52,7 @@ export function MostradorAntesServicio({ /*route,*/ navigation }) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = { uri: response.uri };
+        const source = {uri: response.uri};
         console.log('response', JSON.stringify(response));
         setFilePath(response.assets[0].uri);
         setFile64(response.assets[0].base64);
@@ -56,46 +66,65 @@ export function MostradorAntesServicio({ /*route,*/ navigation }) {
       idTipo: 3,
       contenido: file64,
       contentType: contentType,
-      UsuarioRegistro: 0
-    }
-    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagen`, img)
-    try {
-      await axios
-        .post(`${BASE_URL}Tiendas/InsertImagen`
-          , img
-        )
-        .then((res) => {
-          const result = res.data;
-          let jsonMostradorResulto = JSON.parse(result);
+      UsuarioRegistro: 0,
+    };
+    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagen`, img);
+    try 
+    {
+        
+
+      await axios.post(`${BASE_URL}Tiendas/InsertImagen`, img).then((res) => {
+        const result = res.data;
+        let jsonMostradorResulto = JSON.parse(result);
 
 
-          Alert.alert('Listo', 'Se ha guardado la imagen', [
-            { text: 'Aceptar', onPress: () => navigation.navigate('Formulario', { /*idTienda: idTienda, nombreTienda: nombreTienda*/ }) },
-          ]);
+        Alert.alert('Listo', 'Se ha guardado la imagen', [
+          {
+            text: 'Aceptar',
+            onPress: () =>(authFlow.setEstatus(9, 26, 1, 20),authFlow.getEstatus(1)
+            // navigation.navigate('FormularioEntrega')
+            ),
+          },
+        ]);
 
-          console.log('Resultado');
-          console.log(jsonMostradorResulto)
-          // setIsLoading(false);
-        });
+        console.log('Resultado');
+        console.log(jsonMostradorResulto);
+        // setIsLoading(false);
+      });
     } catch (error) {
-      console.log(`valio verga pariente`, error)
+      console.log(`valio verga pariente`, error);
     }
   };
 
+//Este Este useEffect se detona cuando se modifica el estado del viaje
+useEffect(async () => {
+  console.log("PANTALLA");
+  console.log(estado.Modulo);
+  //navega a la ultima pantalla en que se encontraba el usuario 
+  navigation.dispatch(
+    CommonActions.navigate({
+      name: estado.Modulo,
+      // params: {
+      //   user: 'jane',
+      // },
+    })
+  )
+}, [estado]);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
+      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
     });
   }, []);
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={{ padding: 20, fontWeight: 'bold' }}>
+        <Text style={{padding: 20, fontWeight: 'bold'}}>
           Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
         </Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{ paddingRight: 8 }}>Imagen mostrador:</Text>
+          <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
           <Icon
             name="camera"
             size={25}
@@ -108,8 +137,8 @@ export function MostradorAntesServicio({ /*route,*/ navigation }) {
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ justifyContent: 'center', width: 100, height: 100 }}
-            source={{ uri: filePath }}></Image>
+            style={{justifyContent: 'center', width: 100, height: 100}}
+            source={{uri: filePath}}></Image>
         </View>
       </View>
       <View style={styles.row}>
@@ -126,7 +155,7 @@ export function MostradorAntesServicio({ /*route,*/ navigation }) {
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
@@ -138,7 +167,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   title: {
     paddingBottom: 50,

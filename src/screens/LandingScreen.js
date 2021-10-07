@@ -24,6 +24,7 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import { getDistance, getPreciseDistance } from 'geolib';
 import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions } from '@react-navigation/native';
 import { IconButton } from '../components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
@@ -60,7 +61,8 @@ export function LandingScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const { logout } = React.useContext(AuthContext);
   const user = React.useContext(UserContext);
-  const estatus = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
   const [stepValue, setStep] = useState(0);
   const [stepCant, setStepCant] = useState(0);
   const [statusViaje, setStatusViaje] = useState(0);
@@ -74,6 +76,7 @@ export function LandingScreen({ navigation }) {
   const [latAct, setLatAct] = useState(0);
   const [longAct, setLongAct] = useState(0);
 
+  //Esta funcion valida la distancia entre el dispositivo y la tienda
   async function validateDistance(latTienda, longTienda) {
     await getLocation();
     console.log('tienda');
@@ -95,10 +98,14 @@ export function LandingScreen({ navigation }) {
 
     {
       dis <= parseInt(tiendas[stepValue].RadioGeocerca)
-        ? navigation.navigate('MostradorAntes', {
-          idTienda: tiendas[stepValue].Id,
-          nombreTienda: tiendas[stepValue].Nombre,
-        })
+        ? (authFlow.setEstatus(8,26,1,20), authFlow.getEstatus(1)
+        // navigation.navigate('MostradorAntesServicio', 
+        // {
+        //   idTienda: tiendas[stepValue].Id,
+        //   nombreTienda: tiendas[stepValue].Nombre,
+        // }
+        // )
+        )
         : Alert.alert(
           'No puedes ingresar a esta tienda',
           'Estas fuera de rango ',
@@ -107,38 +114,27 @@ export function LandingScreen({ navigation }) {
     }
   }
 
-  const getStatusViaje = async () => {
-    const params = {
-      idUsuario: 1, //agregar id usuario REAL
-    };
-
-    try {
-      await axios
-        .get(`${BASE_URL}viajes/GetEstatusViajeUsuario`, { params })
-        .then((res) => {
-          const result = res.data;
-          let jsonStatus = JSON.parse(result);
-          setRuta(jsonStatus[0]);
-        });
-    } catch (e) {
-      alert(`Ocurrio un error ${e}`);
-    }
-  };
-
+  //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+
+      if (appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'  
       ) {
         console.log('App has come to the foreground!');
+        console.log(estado.Modulo)
+        appState.current = nextAppState;
+        if (appState.current == 'active' && estado.Modulo !="MostradorAntesServicio" && estado.Modulo !="MostradorDespuesServicio" ) {
+          console.log("si entro ")
+          GetRuta();
+          authFlow.getEstatus(1);
+        }
       }
-
+      //el estado actual sera el nuevo
+      console.log(estado)
       appState.current = nextAppState;
-      if (appState.current == 'active') {
-        console.log('actualizando');
-        GetRuta();
-      }
+
+     
     });
 
     return () => {
@@ -146,16 +142,41 @@ export function LandingScreen({ navigation }) {
     };
   }, []);
 
+  //Este useEffect se detona al cargar la pantalla
   useEffect(async () => {
     setIsLoading(true); //cargando
     // setStepCant();
     await GetRuta();
     await getLocation();
-    getStatusViaje();
+    // await authFlow.setEstatus(6,26,1,20);
+
+    console.log("ESTADO")
+    console.log(estado)
+    // getStatusViaje();
     GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
   }, []);
 
-  //ESTE es para la GRafica
+//Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(async () => {
+    console.log("PANTALLA");
+    console.log("SI ESTA RECARGANDO");
+
+    if(estado){
+    //navega a la ultima pantalla en que se encontraba el usuario 
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: estado.Modulo,
+          // params: {
+          //   user: 'jane',
+          // },
+        })
+      )
+    }
+
+  }, [estado]);
+
+  //Este useEffect se detona cuando se cambia se completa/omite una tienda 
+  //Construye la grafica y obtiene la ubicacion de la siguiente tienda
   useEffect(() => {
     chartConstructor();
     getLocation();
@@ -195,17 +216,16 @@ export function LandingScreen({ navigation }) {
   async function getLocation() {
     Geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        console.log(`lat:: ${latitude}`);
-        console.log(`long::${longitude}`);
-        setLocation({ latitude, longitude });
+        const {latitude, longitude} = position.coords;
+        // console.log(`lat:: ${latitude}`);
+        // console.log(`long::${longitude}`);
+        setLocation({latitude, longitude});
       },
       (error) => {
         console.log(error.code, error.message);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
-    console.log(`ESTATUS: ${estatus}`)
   }
   //fucnion para regresar las tiendas
   const GetTiendas = (idRuta) => {

@@ -2,8 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LandingScreen } from '../screens/LandingScreen';
 import CapturaKilometraje from '../screens/CapturaKilometraje';
-import Formulario from '../screens/Formulario';
-import TerminaViaje from '../screens/TerminaViaje';
+import FormularioEntrega from '../screens/FormularioEntrega';
+import ChecklistTienda from '../screens/ChecklistTienda';
 import { FinalizaRuta } from '../screens/FinalizaRuta';
 import { MostradorAntesServicio } from '../screens/MostradorAntesServicio';
 import { MostradorDespuesServicio } from '../screens/MostradorDespuesServicio';
@@ -17,8 +17,8 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
-      {/* <MainStack.Screen
-        name={'Inicio'}
+      <MainStack.Screen
+        name={'CapturaKilometraje'}
         component={CapturaKilometraje}
         options={{
           title: 'Be Fashion Eyewear',
@@ -31,7 +31,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
       <MainStack.Screen
-        name={'Home'}
+        name={'LandingScreen'}
         component={LandingScreen}
         options={{
           title: 'Be Fashion Eyewear',
@@ -42,10 +42,10 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> 
-
+        }}></MainStack.Screen>
+        
       <MainStack.Screen
-        name={'MostradorDespues'}
+        name={'MostradorDespuesServicio'}
         component={MostradorDespuesServicio}
         options={{
           title: 'Be Fashion Eyewear',
@@ -56,9 +56,21 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-       <MainStack.Screen
-        name={'Formulario'}
-        component={Formulario}
+      <MainStack.Screen
+        name={'FormularioEntrega'}
+        component={FormularioEntrega}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen> 
+      <MainStack.Screen
+        name={'ChecklistTienda'}
+        component={ChecklistTienda}
         options={{
           title: 'Be Fashion Eyewear',
           headerLeft: () => null,
@@ -69,19 +81,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
       <MainStack.Screen
-        name={'TerminaTienda'}
-        component={TerminaViaje}
-        options={{
-          title: 'Be Fashion Eyewear',
-          headerLeft: () => null,
-          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontSize: 16,
-          },
-        }}></MainStack.Screen>
-      <MainStack.Screen
-        name={'MostradorAntes'}
+        name={'MostradorAntesServicio'}
         component={MostradorAntesServicio}
         options={{
           title: 'Be Fashion Eyewear',
@@ -104,12 +104,11 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-      {/*}
-      <MainStack.Screen
-        name={'maps'}
-        component={mapScreen}
+       <MainStack.Screen
+        name={'addSite'}
+        component={AgregarUbicacion}
         options={{
-          title: 'maps',
+          title: 'Agregar tienda',
           headerLeft: () => null,
           headerStyle: { backgroundColor: 'rgb(27,67,136)' },
           headerTintColor: '#fff',
@@ -117,13 +116,13 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-      <MainStack.Screen
-        name={'addSite'}
-        component={AgregarUbicacion}
+            {/*  <MainStack.Screen
+        name={'maps'}
+        component={mapScreen}
         options={{
-          title: 'Agregar tienda',
+          title: 'maps',
           headerLeft: () => null,
-          headerStyle: { backgroundColor: 'rgb(27,67,136)' },
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontSize: 16,
