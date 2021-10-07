@@ -1,105 +1,148 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-    View, SafeAreaView, StyleSheet, Text, TextInput, Button
+    View, SafeAreaView, StyleSheet, Text, TextInput, Button, TouchableOpacity, Alert
 } from 'react-native'
-import { CheckBox } from 'react-native-elements';
+import { CheckBox, Input } from 'react-native-elements';
 import { Heading } from '../components/Heading';
-
-async function insertkm(km, imagen64, IdUsuario) {
-
-    if (!km) {
-        Alert.alert(
-            "Verifique los datos",
-            "Agregue un kilometraje final",
-        );
-        return;
-    }
-    if (!imagen64) {
-        Alert.alert(
-            "Verifique los datos",
-            "Adjunte una imagen del odómetro",
-            [
-
-                { text: "Aceptar" }
-            ]
-        );
-        return;
-    }
-
-    const viaje = {
-        IdRuta: 1, //agregar
-
-        IdUsuario: IdUsuario,
-        KmFinal: km,
-        IdEstatus: 1, //agregar
-        Imagen: imagen64,
-    };
-    console.log(viaje);
-
-    const result = await axios.post(
-        `${BASE_URL}vehiculos/InsertaKmInicial`,
-        viaje,
-    );
-    if (result.data == 'ok') {
-        Alert.alert(
-            "Listo",
-            "Se han registrado correctamente",
-            [
-
-                { text: "Continuar", onPress: () => navigation.navigate('Home') }
-            ]
-        );
-    } else {
-        alert('error');
-    }
-    console.log(result.data);
-
-    return result;
-
-
-}
+import axios from 'axios'
+import { BASE_URL } from '../config';
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 
 
 export function FinalizaRuta({ navigation }) {
 
-    const [entMercancia, setEntMerc] = useState(false);
-    const [entDevolucion, setEntDev] = useState(false);
+    const [idViaje, setIdViaje] = useState(3)
+    const [entMercancia, setEntMerc] = useState(0);
+    const [entDevolucion, setEntDev] = useState(0);
 
-    const [totalPz, setTotalPz] = usesState(0);
-    const [vehiculo, setVehiculo] = usesState("0");
-    const [kmInicial, setKmInicial] = usesState(0);
-    const [kmFinal, setKmFinal] = usesState(0);
-    const [hrInicial, setHrInicial] = usesState("0");
-    const [hrFinal, setHrFinal] = usesState("0");
-    const [pzVendidas, setPzVendidas] = usesState(0);
-    const [pzDanadas, setPzDanadas] = usesState(0);
-    const [pzDefectuosa, setPzDefectuosa] = usesState(0);
-    const [visitasDiarias, setVisitasDiarias] = usesState(0);
-    const [visitasEfectivas, setVisitasEfectivas] = usesState(0);
-    const [promocion, setPromocion] = usesState(0);
+    const [totalPz, setTotalPz] = useState(0);
+    const [vehiculo, setVehiculo] = useState();
+    const [kmInicial, setKmInicial] = useState(0);
+
+    const [kmFinal, setKmFinal] = useState("0");
+    const [imagen64, setImagen64] = useState()
+
+    const [hrInicial, setHrInicial] = useState("0");
+    const [hrFinal, setHrFinal] = useState("");
+    const [pzVendidas, setPzVendidas] = useState(0);
+    const [pzDanadas, setPzDanadas] = useState("0");
+    const [pzDefectuosa, setPzDefectuosa] = useState("0");
+    const [visitasDiarias, setVisitasDiarias] = useState(0);
+    const [visitasEfectivas, setVisitasEfectivas] = useState(0);
+    const [promocion, setPromocion] = useState(0);
 
 
     const terminaRuta = () => {
 
     };
 
+
+    const insertFinalaViaje = async () => {
+
+        console.log(`entra, KmFinal`, kmFinal)
+        if (parseInt(kmFinal) <= 0) {
+            Alert.alert(
+                "Verifique los datos",
+                "Agregue un kilometraje final",
+            );
+            return;
+        }
+        // if (!imagen64) {
+        //     Alert.alert(
+        //         "Verifique los datos",
+        //         "Adjunte una imagen del odómetro",
+        //         [
+
+        //             { text: "Aceptar" }
+        //         ]
+        //     );
+        //     return;
+        // }
+
+        const viaje = {
+            idViaje: idViaje,
+            inventarioFinalPzs: totalPz,
+            kmInicial: kmInicial,
+            kmFinal: kmFinal,
+            horaInicial: hrInicial,
+            horaFinal: hrFinal,
+            pzVendidas: pzVendidas,
+            pzDanadas: parseInt(pzDanadas),
+            pzDefectuosasFabrica: parseInt(pzDefectuosa),
+            visitaDiaria: visitasDiarias,
+            visitasEfectivas: visitasEfectivas
+        }
+        console.log(viaje);
+
+        const result = await axios.post(
+            `${BASE_URL}viajes/InsertFinalViaje`,
+            viaje,
+        );
+        if (result.data == 'ok') {
+            Alert.alert(
+                "Listo!",
+                "Haz terminado tu ruta por hoy",
+                [
+
+                    { text: "Terminar", onPress: () => navigation.navigate('Home') }
+                ]
+            );
+        } else {
+            alert(result);
+        }
+        console.log(result.data);
+
+
+
+
+    }
+    const getFinalRuta = async () => {
+
+        await axios.get(
+            `${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`,
+
+        ).then((result) => {
+            const res = JSON.parse(result.data)[0];
+            console.log(res);
+            setTotalPz(res.totalPz)
+            setVehiculo(res.vehiculo)
+            setKmInicial(res.KmInicial)
+            setPzVendidas(res.pzVendidas)
+            setPromocion(res.Promociones)
+            setHrInicial(res.fechaInicial)
+            const date = new Date().toLocaleDateString().toString();
+            setHrFinal(date)
+        });
+
+
+    }
+
+
+    useEffect(() => {
+        console.log(`useEfect si llega`,)
+        getFinalRuta()
+    }, [])
     return (
         <SafeAreaView>
             <View style={{ paddingTop: 10 }}>
                 <View style={styles.checkboxContainer}>
-                    <CheckBox
+                    {/* entrada de mercancia por vehiculo */}
+                    <TextInput
                         value={entMercancia}
                         onValueChange={setEntMerc}
-                        style={styles.checkbox}
+                        keyboardType="numeric"
+                        style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
                     />
-                    <Text style={styles.label}>Entrada de merca por veh </Text>
+                    <Text style={styles.label}>Entrada de mercancia por vehiculo </Text>
                 </View>
                 <View style={styles.checkboxContainer}>
-                    <CheckBox
+                    {/* Devoluciones */}
+                    <TextInput
                         value={entDevolucion}
                         onValueChange={setEntDev}
-                        style={styles.checkbox}
+                        keyboardType="number-pad"
+                        style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
                     />
                     <Text style={styles.label}>Entrada por devolucion</Text>
                 </View>
@@ -107,69 +150,88 @@ export function FinalizaRuta({ navigation }) {
             <View style={{ paddingLeft: 70, paddingRight: 10, alignContent: "center" }}>
                 <View>
 
-                    <Text>
+                    <Text style={{ padding: 5 }}>
 
                         {totalPz} Total de piezas en carro
                     </Text>
                 </View>
                 <View>
 
-                    <Text>
+                    <Text style={{ padding: 5 }}>
                         {vehiculo} No. Vehiculo
                     </Text>
                 </View>
                 <View>
 
-                    <Text>
+                    <Text style={{ padding: 5 }}>
                         {kmInicial} KM inicial
                     </Text>
                 </View>
 
-                <View>
-                    <TextInput></TextInput>
-                    <Text>
-                        {kmFinal} KM final
+                <View style={{ flexDirection: 'row' }}>
+                    <TextInput
+
+                        onChangeText={setKmFinal}
+                        keyboardType="numeric"
+                        style={{ height: 35 }}
+                    />
+                    <Text style={{ padding: 5 }}>
+                        KM final
                     </Text>
+
+                    <Icon
+                        name="camera"
+                        size={25}
+                        color="gray"
+                        padding={20}
+                        onPress={() => launchCamera()}
+                    />
                 </View>
                 <View>
-                    <TextInput></TextInput>
-                    <Text>
+
+                    <Text style={{ padding: 5 }}>
                         {hrInicial} Hora de salida
                     </Text>
                 </View>
 
                 <View>
-                    <TextInput></TextInput>
-
-
-                    <Text>
+                    <Text style={{ padding: 5 }}>
                         {hrFinal} Hora de llegada
                     </Text>
                 </View>
 
                 <View>
 
-                    <Text>
+                    <Text style={{ padding: 5 }}>
                         {pzVendidas} Piezas vendidas
                     </Text>
                 </View>
 
-                <View>
+                <View style={{ flexDirection: 'row' }}>
+                    <TextInput
 
-                    <Text>
-
-                        {pzDanadas} Piezas dañadas
+                        onChange={setPzDanadas}
+                        keyboardType="numeric"
+                        style={{ height: 35 }}
+                    />
+                    <Text style={{ padding: 5 }}>
+                        Piezas dañadas
                     </Text>
                 </View>
 
-                <View>
+                <View style={{ flexDirection: 'row' }}>
+                    <TextInput
 
-                    <Text>
-                        {pzDefectuosa} Defectuosas de fabrica
+                        onChange={setPzDefectuosa}
+                        keyboardType="numeric"
+                        style={{ height: 35 }}
+                    />
+                    <Text style={{ padding: 5 }}>
+                        Defectuosas de fabrica
                     </Text>
                 </View>
 
-                <View>
+                {/* <View>
 
                     <Text>
                         {visitasDiarias} Visita diaria
@@ -181,21 +243,23 @@ export function FinalizaRuta({ navigation }) {
                     <Text>
                         {visitasEfectivas} Visitas efectivas
                     </Text>
-                </View>
+                </View> */}
 
                 <View>
 
-                    <Text>
+                    <Text style={{ padding: 5 }}>
                         {promocion} Promocion
                     </Text>
                 </View>
 
 
             </View>
-            <View style={{ paddingTop: 70, paddingLeft: 70, paddingRight: 70, alignContent: "center" }}>
-                <Button title={"Terminar"} style={styles.btnSubmit}>
-
-                </Button>
+            <View style={styles.btnSubmitContainer}>
+                <TouchableOpacity
+                    style={styles.btnSubmit}
+                    onPress={() => insertFinalaViaje()}>
+                    <Text style={styles.btnSubmitText}>Terminar mi ruta</Text>
+                </TouchableOpacity>
             </View>
 
         </SafeAreaView>

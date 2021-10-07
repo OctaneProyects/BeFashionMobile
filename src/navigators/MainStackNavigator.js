@@ -42,7 +42,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> */}
+        }}></MainStack.Screen> 
 
       <MainStack.Screen
         name={'MostradorDespues'}
@@ -56,7 +56,7 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-      {/* <MainStack.Screen
+       <MainStack.Screen
         name={'Formulario'}
         component={Formulario}
         options={{
@@ -91,7 +91,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>
+        }}></MainStack.Screen>*/}
       <MainStack.Screen
         name={'FinalizarRuta'}
         component={FinalizaRuta}
@@ -104,6 +104,7 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
+      {/*}
       <MainStack.Screen
         name={'maps'}
         component={mapScreen}
