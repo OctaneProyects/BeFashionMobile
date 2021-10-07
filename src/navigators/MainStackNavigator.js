@@ -45,7 +45,7 @@ export function MainStackNavigator() {
         }}></MainStack.Screen>
         
       <MainStack.Screen
-        name={'MostradorDespues'}
+        name={'MostradorDespuesServicio'}
         component={MostradorDespuesServicio}
         options={{
           title: 'Be Fashion Eyewear',
@@ -81,7 +81,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
       <MainStack.Screen
-        name={'MostradorAntes'}
+        name={'MostradorAntesServicio'}
         component={MostradorAntesServicio}
         options={{
           title: 'Be Fashion Eyewear',

@@ -9,10 +9,9 @@ export function useFlowAuth() {
     (estatus, action) => {
       switch (action.type) {
         case 'SET_STATUS':
-          console.log(estado);
           return {
             ...estatus,
-            estatus: {...action.payload},
+            estatus: action.payload,
           };
         case 'GET_STATUS':
           console.log('GET_STATUS');
@@ -27,7 +26,9 @@ export function useFlowAuth() {
       }
     },
     {
-      estado: "negra",
+       estado: {
+         Modulo: "LandingScreen"
+       },
     },
   );
 
@@ -49,7 +50,7 @@ export function useFlowAuth() {
           console.log('Insert');
           console.log(jsonStatus[0]);
 
-          // dispatch(createAction('SET_STATUS', jsonStatus[0]));
+          dispatch(createAction('SET_STATUS', jsonStatus[0]));
         });
     } catch (e) {
       alert(`Ocurrio un error ${e}`);

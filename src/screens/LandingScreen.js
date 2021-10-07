@@ -98,10 +98,14 @@ export function LandingScreen({ navigation }) {
 
     {
       dis <= parseInt(tiendas[stepValue].RadioGeocerca)
-        ? navigation.navigate('MostradorAntes', {
-          idTienda: tiendas[stepValue].Id,
-          nombreTienda: tiendas[stepValue].Nombre,
-        })
+        ? (authFlow.setEstatus(8,26,1,20), authFlow.getEstatus(1)
+        // navigation.navigate('MostradorAntesServicio', 
+        // {
+        //   idTienda: tiendas[stepValue].Id,
+        //   nombreTienda: tiendas[stepValue].Nombre,
+        // }
+        // )
+        )
         : Alert.alert(
           'No puedes ingresar a esta tienda',
           'Estas fuera de rango ',
@@ -113,20 +117,24 @@ export function LandingScreen({ navigation }) {
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
+
+      if (appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'  
       ) {
         console.log('App has come to the foreground!');
+        console.log(estado.Modulo)
+        appState.current = nextAppState;
+        if (appState.current == 'active' && estado.Modulo !="MostradorAntesServicio" && estado.Modulo !="MostradorDespuesServicio" ) {
+          console.log("si entro ")
+          GetRuta();
+          authFlow.getEstatus(1);
+        }
       }
-
+      //el estado actual sera el nuevo
+      console.log(estado)
       appState.current = nextAppState;
-      if (appState.current == 'active') {
-        console.log('actualizando');
-        GetRuta();
 
-        authFlow.getEstatus(1);
-      }
+     
     });
 
     return () => {
@@ -140,8 +148,10 @@ export function LandingScreen({ navigation }) {
     // setStepCant();
     await GetRuta();
     await getLocation();
-    await authFlow.setEstatus(6,26,1,20);
+    // await authFlow.setEstatus(6,26,1,20);
 
+    console.log("ESTADO")
+    console.log(estado)
     // getStatusViaje();
     GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
   }, []);
@@ -149,16 +159,20 @@ export function LandingScreen({ navigation }) {
 //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
     console.log("PANTALLA");
-    console.log(estado.Modulo);
+    console.log("SI ESTA RECARGANDO");
+
+    if(estado){
     //navega a la ultima pantalla en que se encontraba el usuario 
-    navigation.dispatch(
-      CommonActions.navigate({
-        name: estado.Modulo,
-        // params: {
-        //   user: 'jane',
-        // },
-      })
-    )
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: estado.Modulo,
+          // params: {
+          //   user: 'jane',
+          // },
+        })
+      )
+    }
+
   }, [estado]);
 
   //Este useEffect se detona cuando se cambia se completa/omite una tienda 

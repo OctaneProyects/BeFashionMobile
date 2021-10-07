@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  AppState,
   Alert,
   FlatList,
   SafeAreaView,
@@ -14,14 +15,16 @@ import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 import {UserContext} from '../context/UserContext';
 import {LentesHandler} from '../components/LentesHandler';
-import { EstatusContext } from '../context/EstatusContext';
+import {EstatusContext} from '../context/EstatusContext';
+import {CommonActions} from '@react-navigation/native';
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
   const [entregas] = useState([]);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+    //AuthFlow
+    const {estado} = React.useContext(EstatusContext);
+    const {authFlow} = React.useContext(EstatusContext);
   // const {idTienda, nombreTienda} = route.params;
   const idTienda = 26;
   const user = React.useContext(UserContext);
@@ -47,14 +50,14 @@ export default function Formulario({route, navigation}) {
     console.log(formulario);
 
     const result = await axios.post(
-      `${BASE_URL}Sitios/InsertaFormCapt`,
+      `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
     );
-    
-    if (result.data == 'ok') {
+
+    if (result.data) {
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
-          text: 'Aceptar',
+          text: 'Aceptar',onPress:() =>( authFlow.setEstatus(10, 26, 1, 20), authFlow.getEstatus(1))
           // onPress: () => navigation.navigate('MostradorDespues'),
         },
       ]);
@@ -86,13 +89,13 @@ export default function Formulario({route, navigation}) {
 
   const GetArticulos = async (idTienda) => {
     const params = {
-      idTienda: idTienda, //agregar id usuario REAL
+      idUsuario: 1, //agregar id usuario REAL
     };
     // console.log(idTienda);
 
     try {
       await axios
-        .get(`${BASE_URL}sitios/GetArticulos`, {params})
+        .get(`${BASE_URL}Articulos/GetArticulos`, {params})
         .then((res) => {
           const result = res.data;
           let jsonArticulos = JSON.parse(result);
@@ -115,6 +118,21 @@ export default function Formulario({route, navigation}) {
     return () => {};
   }, []);
 
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(async () => {
+    console.log('PANTALLA');
+    console.log(estado.Modulo);
+    //navega a la ultima pantalla en que se encontraba el usuario
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: estado.Modulo,
+        // params: {
+        //   user: 'jane',
+        // },
+      }),
+    );
+  }, [estado]);
+
   useEffect(() => {
     console.log(`Entregas: ${JSON.stringify(entregas)}`);
   }, [entregas]);
@@ -126,98 +144,43 @@ export default function Formulario({route, navigation}) {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>OXXO</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>OXXO</Text>
 
-        {/* <Text style={styles.header}>{nombreTienda}</Text> */}
-      </View>
+          {/* <Text style={styles.header}>{nombreTienda}</Text> */}
+        </View>
 
-      <Text style={{padding: 20, fontWeight: 'bold'}}>
-        Tercer paso: Deja productos a tienda
-      </Text>
-
-      <View style={{alignItems: 'center'}}>
-        <Text style={{fontStyle: 'italic'}}>
-          <Icon
-            name="info-circle"
-            type="font-awesome"
-            size={15}
-            color="blue"></Icon>{' '}
-          Captura las cantidades entregadas de cada modelo
+        <Text style={{padding: 20, fontWeight: 'bold'}}>
+          Tercer paso: Deja productos a tienda
         </Text>
-      </View>
-      <FlatList
-        data={articulos}
-        keyExtractor={({id}, index) => id}
-        renderItem={({item}) => (
-          <LentesHandler
-            handleCant={handleCant}
-            key={item.id}
-            id={item.Id}
-            nombre={item.Nombre}></LentesHandler>
-          // <View style={styles.headerContainer}>
-          //   <Text style={styles.header}>{item.Nombre}</Text>
-          //   <View
-          //     style={{
-          //       alignItems: 'center',
-          //       justifyContent: 'center',
-          //       alignContent: 'center',
-          //       flexDirection: 'row',
-          //     }}>
-          //     <Icon
-          //       raised
-          //       name="minus"
-          //       type="font-awesome"
-          //       color="blue"
-          //       onPress={() => disminuyeCant()}
-          //     />
-          //     <TextInput
-          //       style={{fontSize: 20, marginHorizontal: 20}}
-          //       value={cantidad.toString()}
-          //       placeholder="0"
-          //       keyboardType="number-pad"
-          //       onChangeText={(cant) => setCantidad(cant)}
-          //       keyboardType="number-pad"></TextInput>
-          //     <Icon
-          //       raised
-          //       name="plus"
-          //       type="font-awesome"
-          //       color="blue"
-          //       onPress={() => aumentaCant()}
-          //     />
-          //   </View>
-          // </View>
-        )}></FlatList>
-      {/* <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          alignContent: 'center',
-          flexDirection: 'row',
-        }}>
-        <Icon
-          raised
-          name="minus"
-          type="font-awesome"
-          color="blue"
-          onPress={(cant) => disminuyeCant2(cant)}
-        />
-        <TextInput
-          style={{fontSize: 20, marginHorizontal: 20}}
-          value={cantidad2.toString()}
-          placeholder="0"
-          keyboardType="number-pad"
-          onChangeText={(cant) => setCantidad2(cant)}></TextInput>
-        <Icon
-          raised
-          name="plus"
-          type="font-awesome"
-          color="blue"
-          onPress={(cant) => aumentaCant2(cant)}
-        />
-      </View> */}
 
+        <View style={{alignItems: 'center'}}>
+          <Text style={{fontStyle: 'italic'}}>
+            <Icon
+              name="info-circle"
+              type="font-awesome"
+              size={15}
+              color="blue"></Icon>{' '}
+            Captura las cantidades entregadas de cada modelo
+          </Text>
+        </View>
+      </View>
+      
+      <View style={styles.articulosContainer}>
+        <FlatList
+          data={articulos}
+          keyExtractor={({id}, index) => id}
+          renderItem={({item}) => (
+            <LentesHandler
+              handleCant={handleCant}
+              key={item.id}
+              id={item.Id}
+              nombre={item.Nombre}></LentesHandler>
+          )}></FlatList>
+      </View>
+     
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
@@ -232,22 +195,32 @@ export default function Formulario({route, navigation}) {
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+  container: {
+    flex: 1,
+  },
+  articulosContainer: {
+   flex:2
+  },
+  headerContainer:{
+    flex:1,
   },
   header: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  headerText: {
     fontSize: 24,
   },
   btnSubmit: {
-    marginTop: 40,
+    marginTop: 10,
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
     backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
+    flex:.5,
     padding: 20,
   },
   btnSubmitText: {

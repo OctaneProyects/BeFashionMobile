@@ -16,9 +16,27 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Alert } from 'react-native';
 import { UserContext } from '../context/UserContext';
 import { ScrollView } from 'react-native-gesture-handler';
+import {EstatusContext} from '../context/EstatusContext'
 
 
-//asi se envia para POST (server recibe modelo)
+
+
+export default function CapturaKilometraje({navigation}) {
+  const {iniciar} = React.useContext(AuthContext);
+  const user = React.useContext(UserContext);
+
+  const [km, setkm] = useState(0);
+  const [imagen, setImagen] = useState();
+  const [imagen64, setImagen64] = useState();
+  const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
+  const [IdRuta, setIdRuta] = useState(null);
+  const [IdVehiculo, setIdVehiculo] = useState(user.idvehiculo);
+  const [IdEstatus, setIdEstatus] = useState(null);
+  const {authFlow} = React.useContext(EstatusContext);
+
+
+
+  //asi se envia para POST (server recibe modelo)
 async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
 
 
@@ -28,7 +46,7 @@ async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
       "Verifique los datos",
       "Agregue un kilometraje inicial",
       [
-        { text: "Aceptar",onPress:() => navigation.navigate('LandingScreen')}
+        { text: "Aceptar",onPress:() => (authFlow.setEstatus(6,26,1,20),navigation.navigate('LandingScreen'))}
       ]
     );
     return;
@@ -77,18 +95,6 @@ async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
 
 
 }
-
-export default function CapturaKilometraje({navigation}) {
-  const {iniciar} = React.useContext(AuthContext);
-  const user = React.useContext(UserContext);
-
-  const [km, setkm] = useState(0);
-  const [imagen, setImagen] = useState();
-  const [imagen64, setImagen64] = useState();
-  const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
-  const [IdRuta, setIdRuta] = useState(null);
-  const [IdVehiculo, setIdVehiculo] = useState(user.idvehiculo);
-  const [IdEstatus, setIdEstatus] = useState(null);
 
 
 
