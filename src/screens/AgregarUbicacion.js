@@ -154,7 +154,7 @@ export function AgregarUbicacion({ navigation }) {
 
 
                     Alert.alert('Listo', 'Se han registrado correctamente', [
-                        { text: 'Aceptar', onPress: () => navigation.navigate('Home') },
+                        { text: 'Aceptar', onPress: () => navigation.navigate('LandingScreen') },
                     ]);
 
                     console.log('clientes');
