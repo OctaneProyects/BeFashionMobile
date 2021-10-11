@@ -7,12 +7,16 @@ import { Heading } from '../components/Heading';
 import axios from 'axios'
 import { BASE_URL } from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { UserContext } from '../context/UserContext';
+import * as ImagePicker from 'react-native-image-picker';
 
 
 
-export function FinalizaRuta({ navigation }) {
+export function FinalizaViaje({ navigation }) {
 
-    const [idViaje, setIdViaje] = useState(3)
+    const user = React.useContext(UserContext);
+
+    const [idViaje, setIdViaje] = useState(1)
     const [entMercancia, setEntMerc] = useState(0);
     const [entDevolucion, setEntDev] = useState(0);
 
@@ -21,7 +25,10 @@ export function FinalizaRuta({ navigation }) {
     const [kmInicial, setKmInicial] = useState(0);
 
     const [kmFinal, setKmFinal] = useState("0");
+
     const [imagen64, setImagen64] = useState()
+    const [contentType, setContentType] = useState()
+
 
     const [hrInicial, setHrInicial] = useState("0");
     const [hrFinal, setHrFinal] = useState("");
@@ -33,9 +40,6 @@ export function FinalizaRuta({ navigation }) {
     const [promocion, setPromocion] = useState(0);
 
 
-    const terminaRuta = () => {
-
-    };
 
 
     const insertFinalaViaje = async () => {
@@ -48,30 +52,35 @@ export function FinalizaRuta({ navigation }) {
             );
             return;
         }
-        // if (!imagen64) {
-        //     Alert.alert(
-        //         "Verifique los datos",
-        //         "Adjunte una imagen del odómetro",
-        //         [
+        if (!imagen64) {
+            Alert.alert(
+                "Verifique los datos",
+                "Adjunte una imagen del odómetro",
+                [
 
-        //             { text: "Aceptar" }
-        //         ]
-        //     );
-        //     return;
-        // }
+                    { text: "Aceptar" }
+                ]
+            );
+            return;
+        }
 
         const viaje = {
-            idViaje: idViaje,
-            inventarioFinalPzs: totalPz,
-            kmInicial: kmInicial,
-            kmFinal: kmFinal,
-            horaInicial: hrInicial,
-            horaFinal: hrFinal,
-            pzVendidas: pzVendidas,
-            pzDanadas: parseInt(pzDanadas),
-            pzDefectuosasFabrica: parseInt(pzDefectuosa),
-            visitaDiaria: visitasDiarias,
-            visitasEfectivas: visitasEfectivas
+            IdViaje: parseInt(idViaje),
+            InventarioFinalPzs: parseInt(totalPz),
+            KmInicial: parseInt(kmInicial),
+            KMFinal: parseInt(kmFinal),
+            HoraInicial: hrInicial,
+            HoraFinal: hrFinal,
+            PzVendidas: parseInt(pzVendidas),
+            PzDanadas: parseInt(pzDanadas),
+            PzDefectuosasFabrica: parseInt(pzDefectuosa),
+            VisitaDiaria: parseInt(visitasDiarias),
+            VisitasEfectivas: parseInt(visitasEfectivas),
+            imagen64: imagen64,
+            contentType: contentType,
+            usuarioRegistro: user.IdUsuario,
+            entMercancia: parseInt(entMercancia),
+            devolucion: parseInt(entDevolucion),
         }
         console.log(viaje);
 
@@ -79,18 +88,18 @@ export function FinalizaRuta({ navigation }) {
             `${BASE_URL}viajes/InsertFinalViaje`,
             viaje,
         );
-        if (result.data == 'ok') {
-            Alert.alert(
-                "Listo!",
-                "Haz terminado tu ruta por hoy",
-                [
+        // if (result.data == 'ok') {
+        //     Alert.alert(
+        //         "Listo!",
+        //         "Haz terminado tu ruta por hoy",
+        //         [
 
-                    { text: "Terminar", onPress: () => navigation.navigate('Home') }
-                ]
-            );
-        } else {
-            alert(result);
-        }
+        //             { text: "Terminar", onPress: () => navigation.navigate('Home') }
+        //         ]
+        //     );
+        // } else {
+        //     alert(result);
+        // }
         console.log(result.data);
 
 
@@ -111,16 +120,50 @@ export function FinalizaRuta({ navigation }) {
             setPzVendidas(res.pzVendidas)
             setPromocion(res.Promociones)
             setHrInicial(res.fechaInicial)
-            const date = new Date().toLocaleDateString().toString();
-            setHrFinal(date)
+            const currentdate = new Date();
+            var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth() + 1) + "/"
+                + currentdate.getFullYear() + " "
+                + currentdate.getHours() + ":"
+                + currentdate.getMinutes() + ":"
+                + currentdate.getSeconds();
+            setHrFinal(datetime)
         });
 
 
     }
 
+    launchCamera = () => {
+        let options = {
+            includeBase64: true,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        ImagePicker.launchCamera(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+                alert(response.customButton);
+            } else {
+                const source = { uri: response.uri };
+                console.log('response', JSON.stringify(response));
+
+                setImagen64(response.assets[0].base64);
+                setContentType(response.assets[0].type);
+            }
+        });
+    };
+
 
     useEffect(() => {
-        console.log(`useEfect si llega`,)
+
         getFinalRuta()
     }, [])
     return (
@@ -130,7 +173,7 @@ export function FinalizaRuta({ navigation }) {
                     {/* entrada de mercancia por vehiculo */}
                     <TextInput
                         value={entMercancia}
-                        onValueChange={setEntMerc}
+                        onChangeText={setEntMerc}
                         keyboardType="numeric"
                         style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
                     />
@@ -140,7 +183,7 @@ export function FinalizaRuta({ navigation }) {
                     {/* Devoluciones */}
                     <TextInput
                         value={entDevolucion}
-                        onValueChange={setEntDev}
+                        onChangeText={setEntDev}
                         keyboardType="number-pad"
                         style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
                     />
@@ -210,7 +253,7 @@ export function FinalizaRuta({ navigation }) {
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
 
-                        onChange={setPzDanadas}
+                        onChangeText={setPzDanadas}
                         keyboardType="numeric"
                         style={{ height: 35 }}
                     />
@@ -222,7 +265,7 @@ export function FinalizaRuta({ navigation }) {
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
 
-                        onChange={setPzDefectuosa}
+                        onChangeText={setPzDefectuosa}
                         keyboardType="numeric"
                         style={{ height: 35 }}
                     />
