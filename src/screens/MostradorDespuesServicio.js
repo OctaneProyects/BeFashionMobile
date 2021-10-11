@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Alert,
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
-import { FilledButton } from '../components/Button';
-import { Heading } from '../components/Heading';
-import { IconButton } from '../components/IconButton';
+import {FilledButton} from '../components/Button';
+import {Heading} from '../components/Heading';
+import {IconButton} from '../components/IconButton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import { BASE_URL } from '../config';
-import { UserContext } from '../context/UserContext'
+import {BASE_URL} from '../config';
+import {UserContext} from '../context/UserContext';
+import {CommonActions} from '@react-navigation/native';
+import {EstatusContext} from '../context/EstatusContext';
 
-
-export function MostradorDespuesServicio({ navigation }) {
+export function MostradorDespuesServicio({route,navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
   const [filePathM3, setFilePathM3] = useState('FileM3');
   const [filePathM64, setFilePathM64] = useState();
@@ -19,6 +28,11 @@ export function MostradorDespuesServicio({ navigation }) {
   const [fileM3ContentType, setFileM3ContentType] = useState();
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
+  const {idTienda, nombreTienda} = route.params;
+
+  //AuthFlow
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
 
   launchCamera = (tipo) => {
     let options = {
@@ -39,7 +53,7 @@ export function MostradorDespuesServicio({ navigation }) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = { uri: response.uri };
+        const source = {uri: response.uri};
         console.log('response', JSON.stringify(JSON.stringify(response)).uri);
         if (tipo == 1) {
           setFilePathM(response.assets[0].uri);
@@ -56,72 +70,79 @@ export function MostradorDespuesServicio({ navigation }) {
 
   guardarImagen = async () => {
     let img = {
-      img: [{
-        idTipo: 4,
-        contenido: filePathM64,
-        contentType: fileMContentType,
-        UsuarioRegistro: 0
-      },
-      {
-        idTipo: 5,
-        contenido: filePathM364,
-        contentType: fileM3ContentType,
-        UsuarioRegistro: 0
-      }]
-    }
+      img: [
+        {
+          idTipo: 4,
+          contenido: filePathM64,
+          contentType: fileMContentType,
+          UsuarioRegistro: 0,
+        },
+        {
+          idTipo: 5,
+          contenido: filePathM364,
+          contentType: fileM3ContentType,
+          UsuarioRegistro: 0,
+        },
+      ],
+    };
 
-
-
-
-    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagenes`, img)
+    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagenes`, img);
     try {
-      await axios
-        .post(`${BASE_URL}Tiendas/InsertImagenes`
-          , img
-        )
-        .then((res) => {
-          const result = res.data;
-          let jsonMostradorResulto = JSON.parse(result);
+      await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
+        if (res) {
+          authFlow.setEstatus(11, idTienda, user.IdUsuario, 20);
+          authFlow.getEstatus(0,user.IdUsuario);
+          Alert.alert('Listo', 'Se han guardado las imagenes' + user.IdUsuario, [
+            {
+              text: 'Aceptar',
+              onPress: () => (
 
-
-
-
-          console.log('Resultado');
-          console.log(jsonMostradorResulto)
-          navigation.navigate('TerminaTienda')
-          // setIsLoading(false);
-        });
+                navigation.navigate('ChecklistTienda', {idTienda, nombreTienda})
+              ),
+            },
+          ]);
+        }
+      });
     } catch (error) {
-      console.log(`valio verga pariente`, error)
+      console.log(error);
     }
   };
 
-  guardarImagenes = () => {
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(async () => {
+    console.log('PANTALLA');
+    console.log('SI ESTA RECARGANDO');
 
-    for (let i = 0; i < 2; i++) {
-      const element = array[i];
-
+    if (estado) {
+      //navega a la ultima pantalla en que se encontraba el usuario
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: estado.Modulo,
+          params: {idTienda, nombreTienda}
+        }),
+      );
     }
-  }
-
+  }, [estado]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
+      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
     });
   }, []);
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={{ padding: 20, fontWeight: 'bold' }}>
+        <Text> idTienda: {idTienda}</Text>
+        <Text>nombreTienda: {nombreTienda}</Text>
+        <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con caracteristicas x
         </Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{ paddingRight: 8 }}>Imagen mostrador:</Text>
+          <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
           <Icon
-            style={{ paddingLeft: 2 }}
+            style={{paddingLeft: 2}}
             size={20}
             name="camera"
             onPress={() => launchCamera(1)}
@@ -129,15 +150,15 @@ export function MostradorDespuesServicio({ navigation }) {
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ width: '10%', height: '50%', marginLeft: 20 }}
-            source={{ uri: filePathM }}></Image>
+            style={{width: '10%', height: '50%', marginLeft: 20}}
+            source={{uri: filePathM}}></Image>
         </View>
-        <Text>{filePathM}</Text>
+        {/* <Text>{filePathM}</Text> */}
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{ paddingRight: 8 }}>Imagen mostrador a 3 metros:</Text>
+          <Text style={{paddingRight: 8}}>Imagen mostrador a 3 metros:</Text>
           <Icon
-            style={{ paddingLeft: 2 }}
+            style={{paddingLeft: 2}}
             size={20}
             name="camera"
             onPress={() => launchCamera(2)}
@@ -145,26 +166,25 @@ export function MostradorDespuesServicio({ navigation }) {
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ width: '10%', height: '50%', marginLeft: 20 }}
-            source={{ uri: filePathM3 }}></Image>
+            style={{width: '10%', height: '50%', marginLeft: 20}}
+            source={{uri: filePathM3}}></Image>
         </View>
 
         <View style={styles.row}>
-
           <TouchableOpacity
             style={styles.btnSubmit}
-            onPress={() => guardarImagen()
+            onPress={
+              () => guardarImagen()
               //enviar === 0
               //  ? () => navigation.navigate('TerminaTienda')
               //  : () => {
               //Llamada api para guardar
-
             }>
             <Text style={styles.btnSubmitText}>Siguiente</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 

@@ -91,7 +91,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen>*/}
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'FinalizarRuta'}
         component={FinalizaRuta}

@@ -27,7 +27,7 @@ export function useFlowAuth() {
     },
     {
        estado: {
-         Modulo: "LandingScreen"
+         Modulo: "LandingScreen",
        },
     },
   );
@@ -58,9 +58,10 @@ export function useFlowAuth() {
   },
 
     //OBTENER ESTATUS DEL USUARIO EN LA APP
-    getEstatus: async (idUsuario) => {
+    getEstatus: async (opc,idUsuario) => {
       const params = {
-        idUsuario: 1, //agregar id usuario REAL
+        opc: opc,
+        idUsuario: idUsuario, //agregar id usuario REAL
       };
       try {
         await axios

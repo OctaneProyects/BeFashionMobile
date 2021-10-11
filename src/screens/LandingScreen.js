@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {
   AppState,
   View,
@@ -8,24 +8,24 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { HeaderIconButton } from '../components/HeaderIconButton';
-import { AuthContext } from '../context/AuthContext';
-import { UserContext } from '../context/UserContext';
-import { PieChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+import {HeaderIconButton} from '../components/HeaderIconButton';
+import {AuthContext} from '../context/AuthContext';
+import {UserContext} from '../context/UserContext';
+import {PieChart} from 'react-native-chart-kit';
+import {Dimensions} from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
-import { FilledButton } from '../components/Button';
+import {FilledButton} from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
-import { BASE_URL } from '../config';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import {BASE_URL} from '../config';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
-import { getDistance, getPreciseDistance } from 'geolib';
-import { EstatusContext } from '../context/EstatusContext';
-import { CommonActions } from '@react-navigation/native';
-import { IconButton } from '../components/IconButton';
+import {getDistance, getPreciseDistance} from 'geolib';
+import {EstatusContext} from '../context/EstatusContext';
+import {CommonActions} from '@react-navigation/native';
+import {IconButton} from '../components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -54,87 +54,82 @@ const customStyles = {
 };
 var labels = [];
 
-export function LandingScreen({ navigation }) {
+export function LandingScreen({route, navigation}) {
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
-
   const [isLoading, setIsLoading] = useState(true);
-  const { logout } = React.useContext(AuthContext);
+  const {logout} = React.useContext(AuthContext);
   const user = React.useContext(UserContext);
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
   const [stepValue, setStep] = useState(0);
-  const [stepCant, setStepCant] = useState(0);
-  const [statusViaje, setStatusViaje] = useState(0);
+  const {IdViaje} = route.params;
+  // const [stepCant, setStepCant] = useState(0);
+  // const [statusViaje, setStatusViaje] = useState(0);
 
   const [ruta, setRuta] = useState([]);
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
-  const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
-  const [contar, setContar] = useState(0);
+  const [location, setLocation] = useState({latitude: 0, longitude: 0});
   const [cantTiendas, setCanTiendas] = useState(0);
-  const [latAct, setLatAct] = useState(0);
-  const [longAct, setLongAct] = useState(0);
+  const [btnContinuar, setBtnContinuar] = useState(false);
 
   //Esta funcion valida la distancia entre el dispositivo y la tienda
   async function validateDistance(latTienda, longTienda) {
     await getLocation();
-    console.log('tienda');
-    console.log(`${latTienda} y  ${longTienda}`);
-    console.log('actual location');
-    console.log(`${location.latitude} y  ${location.longitude}`);
-    console.log(
-      `actual lat: ${location.latitude}, actual Long: ${location.longitude}`,
-    );
-
     var dis = getDistance(
-      { latitude: latTienda, longitude: longTienda },
-      { latitude: location.latitude, longitude: location.longitude },
+      {latitude: latTienda, longitude: longTienda},
+      {latitude: location.latitude, longitude: location.longitude},
     );
 
-    console.log(`idTienda>>>>>>>>>>>>: ${tiendas[stepValue].Id}`);
-    console.log(`nombre>>>>>>>>>>>>: ${tiendas[stepValue].Nombre}`);
-    console.log(`Distancia: ${dis}`);
+    // console.log(`idTienda>>>>>>>>>>>>: ${tiendas[stepValue].Id}`);
+    // console.log(`nombre>>>>>>>>>>>>: ${tiendas[stepValue].Nombre}`);
+    // console.log(`Distancia: ${dis}`);
 
     {
       dis <= parseInt(tiendas[stepValue].RadioGeocerca)
-        ? (authFlow.setEstatus(8,26,1,20), authFlow.getEstatus(1)
-        // navigation.navigate('MostradorAntesServicio', 
-        // {
-        //   idTienda: tiendas[stepValue].Id,
-        //   nombreTienda: tiendas[stepValue].Nombre,
-        // }
-        // )
-        )
+        ? (authFlow.setEstatus(
+            8,
+            tiendas[stepValue].Id,
+            user.IdUsuario,
+            IdViaje,
+          ),
+          authFlow.getEstatus(0, user.IdUsuario),
+          navigation.navigate('MostradorAntesServicio', {
+            idTienda: tiendas[stepValue].Id,
+            nombreTienda: tiendas[stepValue].Nombre,
+          }))
         : Alert.alert(
-          'No puedes ingresar a esta tienda',
-          'Estas fuera de rango ',
-          [{ text: 'OK' }],
-        );
+            'No puedes ingresar a esta tienda',
+            'Estas fuera de rango ',
+            [{text: 'OK'}],
+          );
     }
   }
 
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-
-      if (appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'  
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
       ) {
-        console.log('App has come to the foreground!');
-        console.log(estado.Modulo)
         appState.current = nextAppState;
-        if (appState.current == 'active' && estado.Modulo !="MostradorAntesServicio" && estado.Modulo !="MostradorDespuesServicio" ) {
-          console.log("si entro ")
+        console.log('modulo ');
+
+        console.log(estado.Modulo);
+        if (
+          appState.current == 'active' &&
+          estado.Modulo != 'MostradorAntesServicio' &&
+          estado.Modulo != 'MostradorDespuesServicio'
+        ) {
+          console.log('si entro ');
           GetRuta();
-          authFlow.getEstatus(1);
+          authFlow.getEstatus(0, user.IdUsuario);
         }
       }
       //el estado actual sera el nuevo
-      console.log(estado)
+      console.log(estado);
       appState.current = nextAppState;
-
-     
     });
 
     return () => {
@@ -148,34 +143,38 @@ export function LandingScreen({ navigation }) {
     // setStepCant();
     await GetRuta();
     await getLocation();
-    // await authFlow.setEstatus(6,26,1,20);
 
-    console.log("ESTADO")
-    console.log(estado)
+    console.log('ESTADO');
+    console.log(estado);
     // getStatusViaje();
     GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
   }, []);
 
-//Este Este useEffect se detona cuando se modifica el estado del viaje
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
-    console.log("PANTALLA");
-    console.log("SI ESTA RECARGANDO");
+    console.log('PANTALLA');
+    console.log('PASO ACTUAL');
+    console.log(estado.PasoActual);
 
-    if(estado){
-    //navega a la ultima pantalla en que se encontraba el usuario 
+    setStep(estado.PasoActual);
+    if(stepValue==cantTiendas){
+      setBtnContinuar(true);
+    }
+    if (estado.Modulo) {
+      //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
         CommonActions.navigate({
           name: estado.Modulo,
-          // params: {
-          //   user: 'jane',
-          // },
-        })
-      )
+          params: {
+            idTienda: tiendas[stepValue].Id,
+            nombreTienda: tiendas[stepValue].Nombre,
+          },
+        }),
+      );
     }
-
   }, [estado]);
 
-  //Este useEffect se detona cuando se cambia se completa/omite una tienda 
+  //Este useEffect se detona cuando se cambia se completa/omite una tienda
   //Construye la grafica y obtiene la ubicacion de la siguiente tienda
   useEffect(() => {
     chartConstructor();
@@ -224,7 +223,7 @@ export function LandingScreen({ navigation }) {
       (error) => {
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   }
   //fucnion para regresar las tiendas
@@ -234,10 +233,10 @@ export function LandingScreen({ navigation }) {
       idRuta: 1, //agregar id usuario REAL
     };
     try {
-      axios.get(`${BASE_URL}rutas/GetTiendas`, { params }).then((res) => {
+      axios.get(`${BASE_URL}rutas/GetTiendas`, {params}).then((res) => {
         const result = res.data;
         let jsontiendas = JSON.parse(result);
-        console.log(`Josntiendas: ${jsontiendas.length}`);
+
         //inserta los nombres de las tiendas en el arreglo labels
         labels = jsontiendas.map(function (t) {
           return t.Nombre;
@@ -252,15 +251,15 @@ export function LandingScreen({ navigation }) {
   };
 
   //fucnion para regresar las tiendas
-  const GetRuta = async (opc, idUsuario) => {
+  const GetRuta = async () => {
     const params = {
       opc: 3,
-      idUsuario: 1, //agregar id usuario REAL
+      idUsuario: user.IdUsuario,
     };
 
     try {
       await axios
-        .get(`${BASE_URL}rutas/GetRutaUsuario`, { params })
+        .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
         .then((res) => {
           const result = res.data;
           let jsonRuta = JSON.parse(result);
@@ -276,16 +275,51 @@ export function LandingScreen({ navigation }) {
   };
 
   //Metodo para saltar tienda
-  function skipTienda() {
-    Alert.alert('Omitir tienda', 'Esta seguro de omitir esta tienda?', [
-      {
-        text: 'Aceptar',
-        onPress: () => {
-          stepValue == cantTiendas ? setStep(0) : setStep(stepValue + 1);
-        },
-      },
-      { text: 'cancelar' },
-    ]);
+  async function skipTienda() {
+    const form = {
+      idVisita: 1, //agregar
+      idTienda: tiendas[stepValue].Id,
+      idUsuario: user.IdUsuario,
+      isExhibido: false,
+      isSurtido: false,
+      cant: 0,
+      isAlcance: false,
+      comentarios: 'NO VISITADO (OMITIDO)',
+      visitada: false,
+    };
+
+    console.log(tiendas[stepValue]);
+    console.log(form);
+    try {
+      await axios
+        .post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form)
+        .then((res) => {
+          const result = JSON.parse(res.data);
+          console.log(result);
+          if (result[0].result == 'okay') {
+            authFlow.setEstatus(
+              6,
+              tiendas[stepValue].Id,
+              user.IdUsuario,
+              IdViaje,
+            ),
+              Alert.alert(
+                'Listo',
+                `Se ha omitido la tienda: ${tiendas[stepValue].Nombre}`,
+                [
+                  {
+                    text: 'Aceptar',
+                    onPress: () =>
+                      authFlow.getEstatus(0, user.IdUsuario),
+                      // navigation.navigate('LandingScreen')
+                  },
+                ],
+              );
+          }
+        });
+    } catch (error) {
+      alert(error);
+    }
   }
 
   React.useLayoutEffect(() => {
@@ -315,21 +349,19 @@ export function LandingScreen({ navigation }) {
         <View style={styles.container}>
           <View>
             <View style={styles.rightText}>
-
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('addSite')
+                  navigation.navigate('addSite');
                 }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <Icon name={"plus-circle"} color='black'></Icon>
-                  <Text style={{ color: 'blue' }}> Agregar tienda</Text>
+                <View style={{flexDirection: 'row'}}>
+                  <Icon name={'plus-circle'} color="black"></Icon>
+                  <Text style={{color: 'blue'}}> Agregar tienda</Text>
                 </View>
               </TouchableOpacity>
-
             </View>
 
             <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <View>
                 <Text>Bienvenido:</Text>
                 <Text>{user.name}!</Text>
@@ -359,18 +391,32 @@ export function LandingScreen({ navigation }) {
                 </View>
 
                 <View>
-                  <View style={{ alignItems: 'flex-end' }}>
+                  <View style={{alignItems: 'flex-end'}}>
                     <TouchableOpacity
                       style={styles.skipTienda}
-                      onPress={() => skipTienda()}>
-                      <Text style={{ fontSize: 12, color: 'black' }}>
+                      onPress={() =>
+                        Alert.alert(
+                          'Omitir tienda',
+                          `Esta seguro de omitir esta tienda? ${tiendas[stepValue].Nombre}`,
+                          [
+                            {
+                              text: 'Aceptar',
+                              onPress: () => {
+                                skipTienda();
+                              },
+                            },
+                            {text: 'cancelar'},
+                          ],
+                        )
+                      }>
+                      <Text style={{fontSize: 12, color: 'black'}}>
                         Omitir tienda{' '}
                         <Icon name="ban" size={15} color="red"></Icon>
                       </Text>
                     </TouchableOpacity>
                   </View>
                   <ScrollView horizontal={true}>
-                    <View style={{ alignContent: 'center' }}>
+                    <View style={{alignContent: 'center'}}>
                       <StepIndicator
                         customStyles={customStyles}
                         currentPosition={stepValue}
@@ -382,21 +428,11 @@ export function LandingScreen({ navigation }) {
                             tiendas[pos].Longitud,
                           )
                         }
-                      // onPress={(pos) => {
-                      //   stepValue == pos
-                      //     ? navigation.navigate('maps', {
-                      //         idTienda: tiendas[pos].id,
-                      //         nombreTienda: tiendas[pos].Nombre,
-                      //         latitud: tiendas[pos].Latitud,
-                      //         longitud: tiendas[pos].Longitud,
-                      //       })
-                      //     : alert('Aun no puede ingresar a esta tienda');
-                      // }}
                       />
                     </View>
                   </ScrollView>
                 </View>
-                <View style={{ flex: 1, padding: 0, margin: 0 }}>
+                <View style={{flex: 1, padding: 0, margin: 0}}>
                   <SafeAreaView style={styles.containermap}>
                     <StatusBar barStyle="dark-content" />
                     {location && (
@@ -432,8 +468,19 @@ export function LandingScreen({ navigation }) {
               </View>
             ) : null}
           </View>
-          <View style={{ flex: 1, padding: 0, margin: 0 }}>
-            <SafeAreaView style={styles.containermap}>
+          <View style={styles.btnSubmitContainer}>
+            {btnContinuar? (
+              <TouchableOpacity
+                style={styles.btnSubmit}
+                onPress={() => {
+                  navigation.navigate('FinalizarRuta');
+                }}>
+                <Text style={styles.btnSubmitText}>Continuar</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          <View style={{flex: 1, padding: 0, margin: 0}}>
+            {/* <SafeAreaView style={styles.containermap}>
               <StatusBar barStyle="dark-content" />
               {location && (
                 <MapView
@@ -451,7 +498,7 @@ export function LandingScreen({ navigation }) {
                   }
                 />
               )}
-            </SafeAreaView>
+            </SafeAreaView> */}
           </View>
         </View>
       )}
@@ -472,6 +519,22 @@ const chartConfig = {
 };
 
 const styles = StyleSheet.create({
+  btnSubmit: {
+    marginTop: 40,
+    padding: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    backgroundColor: 'rgb(27,67,136)',
+  },
+  btnSubmitContainer: {
+    padding: 20,
+  },
+  btnSubmitText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+
   containermap: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',

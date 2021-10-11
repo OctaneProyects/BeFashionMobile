@@ -18,7 +18,7 @@ import {EstatusContext} from '../context/EstatusContext';
 import { CommonActions } from '@react-navigation/native';
 
 
-export function MostradorAntesServicio({/*route,*/ navigation}) {
+export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
   const [file64, setFile64] = useState();
   const [contentType, setContentType] = useState('');
@@ -26,12 +26,10 @@ export function MostradorAntesServicio({/*route,*/ navigation}) {
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
-  //const { idTienda, nombreTienda } = route.params;
+  const { idTienda, nombreTienda } = route.params;
   const user = React.useContext(UserContext);
 
 
-  // De forma similar a componentDidMount y componentDidUpdate
-  useEffect(() => {});
 
   launchCamera = () => {
     let options = {
@@ -78,11 +76,11 @@ export function MostradorAntesServicio({/*route,*/ navigation}) {
         let jsonMostradorResulto = JSON.parse(result);
 
 
-        Alert.alert('Listo', 'Se ha guardado la imagen', [
+        Alert.alert('Listo', 'Se ha guardado la imagen' + user.IdUsuario, [
           {
             text: 'Aceptar',
-            onPress: () =>(authFlow.setEstatus(9, 26, 1, 20),authFlow.getEstatus(1)
-            // navigation.navigate('FormularioEntrega')
+            onPress: () =>(authFlow.setEstatus(9, idTienda, user.IdUsuario, idViaje), authFlow.getEstatus(0,user.IdUsuario),
+            navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})
             ),
           },
         ]);
@@ -104,9 +102,10 @@ useEffect(async () => {
   navigation.dispatch(
     CommonActions.navigate({
       name: estado.Modulo,
-      // params: {
-      //   user: 'jane',
-      // },
+      params: {
+        idTienda,
+        nombreTienda
+      },
     })
   )
 }, [estado]);
@@ -119,6 +118,10 @@ useEffect(async () => {
   return (
     <SafeAreaView>
       <View style={styles.container}>
+        <Text>
+          idtienda= {idTienda}
+          nombreTienda={nombreTienda}
+        </Text>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
         </Text>

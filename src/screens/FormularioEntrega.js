@@ -14,19 +14,18 @@ import {BASE_URL} from '../config';
 import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 import {UserContext} from '../context/UserContext';
+import {EstatusContext} from '../context/EstatusContext'
 import {LentesHandler} from '../components/LentesHandler';
-import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
   const [entregas] = useState([]);
-    //AuthFlow
-    const {estado} = React.useContext(EstatusContext);
-    const {authFlow} = React.useContext(EstatusContext);
-  // const {idTienda, nombreTienda} = route.params;
-  const idTienda = 26;
+  //AuthFlow
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
+  const {idTienda, nombreTienda} = route.params;
   const user = React.useContext(UserContext);
 
   //asi se envia para POST (server recibe modelo)
@@ -39,12 +38,11 @@ export default function Formulario({route, navigation}) {
     }
 
     const formulario = {
-      idTienda: 26, // agregar
+      idTienda: idTienda, // agregar
       entregas: entregas,
       idViaje: 1, //agregar
-      cant: cant, //agregar
-      idArticulo: 3, //agregar
-      idUsuario: 2000433, //agregar
+      cant: cant, 
+      idUsuario: user.IdUsuario, 
     };
 
     console.log(formulario);
@@ -57,8 +55,11 @@ export default function Formulario({route, navigation}) {
     if (result.data) {
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
-          text: 'Aceptar',onPress:() =>( authFlow.setEstatus(10, 26, 1, 20), authFlow.getEstatus(1))
-          // onPress: () => navigation.navigate('MostradorDespues'),
+          text: 'Aceptar',
+          onPress: () => (
+            authFlow.setEstatus(10, idTienda, user.IdUsuario, 20),
+            authFlow.getEstatus(0,user.IdUsuario)
+          ),
         },
       ]);
     } else {
@@ -87,11 +88,10 @@ export default function Formulario({route, navigation}) {
     }
   };
 
-  const GetArticulos = async (idTienda) => {
+  const GetArticulos = async () => {
     const params = {
-      idUsuario: 1, //agregar id usuario REAL
+      idUsuario: user.IdUsuario, 
     };
-    // console.log(idTienda);
 
     try {
       await axios
@@ -101,10 +101,6 @@ export default function Formulario({route, navigation}) {
           let jsonArticulos = JSON.parse(result);
 
           setArticulos(jsonArticulos);
-          // console.log('articulos');
-          // console.log(jsonArticulos);
-
-          // setIsLoading(false);
         });
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
@@ -126,9 +122,7 @@ export default function Formulario({route, navigation}) {
     navigation.dispatch(
       CommonActions.navigate({
         name: estado.Modulo,
-        // params: {
-        //   user: 'jane',
-        // },
+        params: {idTienda, nombreTienda}
       }),
     );
   }, [estado]);
@@ -147,9 +141,10 @@ export default function Formulario({route, navigation}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.header}>
+          <Text> idTienda: {idTienda}</Text>
+          <Text>nombreTienda: {nombreTienda}</Text>
           <Text style={styles.headerText}>OXXO</Text>
 
-          {/* <Text style={styles.header}>{nombreTienda}</Text> */}
         </View>
 
         <Text style={{padding: 20, fontWeight: 'bold'}}>
@@ -167,7 +162,7 @@ export default function Formulario({route, navigation}) {
           </Text>
         </View>
       </View>
-      
+
       <View style={styles.articulosContainer}>
         <FlatList
           data={articulos}
@@ -180,7 +175,7 @@ export default function Formulario({route, navigation}) {
               nombre={item.Nombre}></LentesHandler>
           )}></FlatList>
       </View>
-     
+
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
@@ -199,10 +194,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   articulosContainer: {
-   flex:2
+    flex: 2,
   },
-  headerContainer:{
-    flex:1,
+  headerContainer: {
+    flex: 1,
   },
   header: {
     alignItems: 'center',
@@ -220,7 +215,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
-    flex:.5,
+    flex: 0.5,
     padding: 20,
   },
   btnSubmitText: {

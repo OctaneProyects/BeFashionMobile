@@ -1,49 +1,83 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Alert, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {UserContext} from '../context/UserContext';
+import {EstatusContext} from '../context/EstatusContext';
+import {CommonActions} from '@react-navigation/native';
 import axios from 'axios';
 import {BASE_URL} from '../config';
 
-export default function TerminaViaje({navigation}) {
-  const [idTienda, setIdTienda] = useState(1);
-  const [idUsuario, setIdUsuario] = useState(1);
-
+export default function TerminaViaje({route,navigation}) {
   const [isExhibido, setExhibido] = useState(false);
   const [isSurtido, setSurtido] = useState(false);
   const [cantNoFashion, setCantNoFashion] = useState('');
   const [isAlcance, setAlcance] = useState(false);
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
+  const {idTienda, nombreTienda} = route.params;
+  //AuthFlow
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
 
-  const terminaTienda = () => {
-    if (cantNoFashion == 0) {
-    } else {
+  const terminaTienda = async () => {
+    if (cantNoFashion < 0) {
       alert('Cantidad de lentes no fashion invalida');
+    } else {
+      const form = {
+        idVisita: 1,
+        idTienda: idTienda,
+        idUsuario: user.IdUsuario,
+        isExhibido: isExhibido,
+        isSurtido: isSurtido,
+        cant: cantNoFashion,
+        isAlcance: isAlcance,
+        comentarios: comentarios,
+        visitada: true,
+
+      };
+
+      try {
+        await axios
+          .post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form)
+          .then((res) => {
+            const result = JSON.parse(res.data);
+            console.log(result);
+            if (result[0].result == 'okay') {
+              authFlow.setEstatus(6, idTienda, user.IdUsuario, 20);
+              authFlow.getEstatus(0, user.IdUsuario);
+              Alert.alert('Listo', 'Se han guardado las imagenes', [
+                {
+                  text: 'Aceptar',
+                  onPress: () => (
+                    navigation.navigate('LandingScreen')
+                  ),
+                },
+              ]);
+            }
+          });
+      } catch (error) {
+        alert(error);
+      }
     }
-
-    const form = {
-      idVisita: 1,
-      idTienda: idTienda,
-      idUsuario: user.IdUsuario,
-      isExhibido: isExhibido,
-      isSurtido: isSurtido,
-      cant: cantNoFashion,
-      isAlcance: isAlcance,
-      comentarios: comentarios,
-    };
-
-    try {
-      const res = axios.post(`${BASE_URL}Sitios/InsertaChecklistSitio`, form);
-      console.log(JSON.stringify(user));
-    } catch (error) {
-      alert(error);
-    }
-
-    console.log(JSON.stringify(form));
   };
+
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(async () => {
+    console.log('SI ESTA RECARGANDO');
+    if (estado) {
+      //navega a la ultima pantalla en que se encontraba el usuario
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: estado.Modulo,
+          // params: {
+          //   user: 'jane',
+          // },
+        }),
+      );
+    }
+  }, [estado]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,6 +88,8 @@ export default function TerminaViaje({navigation}) {
   return (
     <View style={styles.container}>
       <View style={{alignItems: 'center'}}>
+        <Text> idTienda: {idTienda}</Text>
+        <Text>nombreTienda: {nombreTienda}</Text>
         <Text style={{fontStyle: 'italic'}}>
           <Icon
             name="info-circle"
