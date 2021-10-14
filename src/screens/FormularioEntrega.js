@@ -14,7 +14,7 @@ import {BASE_URL} from '../config';
 import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext'
+import {EstatusContext} from '../context/EstatusContext';
 import {LentesHandler} from '../components/LentesHandler';
 import {CommonActions} from '@react-navigation/native';
 
@@ -40,9 +40,9 @@ export default function Formulario({route, navigation}) {
     const formulario = {
       idTienda: idTienda, // agregar
       entregas: entregas,
-      idViaje: 1, //agregar
-      cant: cant, 
-      idUsuario: user.IdUsuario, 
+      idViaje: estado.IdViaje, //agregar
+      cant: cant,
+      idUsuario: user.IdUsuario,
     };
 
     console.log(formulario);
@@ -51,15 +51,17 @@ export default function Formulario({route, navigation}) {
       `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
     );
+    console.log('RESULT DATA');
+    console.log(result.data);
 
-    if (result.data) {
+    var res = JSON.parse(result.data);
+    if (res[0].result == 'ok') {
+        authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje),
+        authFlow.getEstatus(0, user.IdUsuario);
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
           text: 'Aceptar',
-          onPress: () => (
-            authFlow.setEstatus(10, idTienda, user.IdUsuario, 20),
-            authFlow.getEstatus(0,user.IdUsuario)
-          ),
+          onPress: () => navigation.navigate('MostradorDespues',{idTienda: idTienda, nombreTienda: nombreTienda}),
         },
       ]);
     } else {
@@ -90,7 +92,7 @@ export default function Formulario({route, navigation}) {
 
   const GetArticulos = async () => {
     const params = {
-      idUsuario: user.IdUsuario, 
+      idUsuario: user.IdUsuario,
     };
 
     try {
@@ -122,7 +124,7 @@ export default function Formulario({route, navigation}) {
     navigation.dispatch(
       CommonActions.navigate({
         name: estado.Modulo,
-        params: {idTienda, nombreTienda}
+        params: {idTienda, nombreTienda},
       }),
     );
   }, [estado]);
@@ -141,10 +143,9 @@ export default function Formulario({route, navigation}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.header}>
-          <Text> idTienda: {idTienda}</Text>
-          <Text>nombreTienda: {nombreTienda}</Text>
-          <Text style={styles.headerText}>OXXO</Text>
-
+          {/* <Text> idTienda: {idTienda}</Text> */}
+          {/* <Text>nombreTienda: {nombreTienda}</Text> */}
+          <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
 
         <Text style={{padding: 20, fontWeight: 'bold'}}>

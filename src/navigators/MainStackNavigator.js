@@ -17,7 +17,7 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
-      {/* <MainStack.Screen
+      <MainStack.Screen
         name={'CapturaKilometraje'}
         component={CapturaKilometraje}
         options={{
@@ -106,7 +106,7 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
 
-      {/*<MainStack.Screen
+      <MainStack.Screen
         name={'addSite'}
         component={AgregarUbicacion}
         options={{
@@ -118,8 +118,8 @@ export function MainStackNavigator() {
             fontSize: 16,
           },
         }}></MainStack.Screen>
-        */}
-      {/*  <MainStack.Screen
+       
+        <MainStack.Screen
         name={'maps'}
         component={mapScreen}
         options={{
@@ -130,7 +130,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}></MainStack.Screen> */}
+        }}></MainStack.Screen> 
     </MainStack.Navigator>
   );
 }

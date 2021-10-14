@@ -19,7 +19,7 @@ import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
 
-export function MostradorDespuesServicio({route,navigation}) {
+export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
   const [filePathM3, setFilePathM3] = useState('FileM3');
   const [filePathM64, setFilePathM64] = useState();
@@ -88,19 +88,25 @@ export function MostradorDespuesServicio({route,navigation}) {
 
     console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagenes`, img);
     try {
+      console.log(estado);
       await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
         if (res) {
-          authFlow.setEstatus(11, idTienda, user.IdUsuario, 20);
-          authFlow.getEstatus(0,user.IdUsuario);
-          Alert.alert('Listo', 'Se han guardado las imagenes' + user.IdUsuario, [
-            {
-              text: 'Aceptar',
-              onPress: () => (
-
-                navigation.navigate('ChecklistTienda', {idTienda, nombreTienda})
-              ),
-            },
-          ]);
+          authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
+          authFlow.getEstatus(0, user.IdUsuario);
+          Alert.alert(
+            'Listo',
+            'Se han guardado las imagenes',
+            [
+              {
+                text: 'Aceptar',
+                onPress: () =>
+                  navigation.navigate('ChecklistTienda', {
+                    idTienda,
+                    nombreTienda,
+                  }),
+              },
+            ],
+          );
         }
       });
     } catch (error) {
@@ -118,7 +124,7 @@ export function MostradorDespuesServicio({route,navigation}) {
       navigation.dispatch(
         CommonActions.navigate({
           name: estado.Modulo,
-          params: {idTienda, nombreTienda}
+          params: {idTienda, nombreTienda},
         }),
       );
     }
@@ -133,8 +139,11 @@ export function MostradorDespuesServicio({route,navigation}) {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text> idTienda: {idTienda}</Text>
-        <Text>nombreTienda: {nombreTienda}</Text>
+        {/* <Text> idTienda: {idTienda}</Text>
+        <Text>nombreTienda: {nombreTienda}</Text> */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{nombreTienda}</Text>
+        </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con caracteristicas x
         </Text>
@@ -224,5 +233,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
   },
 });

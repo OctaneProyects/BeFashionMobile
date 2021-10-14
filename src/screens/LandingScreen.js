@@ -66,7 +66,7 @@ export function LandingScreen({route, navigation}) {
   // const [stepCant, setStepCant] = useState(0);
   // const [statusViaje, setStatusViaje] = useState(0);
 
-  const [ruta, setRuta] = useState([]);
+  const [ruta, setRuta] = useState({});
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
   const [location, setLocation] = useState({latitude: 0, longitude: 0});
@@ -74,33 +74,37 @@ export function LandingScreen({route, navigation}) {
   const [btnContinuar, setBtnContinuar] = useState(false);
 
   //Esta funcion valida la distancia entre el dispositivo y la tienda
-  async function validateDistance(latTienda, longTienda) {
+  async function validateDistance(latTienda, longTienda, pos) {
     await getLocation();
     var dis = getDistance(
       {latitude: latTienda, longitude: longTienda},
       {latitude: location.latitude, longitude: location.longitude},
     );
 
-    // console.log(`idTienda>>>>>>>>>>>>: ${tiendas[stepValue].Id}`);
-    // console.log(`nombre>>>>>>>>>>>>: ${tiendas[stepValue].Nombre}`);
-    // console.log(`Distancia: ${dis}`);
+    console.log(tiendas);
+    console.log([pos]);
+
+    console.log(`idTienda>>>>>>>>>>>>: ${tiendas[pos].Id}`);
+    console.log(`nombre>>>>>>>>>>>>: ${tiendas[pos].Nombre}`);
+    console.log(`Distancia: ${dis}`);
 
     {
-      dis <= parseInt(tiendas[stepValue].RadioGeocerca)
+      dis <= parseInt(tiendas[pos].RadioGeocerca)
         ? (authFlow.setEstatus(
             8,
-            tiendas[stepValue].Id,
+            tiendas[pos].Id,
             user.IdUsuario,
-            IdViaje,
+            estado.IdViaje,
           ),
           authFlow.getEstatus(0, user.IdUsuario),
           navigation.navigate('MostradorAntesServicio', {
-            idTienda: tiendas[stepValue].Id,
-            nombreTienda: tiendas[stepValue].Nombre,
+            idTienda: tiendas[pos].Id,
+            nombreTienda: tiendas[pos].Nombre,
+            idViaje: 1,
           }))
         : Alert.alert(
             'No puedes ingresar a esta tienda',
-            'Estas fuera de rango ',
+            'Estas fuera de rango',
             [{text: 'OK'}],
           );
     }
@@ -116,7 +120,7 @@ export function LandingScreen({route, navigation}) {
         appState.current = nextAppState;
         console.log('modulo ');
 
-        console.log(estado.Modulo);
+        //console.log(estado.Modulo);
         if (
           appState.current == 'active' &&
           estado.Modulo != 'MostradorAntesServicio' &&
@@ -146,20 +150,55 @@ export function LandingScreen({route, navigation}) {
 
     console.log('ESTADO');
     console.log(estado);
+    console.log('RUTA');
+    console.log(ruta);
     // getStatusViaje();
-    GetTiendas(user.IdUsuario); // invoca al metodo de GetTiendas para obtener los datos
+    if (ruta) {
+      GetTiendas(); // invoca al metodo de GetTiendas para obtener los datos
+    } else {
+      if (cantTiendas == 0) {
+        console.log('CantTiendas');
+        console.log(cantTiendas);
+        setBtnContinuar(false);
+      }
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // console.log('estado.PasoActual');
+    // console.log(estado.PasoActual);
+    // console.log('cantidad');
+    // console.log(cantTiendas);
+    if (ruta) {
+      GetTiendas(); // invoca al metodo de GetTiendas para obtener los datos
+    } else {
+      if (cantTiendas == 0) {
+        console.log('CantTiendas');
+        console.log(cantTiendas);
+        setBtnContinuar(false);
+      }
+      //si el checklist general
+      if (estado.ViajeTerminado == true) {
+        setBtnContinuar(false);
+      } else {
+        setBtnContinuar(true);
+      }
+      setIsLoading(false);
+    }
+    return () => {};
+  }, [ruta]);
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
     console.log('PANTALLA');
     console.log('PASO ACTUAL');
-    console.log(estado.PasoActual);
+    
 
-    setStep(estado.PasoActual);
-    if(stepValue==cantTiendas){
-      setBtnContinuar(true);
-    }
+    //verifica que si ya se completo la ultima tienda
+    verificaCompletado();
+
+
     if (estado.Modulo) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
@@ -168,11 +207,30 @@ export function LandingScreen({route, navigation}) {
           params: {
             idTienda: tiendas[stepValue].Id,
             nombreTienda: tiendas[stepValue].Nombre,
+            idviaje: estado.IdViaje,
           },
         }),
       );
     }
   }, [estado]);
+
+
+  function verificaCompletado(){
+    setStep(estado.PasoActual);
+     //verifica que si ya se completo la ultima tienda
+     if (estado.PasoActual == cantTiendas && cantTiendas > 0) {
+      //verifica si ya se complet el checklist final
+      if (estado.ViajeTerminado == "true") {
+        console.log('NOO MUESTRA BUTTON');
+        setBtnContinuar(false);
+      } else {
+        console.log('SI MUESTRA BUTTON');
+        setBtnContinuar(true);
+      }
+    } else {
+      setBtnContinuar(false);
+    }
+  }
 
   //Este useEffect se detona cuando se cambia se completa/omite una tienda
   //Construye la grafica y obtiene la ubicacion de la siguiente tienda
@@ -184,6 +242,7 @@ export function LandingScreen({route, navigation}) {
   //Este Est para la cantiendas
   useEffect(() => {
     chartConstructor();
+    verificaCompletado();
   }, [cantTiendas]);
 
   //constructor de la grafica
@@ -230,7 +289,7 @@ export function LandingScreen({route, navigation}) {
   const GetTiendas = (idRuta) => {
     labels.length = 0;
     const params = {
-      idRuta: 1, //agregar id usuario REAL
+      idRuta: ruta.Id, //agregar id usuario REAL
     };
     try {
       axios.get(`${BASE_URL}rutas/GetTiendas`, {params}).then((res) => {
@@ -248,6 +307,7 @@ export function LandingScreen({route, navigation}) {
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
     }
+    setIsLoading(false);
   };
 
   //fucnion para regresar las tiendas
@@ -277,7 +337,7 @@ export function LandingScreen({route, navigation}) {
   //Metodo para saltar tienda
   async function skipTienda() {
     const form = {
-      idVisita: 1, //agregar
+      idViaje: estado.IdViaje,
       idTienda: tiendas[stepValue].Id,
       idUsuario: user.IdUsuario,
       isExhibido: false,
@@ -309,9 +369,8 @@ export function LandingScreen({route, navigation}) {
                 [
                   {
                     text: 'Aceptar',
-                    onPress: () =>
-                      authFlow.getEstatus(0, user.IdUsuario),
-                      // navigation.navigate('LandingScreen')
+                    onPress: () => authFlow.getEstatus(0, user.IdUsuario),
+                    // navigation.navigate('LandingScreen')
                   },
                 ],
               );
@@ -391,7 +450,7 @@ export function LandingScreen({route, navigation}) {
                 </View>
 
                 <View>
-                  <View style={{alignItems: 'flex-end'}}>
+                  <View style={{alignItems: 'flex-end', marginVertical: '5%'}}>
                     <TouchableOpacity
                       style={styles.skipTienda}
                       onPress={() =>
@@ -426,6 +485,7 @@ export function LandingScreen({route, navigation}) {
                           validateDistance(
                             tiendas[pos].Latitud,
                             tiendas[pos].Longitud,
+                            pos,
                           )
                         }
                       />
@@ -469,11 +529,13 @@ export function LandingScreen({route, navigation}) {
             ) : null}
           </View>
           <View style={styles.btnSubmitContainer}>
-            {btnContinuar? (
+            {btnContinuar ? (
               <TouchableOpacity
                 style={styles.btnSubmit}
                 onPress={() => {
-                  navigation.navigate('FinalizarRuta');
+                  navigation.navigate('FinalizarRuta', {
+                    idViaje: estado.IdViaje,
+                  });
                 }}>
                 <Text style={styles.btnSubmitText}>Continuar</Text>
               </TouchableOpacity>

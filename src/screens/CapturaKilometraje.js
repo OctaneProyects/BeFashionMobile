@@ -17,12 +17,14 @@ import {Alert} from 'react-native';
 import {UserContext} from '../context/UserContext';
 import {ScrollView} from 'react-native-gesture-handler';
 import {EstatusContext} from '../context/EstatusContext';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 export default function CapturaKilometraje({navigation}) {
   const user = React.useContext(UserContext);
   const [ruta, setRuta] = useState([]);
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
+  const [contentType, setContentType] = useState();
   const [imagen64, setImagen64] = useState();
   const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
   const [IdRuta, setIdRuta] = useState(null);
@@ -61,6 +63,7 @@ export default function CapturaKilometraje({navigation}) {
       KmInicial: km,
       IdEstatus: 1, //agregar
       Imagen: imagen64,
+      contentType: contentType
     };
 
     console.log("RUTAA  ");
@@ -73,13 +76,13 @@ export default function CapturaKilometraje({navigation}) {
           console.log(res.data);
           if (result[0].result == 'OK') {
             authFlow.setEstatus(6, 0, user.IdUsuario, result[0].IdViaje ),
-            authFlow.getEstatus( 0, user.IdUsuario);
+            authFlow.getEstatus(0, user.IdUsuario).then(
             Alert.alert('Listo', 'Se ha iniciado correctamente', [
               {
                 text: 'Continuar',
-                onPress: () => navigation.navigate('LandingScreen', {IdViaje: result[0].IdViaje, }),
+                onPress: () => navigation.navigate('LandingScreen', {IdViaje: result[0].IdViaje,}),
               },
-            ]);
+            ]));
           } else {
             Alert.alert('Aviso', `${result[0].result}`, [
               {
@@ -116,10 +119,13 @@ export default function CapturaKilometraje({navigation}) {
       } else {
         const source = response.assets[0].uri;
         const base64 = response.assets[0].base64;
+        const contentType = response.assets[0].type;
+
         // console.log(JSON.stringify(response.assets[0].base64));
         // console.log(JSON.stringify(response.assets[0].uri));
         setImagen64(base64);
         setImagen(source);
+        setContentType(contentType);
       }
     });
   };
@@ -157,20 +163,50 @@ const GetRuta = async () => {
   }, []);
 
   useEffect(async () => {
-    console.log('PANTALLA');
-    console.log('SI ESTA RECARGANDO');
-    console.log(estado);
-
     if (estado.result =='true') {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      Alert.alert('Aviso', `Su usuario tiene un viaje activo`, [
+      authFlow.getEstatus(0, user.IdUsuario).then(
+      //navega a la ultima pantalla en que se enc ontraba el usuario
+      Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
         {
           text: 'Continuar',
-          onPress: () => ( authFlow.getEstatus(0,user.IdUsuario), navigation.navigate('LandingScreen'))
+          onPress: () => (  navigation.navigate('LandingScreen',{ IdViaje: estado.IdViaje}))
         },
-      ]);
+      ]));
     }
   }, [estado]);
+
+  const handleLocationPermission = async () => {
+    let permissionCheck = '';
+    if (Platform.OS === 'ios') {
+      permissionCheck = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+      if (permissionCheck === RESULTS.DENIED) {
+        const permissionRequest = await request(
+          PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+        );
+        permissionRequest === RESULTS.GRANTED
+          ? console.warn('Location permission granted.')
+          : console.warn('Location perrmission denied.');
+      }
+    }
+
+    if (Platform.OS === 'android') {
+      permissionCheck = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+
+      if (permissionCheck === RESULTS.DENIED) {
+        const permissionRequest = await request(
+          PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        );
+        permissionRequest === RESULTS.GRANTED
+          ? console.warn('Location permission granted.')
+          : console.warn('Location perrmission denied.');
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleLocationPermission();
+  }, []);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({

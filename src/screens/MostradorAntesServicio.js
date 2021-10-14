@@ -26,7 +26,7 @@ export function MostradorAntesServicio({route, navigation}) {
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
-  const { idTienda, nombreTienda } = route.params;
+  const { idTienda, nombreTienda, idViaje } = route.params;
   const user = React.useContext(UserContext);
 
 
@@ -76,12 +76,12 @@ export function MostradorAntesServicio({route, navigation}) {
         let jsonMostradorResulto = JSON.parse(result);
 
 
-        Alert.alert('Listo', 'Se ha guardado la imagen' + user.IdUsuario, [
+        Alert.alert('Listo', 'Se ha guardado la imagen', [
           {
             text: 'Aceptar',
-            onPress: () =>(authFlow.setEstatus(9, idTienda, user.IdUsuario, idViaje), authFlow.getEstatus(0,user.IdUsuario),
-            navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})
-            ),
+            onPress: () =>(authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje), authFlow.getEstatus(0,user.IdUsuario),
+            navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})),
+            // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
           },
         ]);
 
@@ -97,7 +97,7 @@ export function MostradorAntesServicio({route, navigation}) {
 //Este Este useEffect se detona cuando se modifica el estado del viaje
 useEffect(async () => {
   console.log("PANTALLA");
-  console.log(estado.Modulo);
+  console.log(estado);
   //navega a la ultima pantalla en que se encontraba el usuario 
   navigation.dispatch(
     CommonActions.navigate({
@@ -118,12 +118,13 @@ useEffect(async () => {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text>
-          idtienda= {idTienda}
-          nombreTienda={nombreTienda}
-        </Text>
+      <View style={styles.header}>
+          {/* <Text> idTienda: {idTienda}</Text> */}
+          {/* <Text>nombreTienda: {nombreTienda}</Text> */}
+          <Text style={styles.headerText}>{nombreTienda}</Text>
+        </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas X
+          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas 
         </Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>
@@ -197,5 +198,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
   },
 });

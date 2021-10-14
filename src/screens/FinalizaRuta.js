@@ -9,14 +9,20 @@ import { BASE_URL } from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { UserContext } from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
+import { EstatusContext } from '../context/EstatusContext';
 
 
 
-export function FinalizaViaje({ navigation }) {
+export function FinalizaViaje({route, navigation}) {
 
     const user = React.useContext(UserContext);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
 
-    const [idViaje, setIdViaje] = useState(1)
+
+    //variable id vijae por parametros
+    const {idViaje} = route.params;
+    // const [idViaje, setIdViaje] = useState(1)
     const [entMercancia, setEntMerc] = useState(0);
     const [entDevolucion, setEntDev] = useState(0);
 
@@ -88,19 +94,21 @@ export function FinalizaViaje({ navigation }) {
             `${BASE_URL}viajes/InsertFinalViaje`,
             viaje,
         );
-        // if (result.data == 'ok') {
-        //     Alert.alert(
-        //         "Listo!",
-        //         "Haz terminado tu ruta por hoy",
-        //         [
-
-        //             { text: "Terminar", onPress: () => navigation.navigate('Home') }
-        //         ]
-        //     );
-        // } else {
-        //     alert(result);
-        // }
-        console.log(result.data);
+        const res = JSON.parse(result.data)
+        if (res[0].MENSAJE == 'ok') {
+            authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje),
+            authFlow.getEstatus(0, user.IdUsuario);
+            Alert.alert(
+                "Listo!",
+                "Haz terminado tu ruta por hoy",
+                [
+                    { text: "Terminar", onPress: () => navigation.navigate('LandingScreen') }
+                ]
+            );
+        } else {
+            alert(result);
+        }
+        console.log(res);
 
 
 
@@ -108,6 +116,9 @@ export function FinalizaViaje({ navigation }) {
     }
     const getFinalRuta = async () => {
 
+
+        console.log("IDVIAJE")
+        console.log(idViaje)
         await axios.get(
             `${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`,
 
@@ -213,10 +224,10 @@ export function FinalizaViaje({ navigation }) {
 
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
-
+                        placeholder="0"
                         onChangeText={setKmFinal}
                         keyboardType="numeric"
-                        style={{ height: 35 }}
+                        style={{ height: 35, borderWidth:1  }}
                     />
                     <Text style={{ padding: 5 }}>
                         KM final
@@ -252,10 +263,10 @@ export function FinalizaViaje({ navigation }) {
 
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
-
+                        placeholder= "0"
                         onChangeText={setPzDanadas}
                         keyboardType="numeric"
-                        style={{ height: 35 }}
+                        style={{ height: 35, borderWidth:1  }}
                     />
                     <Text style={{ padding: 5 }}>
                         Piezas dañadas
@@ -264,10 +275,10 @@ export function FinalizaViaje({ navigation }) {
 
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
-
+                        placeholder= "0"
                         onChangeText={setPzDefectuosa}
                         keyboardType="numeric"
-                        style={{ height: 35 }}
+                        style={{ height: 35, borderWidth:1 }}
                     />
                     <Text style={{ padding: 5 }}>
                         Defectuosas de fabrica

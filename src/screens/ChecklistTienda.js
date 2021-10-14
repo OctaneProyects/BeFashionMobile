@@ -9,7 +9,7 @@ import {CommonActions} from '@react-navigation/native';
 import axios from 'axios';
 import {BASE_URL} from '../config';
 
-export default function TerminaViaje({route,navigation}) {
+export default function TerminaViaje({route, navigation}) {
   const [isExhibido, setExhibido] = useState(false);
   const [isSurtido, setSurtido] = useState(false);
   const [cantNoFashion, setCantNoFashion] = useState('');
@@ -24,9 +24,11 @@ export default function TerminaViaje({route,navigation}) {
   const terminaTienda = async () => {
     if (cantNoFashion < 0) {
       alert('Cantidad de lentes no fashion invalida');
+      console.log(estado);
     } else {
       const form = {
         idVisita: 1,
+        idViaje: estado.IdViaje,
         idTienda: idTienda,
         idUsuario: user.IdUsuario,
         isExhibido: isExhibido,
@@ -35,7 +37,6 @@ export default function TerminaViaje({route,navigation}) {
         isAlcance: isAlcance,
         comentarios: comentarios,
         visitada: true,
-
       };
 
       try {
@@ -45,14 +46,14 @@ export default function TerminaViaje({route,navigation}) {
             const result = JSON.parse(res.data);
             console.log(result);
             if (result[0].result == 'okay') {
-              authFlow.setEstatus(6, idTienda, user.IdUsuario, 20);
+              authFlow.setEstatus(6, idTienda, user.IdUsuario, estado.IdViaje);
               authFlow.getEstatus(0, user.IdUsuario);
               Alert.alert('Listo', 'Se han guardado las imagenes', [
                 {
                   text: 'Aceptar',
-                  onPress: () => (
-                    navigation.navigate('LandingScreen')
-                  ),
+                  // onPress: () => (
+                  //   navigation.navigate('LandingScreen')
+                  // ),
                 },
               ]);
             }
@@ -65,7 +66,6 @@ export default function TerminaViaje({route,navigation}) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
-    console.log('SI ESTA RECARGANDO');
     if (estado) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
@@ -88,8 +88,11 @@ export default function TerminaViaje({route,navigation}) {
   return (
     <View style={styles.container}>
       <View style={{alignItems: 'center'}}>
-        <Text> idTienda: {idTienda}</Text>
-        <Text>nombreTienda: {nombreTienda}</Text>
+        {/* <Text> idTienda: {idTienda}</Text>
+        <Text>nombreTienda: {nombreTienda}</Text> */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{nombreTienda}</Text>
+        </View>
         <Text style={{fontStyle: 'italic'}}>
           <Icon
             name="info-circle"
@@ -197,6 +200,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
   },
   ipCantNoFashion: {
     borderColor: 'gray',
