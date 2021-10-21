@@ -90,12 +90,8 @@ export function LandingScreen({route, navigation}) {
 
     {
       dis <= parseInt(tiendas[pos].RadioGeocerca)
-        ? (authFlow.setEstatus(
-            8,
-            tiendas[pos].Id,
-            user.IdUsuario,
-            estado.IdViaje,
-          ),
+        ? (
+          authFlow.setEstatus(8,tiendas[pos].Id, user.IdUsuario, estado.IdViaje),
           authFlow.getEstatus(0, user.IdUsuario),
           navigation.navigate('MostradorAntesServicio', {
             idTienda: tiendas[pos].Id,

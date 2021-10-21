@@ -14,7 +14,7 @@ export function LoginScreen({navigation}) {
   // const user = React.useContext(UserContext);
 
   const [usr, setUser] = useState('admin');
-  const [pass, setPass] = useState('G3nerico01');
+  const [pass, setPass] = useState('AppTrack_');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,6 +52,7 @@ export function LoginScreen({navigation}) {
             setLoading(true);
             await login(usr, pass);
           } catch (e) {
+           console.log(e)
             setError(e.message);
             setLoading(false);
           }

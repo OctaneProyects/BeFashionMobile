@@ -39,7 +39,7 @@ xmlns:tools="http://schemas.android.com/tools"
         android:value="AIzaSyBG5vHqUyvBNRs7EZMLf3aPSZamVEl1qnA"/> -->
          <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyBSuydpf0gBGGjICakW_-DGPLvmfuhDvzY"/>
+        android:value="AIzaSyB8oPDHRjRYhGJQfvVTIcNY552cCZuFT84"/>
 
        <!-- You will also only need to add this uses-library tag -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>

@@ -157,6 +157,7 @@ const GetRuta = async () => {
 
 
   useEffect(() => {
+    console.log("GetRuta")
     GetRuta();
     authFlow.getEstatus( 1, user.IdUsuario);
     return () => {};

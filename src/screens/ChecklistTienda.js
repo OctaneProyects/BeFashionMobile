@@ -46,16 +46,18 @@ export default function TerminaViaje({route, navigation}) {
             const result = JSON.parse(res.data);
             console.log(result);
             if (result[0].result == 'okay') {
-              authFlow.setEstatus(6, idTienda, user.IdUsuario, estado.IdViaje);
-              authFlow.getEstatus(0, user.IdUsuario);
-              Alert.alert('Listo', 'Se han guardado las imagenes', [
-                {
-                  text: 'Aceptar',
-                  // onPress: () => (
-                  //   navigation.navigate('LandingScreen')
-                  // ),
-                },
-              ]);
+              authFlow.setEstatus(6, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
+
+                Alert.alert('Listo', 'Se han guardado el checklist', [
+                  {
+                    text: 'Aceptar',
+                    // onPress: () => (
+                    //   navigation.navigate('LandingScreen')
+                    // ),
+                  },
+                ])
+              ));
+   
             }
           });
       } catch (error) {

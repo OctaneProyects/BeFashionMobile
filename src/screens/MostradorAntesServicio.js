@@ -75,15 +75,18 @@ export function MostradorAntesServicio({route, navigation}) {
         const result = res.data;
         let jsonMostradorResulto = JSON.parse(result);
 
+        authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0,user.IdUsuario).then(
+          Alert.alert('Listo', 'Se ha guardado la imagen', [
+            {
+              text: 'Aceptar',
+              onPress: () =>(
+              navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})),
+              // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
+            },
+          ])
 
-        Alert.alert('Listo', 'Se ha guardado la imagen', [
-          {
-            text: 'Aceptar',
-            onPress: () =>(authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje), authFlow.getEstatus(0,user.IdUsuario),
-            navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})),
-            // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
-          },
-        ]);
+        ));
+  
 
         console.log('Resultado');
         console.log(jsonMostradorResulto);

@@ -56,14 +56,17 @@ export default function Formulario({route, navigation}) {
 
     var res = JSON.parse(result.data);
     if (res[0].result == 'ok') {
-        authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje),
-        authFlow.getEstatus(0, user.IdUsuario);
-      Alert.alert('Listo', 'Se han registrado correctamente', [
-        {
-          text: 'Aceptar',
-          onPress: () => navigation.navigate('MostradorDespues',{idTienda: idTienda, nombreTienda: nombreTienda}),
-        },
-      ]);
+        authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
+          Alert.alert('Listo', 'Se han registrado correctamente', [
+            {
+              text: 'Aceptar',
+              onPress: () => navigation.navigate('MostradorDespuesServicio',{idTienda: idTienda, nombreTienda: nombreTienda}),
+            },
+          ])
+
+        ));
+        
+
     } else {
       alert('error');
     }

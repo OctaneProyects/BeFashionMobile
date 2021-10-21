@@ -91,22 +91,24 @@ export function MostradorDespuesServicio({route, navigation}) {
       console.log(estado);
       await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
         if (res) {
-          authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
-          authFlow.getEstatus(0, user.IdUsuario);
-          Alert.alert(
-            'Listo',
-            'Se han guardado las imagenes',
-            [
-              {
-                text: 'Aceptar',
-                onPress: () =>
-                  navigation.navigate('ChecklistTienda', {
-                    idTienda,
-                    nombreTienda,
-                  }),
-              },
-            ],
-          );
+          authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
+            Alert.alert(
+              'Listo',
+              'Se han guardado las imagenes',
+              [
+                {
+                  text: 'Aceptar',
+                  onPress: () =>
+                    navigation.navigate('ChecklistTienda', {
+                      idTienda,
+                      nombreTienda,
+                    }),
+                },
+              ],
+            )
+          ));
+          
+   
         }
       });
     } catch (error) {
@@ -116,7 +118,6 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
-    console.log('PANTALLA');
     console.log('SI ESTA RECARGANDO');
 
     if (estado) {
