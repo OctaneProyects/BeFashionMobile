@@ -75,34 +75,48 @@ export function LandingScreen({route, navigation}) {
 
   //Esta funcion valida la distancia entre el dispositivo y la tienda
   async function validateDistance(latTienda, longTienda, pos) {
-    await getLocation();
-    var dis = getDistance(
-      {latitude: latTienda, longitude: longTienda},
-      {latitude: location.latitude, longitude: location.longitude},
-    );
+    //si se presiona la tienda anterior()
+    if (pos == estado.PasoActual - 1) {
+      Alert.alert(
+        'Reiniciar tienda',
+        'Estas seguro de reiniciar esta tienda',
+        [{text: 'Ok' }, {text: 'Cancelar'}],
+      );
+    } else {
+      await getLocation();
 
-    console.log(tiendas);
-    console.log([pos]);
+      var dis = getDistance(
+        {latitude: latTienda, longitude: longTienda},
+        {latitude: location.latitude, longitude: location.longitude},
+      );
 
-    console.log(`idTienda>>>>>>>>>>>>: ${tiendas[pos].Id}`);
-    console.log(`nombre>>>>>>>>>>>>: ${tiendas[pos].Nombre}`);
-    console.log(`Distancia: ${dis}`);
+      console.log(tiendas);
+      console.log([pos]);
 
-    {
-      dis <= parseInt(tiendas[pos].RadioGeocerca)
-        ? (
-          authFlow.setEstatus(8,tiendas[pos].Id, user.IdUsuario, estado.IdViaje),
-          authFlow.getEstatus(0, user.IdUsuario),
-          navigation.navigate('MostradorAntesServicio', {
-            idTienda: tiendas[pos].Id,
-            nombreTienda: tiendas[pos].Nombre,
-            idViaje: 1,
-          }))
-        : Alert.alert(
-            'No puedes ingresar a esta tienda',
-            'Estas fuera de rango',
-            [{text: 'OK'}],
-          );
+      console.log(`idTienda>>>>>>>>>>>>: ${tiendas[pos].Id}`);
+      console.log(`nombre>>>>>>>>>>>>: ${tiendas[pos].Nombre}`);
+      console.log(`Distancia: ${dis}`);
+
+      {
+        dis <= parseInt(tiendas[pos].RadioGeocerca)
+          ? (authFlow.setEstatus(
+              8,
+              tiendas[pos].Id,
+              user.IdUsuario,
+              estado.IdViaje,
+            ),
+            authFlow.getEstatus(0, user.IdUsuario),
+            navigation.navigate('MostradorAntesServicio', {
+              idTienda: tiendas[pos].Id,
+              nombreTienda: tiendas[pos].Nombre,
+              idViaje: 1,
+            }))
+          : Alert.alert(
+              'No puedes ingresar a esta tienda',
+              'Estas fuera de rango',
+              [{text: 'OK'}],
+            );
+      }
     }
   }
 
@@ -189,11 +203,9 @@ export function LandingScreen({route, navigation}) {
   useEffect(async () => {
     console.log('PANTALLA');
     console.log('PASO ACTUAL');
-    
 
     //verifica que si ya se completo la ultima tienda
     verificaCompletado();
-
 
     if (estado.Modulo) {
       //navega a la ultima pantalla en que se encontraba el usuario
@@ -210,13 +222,12 @@ export function LandingScreen({route, navigation}) {
     }
   }, [estado]);
 
-
-  function verificaCompletado(){
+  function verificaCompletado() {
     setStep(estado.PasoActual);
-     //verifica que si ya se completo la ultima tienda
-     if (estado.PasoActual == cantTiendas && cantTiendas > 0) {
+    //verifica que si ya se completo la ultima tienda
+    if (estado.PasoActual == cantTiendas && cantTiendas > 0) {
       //verifica si ya se complet el checklist final
-      if (estado.ViajeTerminado == "true") {
+      if (estado.ViajeTerminado == 'true') {
         console.log('NOO MUESTRA BUTTON');
         setBtnContinuar(false);
       } else {
@@ -443,6 +454,9 @@ export function LandingScreen({route, navigation}) {
                     backgroundColor={'transparent'}
                     hasLegend={1}
                   />
+                </View>
+                <View>
+                    <Text>144 PIEZAS EN CARRO</Text>
                 </View>
 
                 <View>

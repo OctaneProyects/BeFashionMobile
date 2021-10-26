@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react';
 import {
-    View, SafeAreaView, StyleSheet, Text, TextInput, Button, TouchableOpacity, Alert
-} from 'react-native'
-import { CheckBox, Input } from 'react-native-elements';
-import { Heading } from '../components/Heading';
-import axios from 'axios'
-import { BASE_URL } from '../config';
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { UserContext } from '../context/UserContext';
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {CheckBox, Input} from 'react-native-elements';
+import {Heading} from '../components/Heading';
+import axios from 'axios';
+import {BASE_URL} from '../config';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {UserContext} from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
-import { EstatusContext } from '../context/EstatusContext';
-
-
+import {EstatusContext} from '../context/EstatusContext';
 
 export function FinalizaViaje({ route, navigation }) {
 
@@ -114,63 +119,32 @@ export function FinalizaViaje({ route, navigation }) {
 
 
     }
-    const getFinalRuta = async () => {
-
-
-        console.log("IDVIAJE")
-        console.log(idViaje)
-        await axios.get(
-            `${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`,
-
-        ).then((result) => {
-            const res = JSON.parse(result.data)[0];
-            console.log(res);
-            setTotalPz(res.totalPz)
-            setVehiculo(res.vehiculo)
-            setKmInicial(res.KmInicial)
-            setPzVendidas(res.pzVendidas)
-            setPromocion(res.Promociones)
-            setHrInicial(res.fechaInicial)
-            const currentdate = new Date();
-            var datetime = currentdate.getDate() + "/"
-                + (currentdate.getMonth() + 1) + "/"
-                + currentdate.getFullYear() + " "
-                + currentdate.getHours() + ":"
-                + currentdate.getMinutes() + ":"
-                + currentdate.getSeconds();
-            setHrFinal(datetime)
-        });
-
-
+    if (!imagen64) {
+      Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
+        {text: 'Aceptar'},
+      ]);
+      return;
     }
 
-    launchCamera = () => {
-        let options = {
-            includeBase64: true,
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-        };
-        ImagePicker.launchCamera(options, (response) => {
-            console.log('Response = ', response);
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-                alert(response.customButton);
-            } else {
-                const source = { uri: response.uri };
-                console.log('response', JSON.stringify(response));
-
-                setImagen64(response.assets[0].base64);
-                setContentType(response.assets[0].type);
-            }
-        });
+    const viaje = {
+      IdViaje: parseInt(idViaje),
+      InventarioFinalPzs: parseInt(totalPz),
+      KmInicial: parseInt(kmInicial),
+      KMFinal: parseInt(kmFinal),
+      HoraInicial: hrInicial,
+      HoraFinal: hrFinal,
+      PzVendidas: parseInt(pzVendidas),
+      PzDanadas: parseInt(pzDanadas),
+      PzDefectuosasFabrica: parseInt(pzDefectuosa),
+      VisitaDiaria: parseInt(visitasDiarias),
+      VisitasEfectivas: parseInt(visitasEfectivas),
+      imagen64: imagen64,
+      contentType: contentType,
+      usuarioRegistro: user.IdUsuario,
+      entMercancia: parseInt(entMercancia),
+      devolucion: parseInt(entDevolucion),
     };
+    console.log(viaje);
 
 
     useEffect(() => {
@@ -299,66 +273,59 @@ export function FinalizaViaje({ route, navigation }) {
                     </Text>
                 </View> */}
 
-                <View>
-
-                    <Text style={{ padding: 5 }}>
-                        {promocion} Promocion
-                    </Text>
-                </View>
-
-
-            </View>
-            <View style={styles.btnSubmitContainer}>
-                <TouchableOpacity
-                    style={styles.btnSubmit}
-                    onPress={() => insertFinalaViaje()}>
-                    <Text style={styles.btnSubmitText}>Terminar mi ruta</Text>
-                </TouchableOpacity>
-            </View>
-
-        </SafeAreaView>
-    );
+        <View>
+          <Text style={{padding: 5}}>{promocion} Promocion</Text>
+        </View>
+      </View>
+      <View style={styles.btnSubmitContainer}>
+        <TouchableOpacity
+          style={styles.btnSubmit}
+          onPress={() => insertFinalaViaje()}>
+          <Text style={styles.btnSubmitText}>Terminar mi ruta</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 50,
-        alignContent: 'space-around',
-    },
-    comentsContainer: {
-        paddingHorizontal: '7%',
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        marginBottom: 20,
-        alignContent: 'flex-end',
-        justifyContent: 'space-around',
-    },
-    checkbox: {
-        alignSelf: 'center',
-    },
-    label: {
-        margin: 8,
-        width: 250,
-    },
-    textInput: {
-        backgroundColor: 'white',
-    },
-    btnSubmit: {
-        marginTop: 40,
-        padding: 10,
-        alignItems: 'center',
-        borderWidth: 1,
-        backgroundColor: 'rgb(27,67,136)'
-    },
-    btnSubmitContainer: {
-        padding: 20,
-    },
-    btnSubmitText: {
-        fontSize: 18,
-        color: 'white',
-        fontWeight: 'bold',
-    },
+  container: {
+    flex: 1,
+    marginTop: 50,
+    alignContent: 'space-around',
+  },
+  comentsContainer: {
+    paddingHorizontal: '7%',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignContent: 'flex-end',
+    justifyContent: 'space-around',
+  },
+  checkbox: {
+    alignSelf: 'center',
+  },
+  label: {
+    margin: 8,
+    width: 250,
+  },
+  textInput: {
+    backgroundColor: 'white',
+  },
+  btnSubmit: {
+    marginTop: 40,
+    padding: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    backgroundColor: 'rgb(27,67,136)',
+  },
+  btnSubmitContainer: {
+    padding: 20,
+  },
+  btnSubmitText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
-
