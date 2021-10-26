@@ -13,17 +13,17 @@ import { EstatusContext } from '../context/EstatusContext';
 
 
 
-export function FinalizaViaje({route, navigation}) {
+export function FinalizaViaje({ route, navigation }) {
 
     const user = React.useContext(UserContext);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+    const { estado } = React.useContext(EstatusContext);
+    const { authFlow } = React.useContext(EstatusContext);
 
 
     //variable id vijae por parametros
-    const {idViaje} = route.params;
+    const { idViaje } = route.params;
     // const [idViaje, setIdViaje] = useState(1)
-    const [entMercancia, setEntMerc] = useState(0);
+    //const [entMercancia, setEntMerc] = useState(0);
     const [entDevolucion, setEntDev] = useState(0);
 
     const [totalPz, setTotalPz] = useState(0);
@@ -85,7 +85,7 @@ export function FinalizaViaje({route, navigation}) {
             imagen64: imagen64,
             contentType: contentType,
             usuarioRegistro: user.IdUsuario,
-            entMercancia: parseInt(entMercancia),
+            // entMercancia: parseInt(entMercancia),
             devolucion: parseInt(entDevolucion),
         }
         console.log(viaje);
@@ -97,7 +97,7 @@ export function FinalizaViaje({route, navigation}) {
         const res = JSON.parse(result.data)
         if (res[0].MENSAJE == 'ok') {
             authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje),
-            authFlow.getEstatus(0, user.IdUsuario);
+                authFlow.getEstatus(0, user.IdUsuario);
             Alert.alert(
                 "Listo!",
                 "Haz terminado tu ruta por hoy",
@@ -180,16 +180,16 @@ export function FinalizaViaje({route, navigation}) {
     return (
         <SafeAreaView>
             <View style={{ paddingTop: 10 }}>
-                <View style={styles.checkboxContainer}>
+                {/* <View style={styles.checkboxContainer}> */}
                     {/* entrada de mercancia por vehiculo */}
-                    <TextInput
+                    {/* <TextInput
                         value={entMercancia}
                         onChangeText={setEntMerc}
                         keyboardType="numeric"
                         style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
                     />
                     <Text style={styles.label}>Entrada de mercancia por vehiculo </Text>
-                </View>
+                </View> */}
                 <View style={styles.checkboxContainer}>
                     {/* Devoluciones */}
                     <TextInput
@@ -227,7 +227,7 @@ export function FinalizaViaje({route, navigation}) {
                         placeholder="0"
                         onChangeText={setKmFinal}
                         keyboardType="numeric"
-                        style={{ height: 35, borderWidth:1  }}
+                        style={{ height: 35, borderWidth: 1 }}
                     />
                     <Text style={{ padding: 5 }}>
                         KM final
@@ -263,10 +263,10 @@ export function FinalizaViaje({route, navigation}) {
 
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
-                        placeholder= "0"
+                        placeholder="0"
                         onChangeText={setPzDanadas}
                         keyboardType="numeric"
-                        style={{ height: 35, borderWidth:1  }}
+                        style={{ height: 35, borderWidth: 1 }}
                     />
                     <Text style={{ padding: 5 }}>
                         Piezas dañadas
@@ -275,10 +275,10 @@ export function FinalizaViaje({route, navigation}) {
 
                 <View style={{ flexDirection: 'row' }}>
                     <TextInput
-                        placeholder= "0"
+                        placeholder="0"
                         onChangeText={setPzDefectuosa}
                         keyboardType="numeric"
-                        style={{ height: 35, borderWidth:1 }}
+                        style={{ height: 35, borderWidth: 1 }}
                     />
                     <Text style={{ padding: 5 }}>
                         Defectuosas de fabrica

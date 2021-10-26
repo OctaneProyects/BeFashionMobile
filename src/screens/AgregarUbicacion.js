@@ -36,6 +36,7 @@ export function AgregarUbicacion({ navigation }) {
         await GetClientes();
         await GetSucursales(); // obtiene las sedes de befashion
         //await getClientes(3);
+        console.log("Tiendas/InsertTienda")
         console.log("SI LLEGA PARIENTE")
     }, []);
     const handleLocationPermission = async () => {
@@ -142,7 +143,8 @@ export function AgregarUbicacion({ navigation }) {
             ]);
             return;
         }
-
+        console.log(`API liga`)
+        console.log(`${BASE_URL}Tiendas/InsertTienda`)
         try {
             await axios
                 .post(`${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${0}`
@@ -163,7 +165,8 @@ export function AgregarUbicacion({ navigation }) {
                 });
         } catch (e) {
             console.log(e)
-
+            console.log(`API liga`)
+            console.log(`${BASE_URL}Tiendas/InsertTienda`)
             alert(`Ocurrio un error ${e}`);
         }
     };
