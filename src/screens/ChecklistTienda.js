@@ -48,7 +48,7 @@ export default function TerminaViaje({route, navigation}) {
             if (result[0].result == 'okay') {
               authFlow.setEstatus(6, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
 
-                Alert.alert('Listo', 'Se han guardado el checklist', [
+                Alert.alert('Listo', 'Se ha guardado el checklist', [
                   {
                     text: 'Aceptar',
                     // onPress: () => (

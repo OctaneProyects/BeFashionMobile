@@ -86,7 +86,6 @@ export function MostradorDespuesServicio({route, navigation}) {
       ],
     };
 
-    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagenes`, img);
     try {
       console.log(estado);
       await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
@@ -148,7 +147,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con caracteristicas x
         </Text>
-        <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
+        <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
           <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
           <Icon
@@ -164,7 +163,7 @@ export function MostradorDespuesServicio({route, navigation}) {
             source={{uri: filePathM}}></Image>
         </View>
         {/* <Text>{filePathM}</Text> */}
-        <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
+        <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
           <Text style={{paddingRight: 8}}>Imagen mostrador a 3 metros:</Text>
           <Icon
@@ -207,6 +206,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignContent: 'flex-start',
+    paddingVertical:'5%'
   },
   title: {
     paddingBottom: 50,
