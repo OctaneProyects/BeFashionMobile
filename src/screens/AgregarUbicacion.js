@@ -7,6 +7,7 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import { Input } from '../components/Input';
 import axios from 'axios';
+import { UserContext } from '../context/UserContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
@@ -23,7 +24,7 @@ export function AgregarUbicacion({ navigation }) {
     const [cr, setCR] = useState('a')
     const [sucursales, setSucursales] = useState([])
     const [sucursal, setSucursal] = useState(null)
-
+    const user = React.useContext(UserContext);
     const [openCli, setOpenCli] = useState(false);
     const [openSuc, setOpenSuc] = useState(false);
 
@@ -147,7 +148,7 @@ export function AgregarUbicacion({ navigation }) {
         console.log(`${BASE_URL}Tiendas/InsertTienda`)
         try {
             await axios
-                .post(`${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${0}`
+                .post(`${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario}&IdSucursal=${sucursal}`
                     , {}
                 )
                 .then((res) => {
