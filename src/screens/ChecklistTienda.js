@@ -27,7 +27,7 @@ export default function TerminaViaje({route, navigation}) {
       console.log(estado);
     } else {
       const form = {
-        idVisita: 1,
+        // idVisita: 1,
         idViaje: estado.IdViaje,
         idTienda: idTienda,
         idUsuario: user.IdUsuario,

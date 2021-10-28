@@ -33,6 +33,7 @@ export default function CapturaKilometraje({navigation}) {
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
+  const {logout} = React.useContext(AuthContext);
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
     //valida que se ingrese km
@@ -63,11 +64,11 @@ export default function CapturaKilometraje({navigation}) {
       KmInicial: km,
       IdEstatus: 1, //agregar
       Imagen: imagen64,
-      contentType: contentType
+      contentType: contentType,
     };
 
-    console.log("RUTAA  ");
-    console.log(ruta.Id);
+    console.log('RUTAA  ');
+    // console.log(ruta.Id);
     try {
       await axios
         .post(`${BASE_URL}vehiculos/InsertaViaje`, viaje)
@@ -75,16 +76,20 @@ export default function CapturaKilometraje({navigation}) {
           const result = JSON.parse(res.data);
           console.log(res.data);
           if (result[0].result == 'OK') {
-            authFlow.setEstatus(6, 0, user.IdUsuario, result[0].IdViaje ),
-            authFlow.getEstatus(0, user.IdUsuario).then(
-            Alert.alert('Listo', 'Se ha iniciado correctamente', [
-              {
-                text: 'Continuar',
-                onPress: () => navigation.navigate('LandingScreen', {IdViaje: result[0].IdViaje,}),
-              },
-            ]));
+            authFlow.setEstatus(6, 0, user.IdUsuario, result[0].IdViaje),
+              authFlow.getEstatus(0, user.IdUsuario).then(
+                Alert.alert('Listo', 'Se ha iniciado correctamente', [
+                  {
+                    text: 'Continuar',
+                    onPress: () =>
+                      navigation.navigate('LandingScreen', {
+                        IdViaje: result[0].IdViaje,
+                      }),
+                  },
+                ]),
+              );
           } else {
-            Alert.alert('Aviso', `${result[0].result}`, [
+            Alert.alert('Aviso', `${res.data}`, [
               {
                 text: 'Aceptar',
                 // onPress: () => navigation.navigate('LandingScreen'),
@@ -130,49 +135,66 @@ export default function CapturaKilometraje({navigation}) {
     });
   };
 
-//fucnion para regresar las tiendas
-const GetRuta = async () => {
-  const params = {
-    opc: 3,
-    idUsuario: user.IdUsuario,
+  //fucnion para regresar las tiendas
+  const GetRuta = async () => {
+    const params = {
+      opc: 3,
+      idUsuario: user.IdUsuario,
+    };
+
+    try {
+      await axios
+        .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
+        .then((res) => {
+          const result = res.data;
+          let jsonRuta = JSON.parse(result);
+          if (jsonRuta[0] != null) {
+            setRuta(jsonRuta[0]);
+            console.log('ruta');
+            console.log(jsonRuta);
+            console.log('Ruta obj');
+            console.log(ruta);
+          } else {
+            Alert.alert(
+              'Aviso',
+              'No tienes ruta asignada, contacta a un administrador',
+              [
+                {
+                  text: 'Aceptar',
+                  onPress: () => logout(),
+                },
+              ],
+            );
+          }
+        });
+    } catch (e) {
+      alert(`Ocurrio un error ${e}`);
+    }
   };
 
-  try {
-    await axios
-      .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
-      .then((res) => {
-        const result = res.data;
-        let jsonRuta = JSON.parse(result);
-        setRuta(jsonRuta[0]);
-        console.log('ruta');
-        console.log(jsonRuta);
-        console.log('Ruta obj');
-        console.log(ruta);
-      });
-  } catch (e) {
-    alert(`Ocurrio un error ${e}`);
-  }
-};
-
-
-
   useEffect(() => {
-    console.log("GetRuta")
+    console.log('GetRuta');
     GetRuta();
-    authFlow.getEstatus( 1, user.IdUsuario);
+    authFlow.getEstatus(1, user.IdUsuario);
     return () => {};
   }, []);
 
   useEffect(async () => {
-    if (estado.result =='true') {
+    if (estado.result == 'true') {
       authFlow.getEstatus(0, user.IdUsuario).then(
-      //navega a la ultima pantalla en que se enc ontraba el usuario
-      Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
-        {
-          text: 'Continuar',
-          onPress: () => (  navigation.navigate('LandingScreen',{ IdViaje: estado.IdViaje}))
-        },
-      ]));
+        //navega a la ultima pantalla en que se enc ontraba el usuario
+        Alert.alert(
+          'Aviso',
+          `Su usuario tiene un viaje activo ${estado.IdViaje}`,
+          [
+            {
+              text: 'Continuar',
+              onPress: () =>
+                navigation.navigate('LandingScreen', {IdViaje: estado.IdViaje}),
+            },
+          ],
+        ),
+      );
     }
   }, [estado]);
 

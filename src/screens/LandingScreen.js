@@ -77,11 +77,10 @@ export function LandingScreen({route, navigation}) {
   async function validateDistance(latTienda, longTienda, pos) {
     //si se presiona la tienda anterior()
     if (pos == estado.PasoActual - 1) {
-      Alert.alert(
-        'Reiniciar tienda',
-        'Estas seguro de reiniciar esta tienda',
-        [{text: 'Ok' }, {text: 'Cancelar'}],
-      );
+      Alert.alert('Reiniciar tienda', 'Estas seguro de reiniciar esta tienda', [
+        {text: 'Ok', onPress: () => resetUltimaTienda(pos)},
+        {text: 'Cancelar'},
+      ]);
     } else {
       await getLocation();
 
@@ -109,7 +108,7 @@ export function LandingScreen({route, navigation}) {
             navigation.navigate('MostradorAntesServicio', {
               idTienda: tiendas[pos].Id,
               nombreTienda: tiendas[pos].Nombre,
-              idViaje: 1,
+              idViaje: estado.IdViaje,
             }))
           : Alert.alert(
               'No puedes ingresar a esta tienda',
@@ -118,6 +117,24 @@ export function LandingScreen({route, navigation}) {
             );
       }
     }
+  }
+//FUNCION PARA RESETEAR LA ULTIMA VISITA
+  function resetUltimaTienda(pos) {
+    const params = {
+      IdTienda: tiendas[pos].IdTienda,
+    };
+    console.log(params);
+
+    try {
+      axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,{}).then((res) => {
+        const result = res.data;
+        // let jsontiendas = JSON.parse(result);
+        authFlow.getEstatus(0, user.IdUsuario)
+      });
+    } catch (e) {
+      alert(`Ocurrio un error ${e}`);
+    }
+    setIsLoading(false);
   }
 
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
@@ -456,7 +473,7 @@ export function LandingScreen({route, navigation}) {
                   />
                 </View>
                 <View>
-                    <Text>144 PIEZAS EN CARRO</Text>
+                  <Text>144 PIEZAS EN CARRO</Text>
                 </View>
 
                 <View>
