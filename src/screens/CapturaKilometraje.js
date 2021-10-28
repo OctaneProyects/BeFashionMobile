@@ -33,6 +33,7 @@ export default function CapturaKilometraje({ navigation }) {
   const { estado } = React.useContext(EstatusContext);
   const { authFlow } = React.useContext(EstatusContext);
 
+  const { logout } = React.useContext(AuthContext);
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
     //valida que se ingrese km
@@ -63,11 +64,11 @@ export default function CapturaKilometraje({ navigation }) {
       KmInicial: km,
       IdEstatus: 1, //agregar
       Imagen: imagen64,
-      contentType: contentType
+      contentType: contentType,
     };
 
-    console.log("RUTAA  ");
-    console.log(ruta.Id);
+    console.log('RUTAA  ');
+    // console.log(ruta.Id);
     try {
       await axios
         .post(`${BASE_URL}vehiculos/InsertaViaje`, viaje)
@@ -84,7 +85,7 @@ export default function CapturaKilometraje({ navigation }) {
                   },
                 ]));
           } else {
-            Alert.alert('Aviso', `${result[0].result}`, [
+            Alert.alert('Aviso', `${res.data}`, [
               {
                 text: 'Aceptar',
                 // onPress: () => navigation.navigate('LandingScreen'),
@@ -143,21 +144,32 @@ export default function CapturaKilometraje({ navigation }) {
         .then((res) => {
           const result = res.data;
           let jsonRuta = JSON.parse(result);
-          setRuta(jsonRuta[0]);
-          console.log('ruta');
-          console.log(jsonRuta);
-          console.log('Ruta obj');
-          console.log(ruta);
+          if (jsonRuta[0] != null) {
+            setRuta(jsonRuta[0]);
+            console.log('ruta');
+            console.log(jsonRuta);
+            console.log('Ruta obj');
+            console.log(ruta);
+          } else {
+            Alert.alert(
+              'Aviso',
+              'No tienes ruta asignada, contacta a un administrador',
+              [
+                {
+                  text: 'Aceptar',
+                  onPress: () => logout(),
+                },
+              ],
+            );
+          }
         });
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
     }
   };
 
-
-
   useEffect(() => {
-    console.log("GetRuta")
+    console.log('GetRuta');
     GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
     return () => { };
