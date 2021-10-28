@@ -21,14 +21,17 @@ import {EstatusContext} from '../context/EstatusContext';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
-  const [filePathM3, setFilePathM3] = useState('FileM3');
   const [filePathM64, setFilePathM64] = useState();
-  const [filePathM364, setFilePathM364] = useState();
   const [fileMContentType, setFileMContentType] = useState();
-  const [fileM3ContentType, setFileM3ContentType] = useState();
+
+  // const [filePathM364, setFilePathM364] = useState(); 
+  // const [filePathM3, setFilePathM3] = useState('FileM3');
+  // const [fileM3ContentType, setFileM3ContentType] = useState();
+
+  const ContentType = 'image/jpeg'
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda} = route.params;
+  const {idTienda, nombreTienda, uri, base64} = route.params;
 
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
@@ -59,11 +62,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           setFilePathM(response.assets[0].uri);
           setFilePathM64(response.assets[0].base64);
           setFileMContentType(response.assets[0].type);
-        } else if (tipo == 2) {
-          setFilePathM3(response.assets[0].uri);
-          setFilePathM364(response.assets[0].base64);
-          setFileM3ContentType(response.assets[0].type);
-        }
+        } 
       }
     });
   };
@@ -75,13 +74,13 @@ export function MostradorDespuesServicio({route, navigation}) {
           idTipo: 4,
           contenido: filePathM64,
           contentType: fileMContentType,
-          UsuarioRegistro: 0,
+          UsuarioRegistro: user.IdUsuario,
         },
         {
           idTipo: 5,
-          contenido: filePathM364,
-          contentType: fileM3ContentType,
-          UsuarioRegistro: 0,
+          contenido: base64,
+          contentType: ContentType,
+          UsuarioRegistro: user.IdUsuario,
         },
       ],
     };
@@ -170,13 +169,14 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{paddingLeft: 2}}
             size={20}
             name="camera"
-            onPress={() => launchCamera(2)}
+            // onPress={() => launchCamera(2)}
+            onPress={() => navigation.navigate('PictureScreen', {screen: "MostradorDespuesServicio"})}
           />
           <Image
             resizeMode="cover"
             resizeMethod="scale"
             style={{width: '10%', height: '50%', marginLeft: 20}}
-            source={{uri: filePathM3}}></Image>
+            source={{uri: uri}}></Image>
         </View>
 
         <View style={styles.row}>

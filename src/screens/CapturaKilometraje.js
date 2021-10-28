@@ -76,7 +76,7 @@ export default function CapturaKilometraje({navigation}) {
           const result = JSON.parse(res.data);
           console.log(res.data);
           if (result[0].result == 'OK') {
-            authFlow.setEstatus(6, 0, user.IdUsuario, result[0].IdViaje),
+            authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje),
               authFlow.getEstatus(0, user.IdUsuario).then(
                 Alert.alert('Listo', 'Se ha iniciado correctamente', [
                   {
