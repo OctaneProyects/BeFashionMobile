@@ -7,6 +7,7 @@ import ChecklistTienda from '../screens/ChecklistTienda';
 import {FinalizaViaje} from '../screens/FinalizaRuta';
 import {MostradorAntesServicio} from '../screens/MostradorAntesServicio';
 import {MostradorDespuesServicio} from '../screens/MostradorDespuesServicio';
+import { SelectionMode } from '../screens/SelectionMode';
 import {ImageScreenExample} from '../screens/ImageScreenExample'; //pantalla de prueba (ver imagen de BD)
 import {Text} from 'react-native';
 import mapScreen from '../screens/mapScreen';
@@ -18,6 +19,22 @@ const MainStack = createStackNavigator();
 export function MainStackNavigator() {
   return (
     <MainStack.Navigator>
+      <MainStack.Screen
+        name={'SelectionMode'}
+        component={SelectionMode}
+        options={{
+          title: 'Be Fashion Eyewear',
+          headerLeft: () => null,
+          headerRight: () => <Text style={{color: 'white'}}> usuario</Text>,
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}
+      >
+
+      </MainStack.Screen>
       <MainStack.Screen
         name={'CapturaKilometraje'}
         component={CapturaKilometraje}

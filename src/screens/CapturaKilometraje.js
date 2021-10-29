@@ -153,11 +153,11 @@ export default function CapturaKilometraje({ navigation }) {
           } else {
             Alert.alert(
               'Aviso',
-              'No tienes ruta asignada, contacta a un administrador',
+              'No tienes ruta asignada el día de hoy, contacta a un administrador',
               [
                 {
                   text: 'Aceptar',
-                  onPress: () => logout(),
+                  onPress: () => navigation.goBack(),
                 },
               ],
             );

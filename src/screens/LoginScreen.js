@@ -13,8 +13,8 @@ export function LoginScreen({navigation}) {
   const {login} = useContext(AuthContext);
   // const user = React.useContext(UserContext);
 
-  const [usr, setUser] = useState('daly');
-  const [pass, setPass] = useState('123');
+  const [usr, setUser] = useState('');
+  const [pass, setPass] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
