@@ -79,8 +79,8 @@ export function LandingScreen({ route, navigation }) {
     //si se presiona la tienda anterior()
     if (pos == estado.PasoActual - 1) {
       Alert.alert('Reiniciar tienda', 'Estas seguro de reiniciar esta tienda', [
-        {text: 'Ok', onPress: () => resetUltimaTienda(pos)},
-        {text: 'Cancelar'},
+        { text: 'Ok', onPress: () => resetUltimaTienda(pos) },
+        { text: 'Cancelar' },
       ]);
     } else {
       await getLocation();
@@ -119,7 +119,7 @@ export function LandingScreen({ route, navigation }) {
       }
     }
   }
-//FUNCION PARA RESETEAR LA ULTIMA VISITA
+  //FUNCION PARA RESETEAR LA ULTIMA VISITA
   function resetUltimaTienda(pos) {
     const params = {
       IdTienda: tiendas[pos].IdTienda,
@@ -127,7 +127,7 @@ export function LandingScreen({ route, navigation }) {
     console.log(params);
 
     try {
-      axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,{}).then((res) => {
+      axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`, {}).then((res) => {
         const result = res.data;
         // let jsontiendas = JSON.parse(result);
         authFlow.getEstatus(0, user.IdUsuario)
@@ -138,25 +138,7 @@ export function LandingScreen({ route, navigation }) {
     setIsLoading(false);
   }
 
-  const GetArticulos = async () => {
-    console.log(`user`, user)
-    const params = {
-      idUsuario: user.IdUsuario,
-    };
 
-    try {
-      await axios
-        .get(`${BASE_URL}Articulos/GetArticulos`, { params })
-        .then((res) => {
-          const result = res.data;
-          let jsonArticulos = JSON.parse(result);
-
-          console.log(`jsonArticulos`, jsonArticulos)
-        });
-    } catch (e) {
-      alert(`Ocurrio un error ${e}`);
-    }
-  };
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -218,7 +200,7 @@ export function LandingScreen({ route, navigation }) {
     // console.log(estado.PasoActual);
     // console.log('cantidad');
     // console.log(cantTiendas);
-    user.Articulos == 0 ? setInventario(estado.Articulos) : setInventario(user.Articulos)
+
     if (ruta) {
       GetTiendas(); // invoca al metodo de GetTiendas para obtener los datos
     } else {
@@ -262,6 +244,7 @@ export function LandingScreen({ route, navigation }) {
   }, [estado]);
 
   function verificaCompletado() {
+    
     setStep(estado.PasoActual);
     //verifica que si ya se completo la ultima tienda
     if (estado.PasoActual == cantTiendas && cantTiendas > 0) {
@@ -495,7 +478,7 @@ export function LandingScreen({ route, navigation }) {
                   />
                 </View>
                 <View>
-                  <Text>{estado.Articulos} PIEZAS EN CARRO</Text>
+                  <Text>{estado.Articulos ? estado.Articulos : user.Articulos} PIEZAS EN CARRO</Text>
                 </View>
 
                 <View>

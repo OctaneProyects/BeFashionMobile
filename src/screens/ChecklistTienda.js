@@ -1,25 +1,30 @@
-import React, {useState, useEffect} from 'react';
-import {Alert, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import {TextInput} from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext';
-import {CommonActions} from '@react-navigation/native';
+import { UserContext } from '../context/UserContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
-import {BASE_URL} from '../config';
+import { BASE_URL } from '../config';
+import DropDownPicker from 'react-native-dropdown-picker';
 
-export default function TerminaViaje({route, navigation}) {
-  const [isExhibido, setExhibido] = useState(false);
-  const [isSurtido, setSurtido] = useState(false);
+export default function TerminaViaje({ route, navigation }) {
+  const [isExhibido, setExhibido] = useState();
+  const [isSurtido, setSurtido] = useState();
   const [cantNoFashion, setCantNoFashion] = useState('');
-  const [isAlcance, setAlcance] = useState(false);
+  const [isAlcance, setAlcance] = useState();
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda} = route.params;
+  const { idTienda, nombreTienda } = route.params;
   //AuthFlow
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
+
+  const [openExibido, setOpenExibido] = useState(false)
+  const [openAlcance, setOpenAlcance] = useState(false)
+  const [openSurtido, setOpenSurtido] = useState(false)
 
   const terminaTienda = async () => {
     if (cantNoFashion < 0) {
@@ -57,7 +62,7 @@ export default function TerminaViaje({route, navigation}) {
                   },
                 ])
               ));
-   
+
             }
           });
       } catch (error) {
@@ -83,19 +88,19 @@ export default function TerminaViaje({route, navigation}) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
     });
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={{alignItems: 'center'}}>
+      <View style={{ alignItems: 'center' }}>
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
-        <Text style={{fontStyle: 'italic'}}>
+        <Text style={{ fontStyle: 'italic' }}>
           <Icon
             name="info-circle"
             type="font-awesome-5"
@@ -106,21 +111,45 @@ export default function TerminaViaje({route, navigation}) {
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Exh, colocado al alcance publico </Text>
-        <CheckBox
+        <View style={{ width: '20%' }}>
+
+          <DropDownPicker
+            placeholder="---"
+            value={isExhibido}
+            open={openExibido}
+            setOpen={setOpenExibido}
+            setValue={setExhibido}
+            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
+            zIndex={300}
+          />
+        </View>
+        {/* <CheckBox
           value={isExhibido}
           onValueChange={setExhibido}
-          tintColors={{true: 'rgb(27,67,136)'}}
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
-        />
+        /> */}
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}> No permitido surtir al 100% </Text>
-        <CheckBox
+        <View style={{ width: '20%' }}>
+          <DropDownPicker
+            placeholder="---"
+            value={isSurtido}
+            setValue={setSurtido}
+            open={openSurtido}
+            setOpen={setOpenSurtido}
+            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
+            zIndex={250}
+          />
+
+        </View>
+        {/* <CheckBox
           value={isSurtido}
           onValueChange={setSurtido}
-          tintColors={{true: 'rgb(27,67,136)'}}
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
-        />
+        /> */}
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Lentes no fashion en el exh Cantidad </Text>
@@ -135,12 +164,24 @@ export default function TerminaViaje({route, navigation}) {
       </View>
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Lentes al alcance para el cliente S/N</Text>
-        <CheckBox
+        <View style={{ width: '20%' }}>
+          <DropDownPicker
+            placeholder="---"
+            value={isAlcance}
+            setValue={setAlcance}
+            open={openAlcance}
+            setOpen={setOpenAlcance}
+            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
+            zIndex={200}
+          />
+        </View>
+        {/* <CheckBox
           value={isAlcance}
           onValueChange={setAlcance}
-          tintColors={{true: 'rgb(27,67,136)'}}
+
+          tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
-        />
+        /> */}
       </View>
       <View style={styles.comentsContainer}>
         <Text style={styles.label}>Comentarios:</Text>
