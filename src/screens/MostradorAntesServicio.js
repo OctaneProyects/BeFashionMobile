@@ -64,7 +64,8 @@ export function MostradorAntesServicio({route, navigation}) {
       idTipo: 3,
       contenido: file64,
       contentType: contentType,
-      UsuarioRegistro: 0,
+      UsuarioRegistro: user.IdUsuario,
+      idViaje: estado.IdViaje
     };
     console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagen`, img);
     try 

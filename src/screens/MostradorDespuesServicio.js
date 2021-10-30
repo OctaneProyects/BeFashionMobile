@@ -75,12 +75,15 @@ export function MostradorDespuesServicio({route, navigation}) {
           contenido: filePathM64,
           contentType: fileMContentType,
           UsuarioRegistro: user.IdUsuario,
+          IdViaje: estado.IdViaje
         },
         {
           idTipo: 5,
           contenido: base64,
           contentType: ContentType,
           UsuarioRegistro: user.IdUsuario,
+          IdViaje: estado.IdViaje
+
         },
       ],
     };
@@ -144,7 +147,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Cuarto paso: Tomar capturar con caracteristicas x
+          Cuarto paso: Tomar capturar con las siguientes caracteristicas 
         </Text>
         <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
