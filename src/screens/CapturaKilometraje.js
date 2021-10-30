@@ -100,6 +100,8 @@ export default function CapturaKilometraje({ navigation }) {
 
   launchCamera = () => {
     let options = {
+      maxWidth:1024,
+      maxHeight:768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,

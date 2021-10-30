@@ -39,6 +39,8 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   launchCamera = (tipo) => {
     let options = {
+      maxWidth:1024,
+      maxHeight:768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
