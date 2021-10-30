@@ -38,12 +38,6 @@ export function LoginScreen({navigation}) {
         value={pass}
         onChangeText={setPass}
       />
-      <TextButton style={styles.labelResetPwd}
-        title={'Recuperar contraseña'}
-        onPress={() => {
-          navigation.navigate('Register');
-        }}
-      />
       <FilledButton
         title={'Iniciar Sesión'}
         style={styles.loginButton}

@@ -156,8 +156,8 @@ export function AgregarUbicacion({ navigation }) {
                     let jsonTiendaResult = JSON.parse(result);
 
 
-                    Alert.alert('Listo', 'Se han registrado correctamente', [
-                        { text: 'Aceptar', onPress: () => navigation.navigate('LandingScreen') },
+                    Alert.alert('Listo', 'Se ha registrado correctamente', [
+                        { text: 'Aceptar', onPress: () => navigation.goBack() },
                     ]);
 
                     console.log('clientes');

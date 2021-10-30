@@ -115,7 +115,7 @@ useEffect(async () => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{color: 'white', paddingHorizontal:15}}>{user.name}</Text>,
     });
   }, []);
   return (
