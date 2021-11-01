@@ -114,6 +114,8 @@ if (route.params) {
 
   launchCamera = () => {
     let options = {
+      maxWidth:1024,
+      maxHeight:768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
@@ -237,7 +239,7 @@ if (route.params) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white',paddingHorizontal:15 }}>{user.name}</Text>,
     });
   }, []);
 

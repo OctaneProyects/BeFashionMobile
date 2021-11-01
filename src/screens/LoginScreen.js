@@ -38,7 +38,6 @@ export function LoginScreen({navigation}) {
         value={pass}
         onChangeText={setPass}
       />
-
       <FilledButton
         title={'Iniciar Sesión'}
         style={styles.loginButton}

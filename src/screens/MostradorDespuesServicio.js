@@ -39,6 +39,8 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   launchCamera = (tipo) => {
     let options = {
+      maxWidth:1024,
+      maxHeight:768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
@@ -134,7 +136,7 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>,
     });
   }, []);
 
