@@ -112,40 +112,40 @@ if (route.params) {
     }
   }
 
-  launchCamera = () => {
-    let options = {
-      maxWidth:1024,
-      maxHeight:768,
-      includeBase64: true,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-        fileName: 'imagenmuestra',
-      },
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      console.log('Response = ', response);
+  // launchCamera = () => {
+  //   let options = {
+  //     maxWidth:1024,
+  //     maxHeight:768,
+  //     includeBase64: true,
+  //     storageOptions: {
+  //       skipBackup: true,
+  //       path: 'images',
+  //       fileName: 'imagenmuestra',
+  //     },
+  //   };
+  //   ImagePicker.launchCamera(options, (response) => {
+  //     console.log('Response = ', response);
 
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
-      } else {
-        const source = response.assets[0].uri;
-        const base64 = response.assets[0].base64;
-        const contentType = response.assets[0].type;
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //       alert(response.customButton);
+  //     } else {
+  //       const source = response.assets[0].uri;
+  //       const base64 = response.assets[0].base64;
+  //       const contentType = response.assets[0].type;
 
-        // console.log(JSON.stringify(response.assets[0].base64));
-        // console.log(JSON.stringify(response.assets[0].uri));
-        setImagen64(base64);
-        setImagen(source);
-        setContentType(contentType);
-      }
-    });
-  };
+  //       // console.log(JSON.stringify(response.assets[0].base64));
+  //       // console.log(JSON.stringify(response.assets[0].uri));
+  //       setImagen64(base64);
+  //       setImagen(source);
+  //       setContentType(contentType);
+  //     }
+  //   });
+  // };
 
   //fucnion para regresar las tiendas
   const GetRuta = async () => {
@@ -192,6 +192,7 @@ if (route.params) {
   }, []);
 
   useEffect(async () => {
+    console.log(estado)
     if (estado.result == 'true') {
       authFlow.getEstatus(0, user.IdUsuario).then(
         //navega a la ultima pantalla en que se enc ontraba el usuario
@@ -236,6 +237,22 @@ if (route.params) {
   useEffect(() => {
     handleLocationPermission();
   }, []);
+
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(async () => {
+    console.log('PANTALLA');
+    console.log('Captura kilometraje');
+
+    console.log(estado.Modulo);
+    //navega a la ultima pantalla en que se encontraba el usuario
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: estado.Modulo,
+        params: {idTienda, nombreTienda},
+      }),
+    );
+  }, [estado]);
+
 
   React.useLayoutEffect(() => {
     navigation.setOptions({

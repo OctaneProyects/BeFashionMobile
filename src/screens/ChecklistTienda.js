@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { TextInput } from 'react-native-gesture-handler';
+import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { UserContext } from '../context/UserContext';
 import { EstatusContext } from '../context/EstatusContext';
@@ -93,7 +93,7 @@ export default function TerminaViaje({ route, navigation }) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={{ alignItems: 'center' }}>
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
@@ -200,7 +200,7 @@ export default function TerminaViaje({ route, navigation }) {
           <Text style={styles.btnSubmitText}>Finalizar</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

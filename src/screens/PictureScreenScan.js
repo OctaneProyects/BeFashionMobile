@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import ImageEditor from '@react-native-community/image-editor';
+
 
 class PictureScreenScan extends React.Component {
   state = {
@@ -91,21 +93,50 @@ class PictureScreenScan extends React.Component {
       </View>
     );
   }
+
+
+  // takePicture = async function (camera) {
+  //   const options = {quality: 0.5, base64: true};
+  //   const data = await camera.takePictureAsync(options);
+  //   //  eslint-disable-next-line
+  //   const source = data.uri;
+  //   if (source) {
+  //     await camera.pausePreview();
+  //     console.log('picture source', source);
+  //     console.log('picture data', data);
+  //     this.setState({pausePreview: true});
+  //     this.setState({uri: data.uri});
+  //     this.setState({base64: data.base64});
+  //   }
+  // };
+
   takePicture = async function (camera) {
     const options = {quality: 0.5, base64: true};
     const data = await camera.takePictureAsync(options);
     //  eslint-disable-next-line
-    const source = data.uri;
-    if (source) {
+    const {uri, width, height} = data;
+    console.log('data');
+    console.log(data);
+
+    cropData = {
+      offset: {x: 0, y: 0},
+      size: {width: 1024, height: 768},
+      displaySize: {width: 1024, height: 768},
+      resizeMode: 'contain',
+    };
+
+    if (data) {
       await camera.pausePreview();
-      console.log('picture source', source);
-      console.log('picture data', data);
+      ImageEditor.cropImage(uri, cropData).then((url) => {
+        (data.width = 1024), (data.height = 760);
+        console.log('data', data);
+        console.log('Cropped image uri', url);
+      });
       this.setState({pausePreview: true});
       this.setState({uri: data.uri});
       this.setState({base64: data.base64});
     }
   };
-
   resumePicture = async function (camera) {
     await camera.resumePreview();
     this.setState({pausePreview: false});
