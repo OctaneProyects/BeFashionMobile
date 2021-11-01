@@ -173,7 +173,7 @@ export function MostradorDespuesServicio({route, navigation}) {
             size={20}
             name="camera"
             // onPress={() => launchCamera(2)}
-            onPress={() => navigation.navigate('PictureScreen', {screen: "MostradorDespuesServicio"})}
+            onPress={() => navigation.navigate('PictureScreenScan', {screen: "MostradorDespuesServicio"})}
           />
           <Image
             resizeMode="cover"

@@ -12,7 +12,8 @@ import {ImageScreenExample} from '../screens/ImageScreenExample'; //pantalla de 
 import {Text} from 'react-native';
 import mapScreen from '../screens/mapScreen';
 import {AgregarUbicacion} from '../screens/AgregarUbicacion';
-import PictureScreen from '../screens/PictureScreen';
+import PictureScreenScan from '../screens/PictureScreenScan';
+import CameraScreen from '../screens/CameraScreen';
 
 const MainStack = createStackNavigator();
 
@@ -31,10 +32,7 @@ export function MainStackNavigator() {
           headerTitleStyle: {
             fontSize: 16,
           },
-        }}
-      >
-
-      </MainStack.Screen>
+        }}></MainStack.Screen>
       <MainStack.Screen
         name={'CapturaKilometraje'}
         component={CapturaKilometraje}
@@ -150,8 +148,20 @@ export function MainStackNavigator() {
           },
         }}></MainStack.Screen>
       <MainStack.Screen
-        name={'PictureScreen'}
-        component={PictureScreen}
+        name={'PictureScreenScan'}
+        component={PictureScreenScan}
+        options={{
+          title: 'camera',
+          headerLeft: () => null,
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
+      <MainStack.Screen
+        name={'CameraScreen'}
+        component={CameraScreen}
         options={{
           title: 'camera',
           headerLeft: () => null,

@@ -19,12 +19,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { EstatusContext } from '../context/EstatusContext';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-export default function CapturaKilometraje({ navigation }) {
+export default function CapturaKilometraje({route, navigation }) {
   const user = React.useContext(UserContext);
   const [ruta, setRuta] = useState([]);
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
-  const [contentType, setContentType] = useState();
+  // const [contentType, setContentType] = useState();
   const [imagen64, setImagen64] = useState();
   const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
   const [IdRuta, setIdRuta] = useState(null);
@@ -34,6 +34,20 @@ export default function CapturaKilometraje({ navigation }) {
   const { authFlow } = React.useContext(EstatusContext);
 
   const { logout } = React.useContext(AuthContext);
+
+  var objImg ={
+    uri: '',
+    base64: '',
+    contentType: 'img/jpeg'
+  }
+
+console.log('route.params')
+console.log(route)
+if (route.params) {
+  objImg.uri = route.params.uri,
+  objImg.base64= route.params.base64
+}
+
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
     //valida que se ingrese km
@@ -50,7 +64,7 @@ export default function CapturaKilometraje({ navigation }) {
       return;
     }
     //valida que se adjunte imagen
-    if (!imagen64) {
+    if (objImg.base64 == '') {
       Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
         { text: 'Aceptar' },
       ]);
@@ -63,8 +77,8 @@ export default function CapturaKilometraje({ navigation }) {
       IdUsuario: IdUsuario,
       KmInicial: km,
       IdEstatus: 1, //agregar
-      Imagen: imagen64,
-      contentType: contentType,
+      Imagen: objImg.base64,
+      contentType: objImg.contentType,
     };
 
     console.log('RUTAA  ');
@@ -263,7 +277,8 @@ export default function CapturaKilometraje({ navigation }) {
                 size={25}
                 color="gray"
                 padding={20}
-                onPress={() => launchCamera()}
+                // onPress={() => launchCamera()}
+                onPress={() => navigation.navigate('CameraScreen', {screen: 'CapturaKilometraje'})}
               />
             </TouchableOpacity>
           </View>
@@ -277,7 +292,7 @@ export default function CapturaKilometraje({ navigation }) {
               resizeMode="cover"
               resizeMethod="scale"
               style={{ justifyContent: 'center', width: 100, height: 100 }}
-              source={{ uri: imagen }}></Image>
+              source={{ uri: objImg.uri }}></Image>
           </View>
         </View>
         <View style={styles.btnSubmitContainer}>

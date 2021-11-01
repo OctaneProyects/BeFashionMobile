@@ -10,6 +10,7 @@ xmlns:tools="http://schemas.android.com/tools"
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- provider network location-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!--Gps precission location-->
 
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -34,9 +35,7 @@ xmlns:tools="http://schemas.android.com/tools"
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
       
       <!--para Google mapos-->
-       <!-- <meta-data
-        android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyBG5vHqUyvBNRs7EZMLf3aPSZamVEl1qnA"/> -->
+
          <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
         android:value="AIzaSyB8oPDHRjRYhGJQfvVTIcNY552cCZuFT84"/>
