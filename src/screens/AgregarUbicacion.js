@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BASE_URL } from '../config';
-import { View, SafeAreaView, StyleSheet, Text, Alert } from 'react-native'
+import { View, SafeAreaView, StyleSheet, Text, Alert, Platform } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -10,20 +10,16 @@ import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-
-
 export function AgregarUbicacion({ navigation }) {
-
-
-
-    const [latitudActual, setLatitud] = useState(0)
-    const [longitudActual, setLongitud] = useState(0)
-    const [clientes, setClientes] = useState([])
-    const [cliente, setCliente] = useState(null)
-    const [nombreTienda, setnombreTienda] = useState('')
-    const [cr, setCR] = useState('a')
-    const [sucursales, setSucursales] = useState([])
-    const [sucursal, setSucursal] = useState(null)
+    const [latitudActual, setLatitud] = useState(0);
+    const [longitudActual, setLongitud] = useState(0);
+    const [clientes, setClientes] = useState([]);
+    const [cliente, setCliente] = useState(null);
+    const [clienteNom, setClienteNom] = useState('');
+    const [nombreTienda, setnombreTienda] = useState('');
+    const [cr, setCR] = useState('a');
+    const [sucursales, setSucursales] = useState([]);
+    const [sucursal, setSucursal] = useState(null);
     const user = React.useContext(UserContext);
     const [openCli, setOpenCli] = useState(false);
     const [openSuc, setOpenSuc] = useState(false);
@@ -117,7 +113,6 @@ export function AgregarUbicacion({ navigation }) {
             alert(`Ocurrio un error ${e}`);
         }
     };
-
     const GetSucursales = async () => {
         try {
             await axios
@@ -171,16 +166,17 @@ export function AgregarUbicacion({ navigation }) {
             alert(`Ocurrio un error ${e}`);
         }
     };
-
+    useEffect(()=>{
+        setClienteNom(clientes.filter(c => c.value ==cliente).map(c => c.label)[0]);
+    },[cliente]);
 
     return (
         <SafeAreaView>
             <View style={styles.container}>
-                <View style={styles.rowView}>
+                <View style={styles.rowView, (Platform.OS == "ios"?{zIndex:300}:{})}>
 
                     <DropDownPicker
                         placeholder="Selecciona un cliente"
-                        value={cliente}
                         open={openCli}
                         //searchable={true}
                         items={
@@ -189,6 +185,7 @@ export function AgregarUbicacion({ navigation }) {
                         setItems={setClientes}
                         setOpen={setOpenCli}
                         setValue={setCliente}
+                        
 
                         zIndex={300}
                     >
@@ -196,14 +193,13 @@ export function AgregarUbicacion({ navigation }) {
 
                 </View>
                 <View style={styles.rowView}>
-
                     <Input
                         style={{ borderWidth: 1.3 }}
                         placeholder="Nombre"
                         onChangeText={setnombreTienda} />
                 </View>
                 <>
-                    {cliente == 1 ? (
+                    {clienteNom == "Oxxo" ? (
 
                         <View style={styles.rowView}>
 
@@ -216,7 +212,7 @@ export function AgregarUbicacion({ navigation }) {
                     }
                 </>
 
-                <View style={styles.rowView}>
+                <View style={styles.rowView,(Platform.OS === 'ios'?{zIndex:100}:{})}>
 
                     <DropDownPicker
                         placeholder="Selecciona un sucursal"
