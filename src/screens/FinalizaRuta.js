@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   SafeAreaView,
@@ -9,22 +9,23 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {CheckBox, Input} from 'react-native-elements';
-import {Heading} from '../components/Heading';
+import { CheckBox, Input } from 'react-native-elements';
+import { Heading } from '../components/Heading';
 import axios from 'axios';
-import {BASE_URL} from '../config';
+import { BASE_URL } from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
-import {EstatusContext} from '../context/EstatusContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { PermissionsAndroid } from 'react-native';
 
-export function FinalizaViaje({route, navigation}) {
+export function FinalizaViaje({ route, navigation }) {
   const user = React.useContext(UserContext);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
 
   //variable id vijae por parametros
-  const {idViaje} = route.params;
+  const { idViaje } = route.params;
   // const [idViaje, setIdViaje] = useState(1)
   //const [entMercancia, setEntMerc] = useState(0);
   const [entDevolucion, setEntDev] = useState(0);
@@ -46,6 +47,7 @@ export function FinalizaViaje({route, navigation}) {
   const [visitasDiarias, setVisitasDiarias] = useState(0);
   const [visitasEfectivas, setVisitasEfectivas] = useState(0);
   const [promocion, setPromocion] = useState(0);
+  const [cameraAccess, setCameraAccess] = useState(false);
 
   const insertFinalaViaje = async () => {
     console.log(`entra, KmFinal`, kmFinal);
@@ -55,7 +57,7 @@ export function FinalizaViaje({route, navigation}) {
     }
     if (!imagen64) {
       Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-        {text: 'Aceptar'},
+        { text: 'Aceptar' },
       ]);
       return;
     }
@@ -88,41 +90,15 @@ export function FinalizaViaje({route, navigation}) {
     if (res[0].MENSAJE == 'ok') {
       authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje).then(
         authFlow.getEstatus(0, user.IdUsuario).then(
-      Alert.alert('Listo!', 'Haz terminado tu ruta por hoy', [
-        {text: 'Terminar', onPress: () => navigation.navigate('LandingScreen')},
-      ])
-      ));
+          Alert.alert('Listo!', 'Haz terminado tu ruta por hoy', [
+            { text: 'Terminar', onPress: () => navigation.navigate('LandingScreen') },
+          ])
+        ));
     } else {
       alert(result);
     }
     console.log(res);
   };
-  // if (!imagen64) {
-  //   Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-  //     {text: 'Aceptar'},
-  //   ]);
-  //   return;
-  // }
-
-  // const viaje = {
-  //   IdViaje: parseInt(idViaje),
-  //   InventarioFinalPzs: parseInt(totalPz),
-  //   KmInicial: parseInt(kmInicial),
-  //   KMFinal: parseInt(kmFinal),
-  //   HoraInicial: hrInicial,
-  //   HoraFinal: hrFinal,
-  //   PzVendidas: parseInt(pzVendidas),
-  //   PzDanadas: parseInt(pzDanadas),
-  //   PzDefectuosasFabrica: parseInt(pzDefectuosa),
-  //   VisitaDiaria: parseInt(visitasDiarias),
-  //   VisitasEfectivas: parseInt(visitasEfectivas),
-  //   imagen64: imagen64,
-  //   contentType: contentType,
-  //   usuarioRegistro: user.IdUsuario,
-  //   entMercancia: parseInt(entMercancia),
-  //   devolucion: parseInt(entDevolucion),
-  // };
-  // console.log(viaje);
 
   const getFinalRuta = async () => {
     console.log('IDVIAJE');
@@ -154,42 +130,71 @@ export function FinalizaViaje({route, navigation}) {
         setHrFinal(datetime);
       });
   };
-  launchCamera = () => {
-    let options = {
-      maxWidth:1024,
-      maxHeight:768,
-      includeBase64: true,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: "App Camera Permission",
+          message: "App needs access to your camera "
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK"
+        }
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Camera permission given");
+        setCameraAccess(true);
       } else {
-        const source = {uri: response.uri};
-        console.log('response', JSON.stringify(response));
-
-        setImagen64(response.assets[0].base64);
-        setContentType(response.assets[0].type);
+        console.log("Camera permission denied");
+        setCameraAccess(false);
       }
-    });
+    } catch (err) {
+      console.warn(err);
+      setCameraAccess(false);
+    }
+  };
+  launchCamera = () => {
+    if (cameraAccess) {
+      let options = {
+        maxWidth: 1024,
+        maxHeight: 768,
+        includeBase64: true,
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+      };
+      ImagePicker.launchCamera(options, (response) => {
+        console.log('Response = ', response);
+
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
+          alert(response.customButton);
+        } else {
+          const source = { uri: response.uri };
+          console.log('response', JSON.stringify(response));
+
+          setImagen64(response.assets[0].base64);
+          setContentType(response.assets[0].type);
+        }
+      });
+    } else {
+      requestCameraPermission();
+    }
   };
 
   useEffect(() => {
     getFinalRuta();
+    requestCameraPermission();
   }, []);
   return (
     <SafeAreaView>
-      <View style={{paddingTop: 10}}>
+      <View style={{ paddingTop: 10 }}>
         {/* <View style={styles.checkboxContainer}> */}
         {/* entrada de mercancia por vehiculo */}
         {/* <TextInput
@@ -216,25 +221,25 @@ export function FinalizaViaje({route, navigation}) {
           <Text style={styles.label}>Entrada por devolucion</Text>
         </View>
       </View>
-      <View style={{paddingLeft: 70, paddingRight: 10, alignContent: 'center'}}>
+      <View style={{ paddingLeft: 70, paddingRight: 10, alignContent: 'center' }}>
         <View>
-          <Text style={{padding: 5}}>{totalPz} Total de piezas en carro</Text>
+          <Text style={{ padding: 5 }}>{totalPz} Total de piezas en carro</Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>{vehiculo} No. Vehiculo</Text>
+          <Text style={{ padding: 5 }}>{vehiculo} No. Vehiculo</Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>{kmInicial} KM inicial</Text>
+          <Text style={{ padding: 5 }}>{kmInicial} KM inicial</Text>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <TextInput
             placeholder="0"
             onChangeText={setKmFinal}
             keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
+            style={{ height: 35, borderWidth: 1 }}
           />
-          <Text style={{padding: 5}}>KM final</Text>
+          <Text style={{ padding: 5 }}>KM final</Text>
 
           <Icon
             name="camera"
@@ -245,35 +250,35 @@ export function FinalizaViaje({route, navigation}) {
           />
         </View>
         <View>
-          <Text style={{padding: 5}}>{hrInicial} Hora de salida</Text>
+          <Text style={{ padding: 5 }}>{hrInicial} Hora de salida</Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>{hrFinal} Hora de llegada</Text>
+          <Text style={{ padding: 5 }}>{hrFinal} Hora de llegada</Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>{pzVendidas} Piezas vendidas</Text>
+          <Text style={{ padding: 5 }}>{pzVendidas} Piezas vendidas</Text>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <TextInput
             placeholder="0"
             onChangeText={setPzDanadas}
             keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
+            style={{ height: 35, borderWidth: 1 }}
           />
-          <Text style={{padding: 5}}>Piezas dañadas</Text>
+          <Text style={{ padding: 5 }}>Piezas dañadas</Text>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <TextInput
             placeholder="0"
             onChangeText={setPzDefectuosa}
             keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
+            style={{ height: 35, borderWidth: 1 }}
           />
-          <Text style={{padding: 5}}>Defectuosas de fabrica</Text>
+          <Text style={{ padding: 5 }}>Defectuosas de fabrica</Text>
         </View>
 
         {/* <View>
@@ -291,7 +296,7 @@ export function FinalizaViaje({route, navigation}) {
                 </View> */}
 
         <View>
-          <Text style={{padding: 5}}>{promocion} Promocion</Text>
+          <Text style={{ padding: 5 }}>{promocion} Promocion</Text>
         </View>
       </View>
       <View style={styles.btnSubmitContainer}>
