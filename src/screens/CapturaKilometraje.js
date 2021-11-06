@@ -168,6 +168,7 @@ export default function CapturaKilometraje({ route, navigation }) {
           },
         ]));
     }
+    return ()=>{}
   }, [estado]);
 
   const handleLocationPermission = async () => {
