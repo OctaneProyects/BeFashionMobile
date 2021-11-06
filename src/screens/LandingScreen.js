@@ -63,9 +63,6 @@ export function LandingScreen({ route, navigation }) {
   const { authFlow } = React.useContext(EstatusContext);
   const [stepValue, setStep] = useState(0);
   const { IdViaje } = route.params;
-  // const [stepCant, setStepCant] = useState(0);
-  // const [statusViaje, setStatusViaje] = useState(0);
-
   const [ruta, setRuta] = useState({});
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
@@ -120,56 +117,61 @@ export function LandingScreen({ route, navigation }) {
     }
   }
   //FUNCION PARA RESETEAR LA ULTIMA VISITA
-  function resetUltimaTienda(pos) {
+  async function resetUltimaTienda(pos) {
     const params = {
       IdTienda: tiendas[pos].IdTienda,
     };
     console.log(params);
 
     try {
-      axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`, {}).then((res) => {
-        const result = res.data;
-        // let jsontiendas = JSON.parse(result);
-        authFlow.getEstatus(0, user.IdUsuario)
-      });
+      console.log(`Reiniciando la tienda...`);
+      const reset = await axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`, {});
+      console.log(`Peticion resuelta...`);
+      if (reset) {
+        console.log(`Actualizando estado...`);
+        await authFlow.getEstatus(0, user.IdUsuario);
+        console.log(`Estatus obtenido: ${estado}`);
+        setIsLoading(false);
+      }
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
+      setIsLoading(false);
     }
-    setIsLoading(false);
+
   }
 
 
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
-    return()=>{
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        appState.current = nextAppState;
-        console.log('modulo ');
-
-        //console.log(estado.Modulo);
-        if (
-          appState.current == 'active' &&
-          estado.Modulo != 'MostradorAntesServicio' &&
-          estado.Modulo != 'MostradorDespuesServicio'
-        ) {
-          console.log('si entro ');
-          GetRuta();
-          authFlow.getEstatus(0, user.IdUsuario);
-        }
-      }
-      //el estado actual sera el nuevo
-      console.log(estado);
-      appState.current = nextAppState;
-    });
-
     return () => {
-      subscription.remove();
-    };
-  }
+      const subscription = AppState.addEventListener('change', (nextAppState) => {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          appState.current = nextAppState;
+          console.log('modulo ');
+
+          //console.log(estado.Modulo);
+          if (
+            appState.current == 'active' &&
+            estado.Modulo != 'MostradorAntesServicio' &&
+            estado.Modulo != 'MostradorDespuesServicio'
+          ) {
+            console.log('si entro ');
+            GetRuta();
+            authFlow.getEstatus(0, user.IdUsuario);
+          }
+        }
+        //el estado actual sera el nuevo
+        console.log(estado);
+        appState.current = nextAppState;
+      });
+
+      return () => {
+        subscription.remove();
+      };
+    }
   }, []);
 
   //Este useEffect se detona al cargar la pantalla
@@ -224,27 +226,33 @@ export function LandingScreen({ route, navigation }) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
-    return() =>{
-    //verifica que si ya se completo la ultima tienda
-    verificaCompletado();
-    if (estado.Modulo) {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: estado.Modulo,
-          params: {
-            idTienda: tiendas[stepValue].Id,
-            nombreTienda: tiendas[stepValue].Nombre,
-            idviaje: estado.IdViaje,
-          },
-        }),
-      );
+    return () => {
+      //verifica que si ya se completo la ultima tienda
+      verificaCompletado();
+      if (estado.Modulo) {
+        //navega a la ultima pantalla en que se encontraba el usuario
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: estado.Modulo,
+            params: {
+              idTienda: tiendas[stepValue].Id,
+              nombreTienda: tiendas[stepValue].Nombre,
+              idviaje: estado.IdViaje,
+            },
+          }),
+        );
+      }
+    };
+  }, [estado]);
+  useEffect(() => {
+    console.log(`El paso ${estado.PasoActual}`);
+    if (stepValue != estado.PasoActual) {
+      setStep(estado.PasoActual);
     }
-  };
   }, [estado]);
 
   function verificaCompletado() {
-    
+
     setStep(estado.PasoActual);
     //verifica que si ya se completo la ultima tienda
     if (estado.PasoActual == cantTiendas && cantTiendas > 0) {
@@ -376,35 +384,30 @@ export function LandingScreen({ route, navigation }) {
       comentarios: 'NO VISITADO (OMITIDO)',
       visitada: false,
     };
-
     console.log(tiendas[stepValue]);
     console.log(form);
     try {
-      await axios
-        .post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form)
-        .then((res) => {
-          const result = JSON.parse(res.data);
-          console.log(result);
-          if (result[0].result == 'okay') {
-            authFlow.setEstatus(
-              6,
-              tiendas[stepValue].Id,
-              user.IdUsuario,
-              IdViaje,
-            ),
-              Alert.alert(
-                'Listo',
-                `Se ha omitido la tienda: ${tiendas[stepValue].Nombre}`,
-                [
-                  {
-                    text: 'Aceptar',
-                    onPress: () => authFlow.getEstatus(0, user.IdUsuario),
-                    // navigation.navigate('LandingScreen')
-                  },
-                ],
-              );
-          }
-        });
+      const res = await axios.post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form);
+      console.log(`El resultado de insertar el checklist: ${res}`);
+      if (res) {
+        const result = JSON.parse(res.data);
+        console.log(result);
+        if (result[0].result == 'okay') {
+          await authFlow.setEstatus(6, tiendas[stepValue].Id, user.IdUsuario, IdViaje);
+          await authFlow.getEstatus(0, user.IdUsuario);
+          Alert.alert(
+            'Listo',
+            `Se ha omitido la tienda: ${tiendas[stepValue].Nombre}`,
+            [
+              {
+                text: 'Aceptar',
+                // onPress: () => authFlow.getEstatus(0, user.IdUsuario),
+                // navigation.navigate('LandingScreen')
+              },
+            ],
+          );
+        }
+      }
     } catch (error) {
       alert(error);
     }
