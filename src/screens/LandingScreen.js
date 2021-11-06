@@ -141,6 +141,7 @@ export function LandingScreen({ route, navigation }) {
 
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
+    return()=>{
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
         appState.current.match(/inactive|background/) &&
@@ -168,6 +169,7 @@ export function LandingScreen({ route, navigation }) {
     return () => {
       subscription.remove();
     };
+  }
   }, []);
 
   //Este useEffect se detona al cargar la pantalla
@@ -222,12 +224,9 @@ export function LandingScreen({ route, navigation }) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(async () => {
-    console.log('PANTALLA');
-    console.log('PASO ACTUAL');
-
+    return() =>{
     //verifica que si ya se completo la ultima tienda
     verificaCompletado();
-
     if (estado.Modulo) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
@@ -241,6 +240,7 @@ export function LandingScreen({ route, navigation }) {
         }),
       );
     }
+  };
   }, [estado]);
 
   function verificaCompletado() {

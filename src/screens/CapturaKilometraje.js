@@ -82,7 +82,6 @@ if (route.params) {
     };
 
     console.log('RUTAA  ');
-    // console.log(ruta.Id);
     try {
       await axios
         .post(`${BASE_URL}vehiculos/InsertaViaje`, viaje)
@@ -111,41 +110,6 @@ if (route.params) {
       alert(error);
     }
   }
-
-  // launchCamera = () => {
-  //   let options = {
-  //     maxWidth:1024,
-  //     maxHeight:768,
-  //     includeBase64: true,
-  //     storageOptions: {
-  //       skipBackup: true,
-  //       path: 'images',
-  //       fileName: 'imagenmuestra',
-  //     },
-  //   };
-  //   ImagePicker.launchCamera(options, (response) => {
-  //     console.log('Response = ', response);
-
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error: ', response.error);
-  //     } else if (response.customButton) {
-  //       console.log('User tapped custom button: ', response.customButton);
-  //       alert(response.customButton);
-  //     } else {
-  //       const source = response.assets[0].uri;
-  //       const base64 = response.assets[0].base64;
-  //       const contentType = response.assets[0].type;
-
-  //       // console.log(JSON.stringify(response.assets[0].base64));
-  //       // console.log(JSON.stringify(response.assets[0].uri));
-  //       setImagen64(base64);
-  //       setImagen(source);
-  //       setContentType(contentType);
-  //     }
-  //   });
-  // };
 
   //fucnion para regresar las tiendas
   const GetRuta = async () => {
