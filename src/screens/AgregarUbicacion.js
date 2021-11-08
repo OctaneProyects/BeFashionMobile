@@ -178,15 +178,12 @@ export function AgregarUbicacion({ navigation }) {
                     <DropDownPicker
                         placeholder="Selecciona un cliente"
                         open={openCli}
+                        value={cliente}
                         //searchable={true}
-                        items={
-                            clientes
-                        }
-                        setItems={setClientes}
+                        items={clientes}
                         setOpen={setOpenCli}
                         setValue={setCliente}
-                        
-
+                        setItems={setClientes}
                         zIndex={300}
                     >
                     </DropDownPicker>
@@ -213,7 +210,6 @@ export function AgregarUbicacion({ navigation }) {
                 </>
 
                 <View style={styles.rowView,(Platform.OS === 'ios'?{zIndex:100}:{})}>
-
                     <DropDownPicker
                         placeholder="Selecciona un sucursal"
                         value={sucursal}
@@ -255,9 +251,7 @@ export function AgregarUbicacion({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-
         margin: 10,
-
     },
     comentsContainer: {
         paddingHorizontal: '7%',
