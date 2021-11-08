@@ -152,9 +152,9 @@ android {
             keyPassword 'android'
         }
      release {
-          storeFile file('AppTrackKey.keystore')
+          storeFile file('releaseKey.keystore')
          storePassword 'G3nerico01'
-         keyAlias 'AppTrackAlias'
+         keyAlias 'releaseKeyalias'
          keyPassword 'G3nerico01'
     }
 
