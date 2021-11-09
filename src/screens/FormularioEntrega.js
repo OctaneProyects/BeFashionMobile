@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  KeyboardAvoidingViewBase,
 } from 'react-native';
 import axios from 'axios';
 import {BASE_URL} from '../config';
@@ -56,17 +57,18 @@ export default function Formulario({route, navigation}) {
 
     var res = JSON.parse(result.data);
     if (res[0].result == 'ok') {
-        authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
-          Alert.alert('Listo', 'Se han registrado correctamente', [
-            {
-              text: 'Aceptar',
-              onPress: () => navigation.navigate('MostradorDespuesServicio',{idTienda: idTienda, nombreTienda: nombreTienda}),
-            },
-          ])
-
-        ));
-        
-
+      await authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje);
+      await authFlow.getEstatus(0, user.IdUsuario);
+      Alert.alert('Listo', 'Se han registrado correctamente', [
+        {
+          text: 'Aceptar',
+          onPress: () =>
+            navigation.navigate('MostradorDespuesServicio', {
+              idTienda: idTienda,
+              nombreTienda: nombreTienda,
+            }),
+        },
+      ]);
     } else {
       alert('error');
     }
@@ -101,7 +103,7 @@ export default function Formulario({route, navigation}) {
     try {
       await axios
         .get(`${BASE_URL}Articulos/GetArticulos`, {params})
-        .then((res) => {
+        .then(res => {
           const result = res.data;
           let jsonArticulos = JSON.parse(result);
 
@@ -120,16 +122,20 @@ export default function Formulario({route, navigation}) {
   }, []);
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(async () => {
-    console.log('PANTALLA');
-    console.log(estado.Modulo);
-    //navega a la ultima pantalla en que se encontraba el usuario
-    navigation.dispatch(
-      CommonActions.navigate({
-        name: estado.Modulo,
-        params: {idTienda, nombreTienda},
-      }),
-    );
+  useEffect(() => {
+    return () => {
+      console.log('PANTALLA');
+      console.log(estado.Modulo);
+      if (estado.Modulo && estado.Modulo != 'FormularioEntrega') {
+        //navega a la ultima pantalla en que se encontraba el usuario
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: estado.Modulo,
+            params: {idTienda, nombreTienda},
+          }),
+        );
+      }
+    };
   }, [estado]);
 
   useEffect(() => {

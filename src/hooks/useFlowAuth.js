@@ -14,8 +14,6 @@ export function useFlowAuth() {
             estatus: action.payload,
           };
         case 'GET_STATUS':
-          console.log('GET_STATUS');
-
           return {
             ...estatus,
             estado: action.payload,
@@ -26,9 +24,9 @@ export function useFlowAuth() {
       }
     },
     {
-       estado: {
-         Modulo: "LandingScreen",
-       },
+      estado: {
+        Modulo: 'LandingScreen',
+      },
     },
   );
 
@@ -37,46 +35,51 @@ export function useFlowAuth() {
       const estado = true;
       dispatch(createAction('BEGIN_ROUTE', estado));
     },
-  //SETEAR STATUS
-  setEstatus: async (idModulo,idTienda,idUsuario,idViaje) =>{
-
-    try {
-      await axios
-        .post(`${BASE_URL}viajes/InsertEstatusViajeUsuario`, {idModulo,idTienda, idUsuario, idViaje})
-        .then((res) => {
-          const result = res.data;
-          let jsonStatus = JSON.parse(result);
-
-          console.log('Insert');
-          console.log(jsonStatus[0]);
-
-          dispatch(createAction('SET_STATUS', jsonStatus[0]));
-        });
-    } catch (e) {
-      alert(`Ocurrio un error ${e}`);
-    }
-  },
-
-    //OBTENER ESTATUS DEL USUARIO EN LA APP
-    getEstatus: async (opc,idUsuario) => {
-      const params = {
-        opc: opc,
-        idUsuario: idUsuario, //agregar id usuario REAL
-      };
+    //SETEAR STATUS
+    setEstatus: async (idModulo, idTienda, idUsuario, idViaje) => {
       try {
         await axios
-          .get(`${BASE_URL}viajes/GetEstatusViajeUsuario`, {params})
-          .then((res) => {
+          .post(`${BASE_URL}viajes/InsertEstatusViajeUsuario`, {
+            idModulo,
+            idTienda,
+            idUsuario,
+            idViaje,
+          })
+          .then(res => {
             const result = res.data;
             let jsonStatus = JSON.parse(result);
 
+            console.log('Insert');
+            console.log(jsonStatus[0]);
+
+            dispatch(createAction('SET_STATUS', jsonStatus[0]));
+          });
+      } catch (e) {
+        alert(`Ocurrio un error as definir el estatus: ${e}`);
+      }
+    },
+
+    //OBTENER ESTATUS DEL USUARIO EN LA APP
+    getEstatus: async (opc, idUsuario) => {
+      try {
+        const params = {
+          opc: opc,
+          idUsuario: idUsuario, //agregar id usuario REAL
+        };
+        await axios
+          .get(`${BASE_URL}viajes/GetEstatusViajeUsuario`, {params})
+          .then(res => {
+            const result = res.data;
+            let jsonStatus = JSON.parse(result);
+            console.log('GET');
+            console.log(jsonStatus[0]);
             // const estatus = {
             //   pantalla: jsonStatus[0].IdModulo,
             // };
             dispatch(createAction('GET_STATUS', jsonStatus[0]));
           });
       } catch (e) {
-        alert(`Ocurrio un error ${e}`);
+        alert(`Ocurrio un error al obtener el estatus: ${e}`);
       }
     },
   }));

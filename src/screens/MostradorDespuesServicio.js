@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -9,92 +9,67 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
-import { FilledButton } from '../components/Button';
-import { Heading } from '../components/Heading';
-import { IconButton } from '../components/IconButton';
+import {FilledButton} from '../components/Button';
+import {Heading} from '../components/Heading';
+import {IconButton} from '../components/IconButton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-import { BASE_URL } from '../config';
-import { UserContext } from '../context/UserContext';
-import { CommonActions } from '@react-navigation/native';
-import { EstatusContext } from '../context/EstatusContext';
-import { PermissionsAndroid } from 'react-native';
+import {BASE_URL} from '../config';
+import {UserContext} from '../context/UserContext';
+import {CommonActions} from '@react-navigation/native';
+import {EstatusContext} from '../context/EstatusContext';
 
-export function MostradorDespuesServicio({ route, navigation }) {
+export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
   const [filePathM64, setFilePathM64] = useState();
   const [fileMContentType, setFileMContentType] = useState();
-  const ContentType = 'image/jpeg'
+
+  // const [filePathM364, setFilePathM364] = useState();
+  // const [filePathM3, setFilePathM3] = useState('FileM3');
+  // const [fileM3ContentType, setFileM3ContentType] = useState();
+
+  const ContentType = 'image/jpeg';
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
-  const { idTienda, nombreTienda, uri, base64 } = route.params;
-  const [cameraAccess, setCameraAccess] = useState(false);
+  const {idTienda, nombreTienda, uri, base64} = route.params;
 
   //AuthFlow
-  const { estado } = React.useContext(EstatusContext);
-  const { authFlow } = React.useContext(EstatusContext);
-  const requestCameraPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: "App Camera Permission",
-          message: "App needs access to your camera ",
-          buttonNeutral: "Ask Me Later",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
-        }
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("Camera permission given");
-        setCameraAccess(true);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
+
+  launchCamera = tipo => {
+    let options = {
+      maxWidth: 1024,
+      maxHeight: 768,
+      includeBase64: true,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
       } else {
-        console.log("Camera permission denied");
-        setCameraAccess(false);
-      }
-    } catch (err) {
-      console.warn(err);
-      setCameraAccess(false);
-    }
-  };
-  launchCamera = (tipo) => {
-    if (cameraAccess) {
-      let options = {
-        maxWidth: 1024,
-        maxHeight: 768,
-        includeBase64: true,
-        storageOptions: {
-          skipBackup: true,
-          path: 'images',
-        },
-      };
-      ImagePicker.launchCamera(options, (response) => {
-        console.log('Response = ', response);
-
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-          alert(response.customButton);
-        } else {
-          const source = { uri: response.uri };
-          console.log('response', JSON.stringify(JSON.stringify(response)).uri);
-          if (tipo == 1) {
-            setFilePathM(response.assets[0].uri);
-            setFilePathM64(response.assets[0].base64);
-            setFileMContentType(response.assets[0].type);
-          }
+        const source = {uri: response.uri};
+        console.log('response', JSON.stringify(JSON.stringify(response)).uri);
+        if (tipo == 1) {
+          setFilePathM(response.assets[0].uri);
+          setFilePathM64(response.assets[0].base64);
+          setFileMContentType(response.assets[0].type);
         }
-      });
-    }
-    else {
-      requestCameraPermission();
-    }
+      }
+    });
   };
 
-  guardarImagen = async () => {
+  async function guardarImagen() {
     let img = {
       img: [
         {
@@ -102,68 +77,61 @@ export function MostradorDespuesServicio({ route, navigation }) {
           contenido: filePathM64,
           contentType: fileMContentType,
           UsuarioRegistro: user.IdUsuario,
-          IdViaje: estado.IdViaje
+          IdViaje: estado.IdViaje,
         },
         {
           idTipo: 5,
           contenido: base64,
           contentType: ContentType,
           UsuarioRegistro: user.IdUsuario,
-          IdViaje: estado.IdViaje
-
+          IdViaje: estado.IdViaje,
         },
       ],
     };
 
     try {
       console.log(estado);
-      await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
-        if (res) {
-          authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
-            Alert.alert(
-              'Listo',
-              'Se han guardado las imagenes',
-              [
-                {
-                  text: 'Aceptar',
-                  onPress: () =>
-                    navigation.navigate('ChecklistTienda', {
-                      idTienda,
-                      nombreTienda,
-                    }),
-                },
-              ],
-            )
-          ));
-
-
-        }
-      });
+      const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
+      if (res) {
+        await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
+        authFlow.getEstatus(0, user.IdUsuario);
+        Alert.alert('Listo', 'Se han guardado las imagenes', [
+          {
+            text: 'Aceptar',
+            onPress: () =>
+              navigation.navigate('ChecklistTienda', {
+                idTienda,
+                nombreTienda,
+              }),
+          },
+        ]);
+      }
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(async () => {
-    console.log('SI ESTA RECARGANDO');
-
+  useEffect(() => {
     if (estado) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
         CommonActions.navigate({
           name: estado.Modulo,
-          params: { idTienda, nombreTienda },
+          params: {idTienda, nombreTienda},
         }),
       );
     }
+    return () => {
+      console.log('SI ESTA RECARGANDO');
+    };
   }, [estado]);
-  useEffect(() => {
-    requestCameraPermission();
-  }, []);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>,
+      headerRight: () => (
+        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+      ),
     });
   }, []);
 
@@ -175,14 +143,14 @@ export function MostradorDespuesServicio({ route, navigation }) {
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
-        <Text style={{ padding: 20, fontWeight: 'bold' }}>
+        <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con las siguientes caracteristicas
         </Text>
         <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{ paddingRight: 8 }}>Imagen mostrador:</Text>
+          <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
           <Icon
-            style={{ paddingLeft: 2 }}
+            style={{paddingLeft: 2}}
             size={20}
             name="camera"
             onPress={() => launchCamera(1)}
@@ -190,25 +158,29 @@ export function MostradorDespuesServicio({ route, navigation }) {
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ width: '10%', height: '50%', marginLeft: 20 }}
-            source={{ uri: filePathM }}></Image>
+            style={{width: '10%', height: '50%', marginLeft: 20}}
+            source={{uri: filePathM}}></Image>
         </View>
         {/* <Text>{filePathM}</Text> */}
         <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
-          <Text style={{ paddingRight: 8 }}>Imagen mostrador a 3 metros:</Text>
+          <Text style={{paddingRight: 8}}>Imagen mostrador a 3 metros:</Text>
           <Icon
-            style={{ paddingLeft: 2 }}
+            style={{paddingLeft: 2}}
             size={20}
             name="camera"
             // onPress={() => launchCamera(2)}
-            onPress={() => navigation.navigate('PictureScreenScan', { screen: "MostradorDespuesServicio" })}
+            onPress={() =>
+              navigation.navigate('PictureScreenScan', {
+                screen: 'MostradorDespuesServicio',
+              })
+            }
           />
           <Image
             resizeMode="cover"
             resizeMethod="scale"
-            style={{ width: '10%', height: '50%', marginLeft: 20 }}
-            source={{ uri: uri }}></Image>
+            style={{width: '10%', height: '50%', marginLeft: 20}}
+            source={{uri: uri}}></Image>
         </View>
 
         <View style={styles.row}>
@@ -238,7 +210,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignContent: 'flex-start',
-    paddingVertical: '5%'
+    paddingVertical: '5%',
   },
   title: {
     paddingBottom: 50,

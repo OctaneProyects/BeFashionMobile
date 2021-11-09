@@ -1,35 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
+import React, {useState, useEffect} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Keyboard,
+} from 'react-native';
+import {
+  ScrollView,
+  TextInput,
+  TouchableWithoutFeedback,
+} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { UserContext } from '../context/UserContext';
-import { EstatusContext } from '../context/EstatusContext';
-import { CommonActions } from '@react-navigation/native';
+import {UserContext} from '../context/UserContext';
+import {EstatusContext} from '../context/EstatusContext';
+import {CommonActions} from '@react-navigation/native';
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import {BASE_URL} from '../config';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-export default function TerminaViaje({ route, navigation }) {
+export default function TerminaViaje({route, navigation}) {
   const [isExhibido, setExhibido] = useState();
   const [isSurtido, setSurtido] = useState();
   const [cantNoFashion, setCantNoFashion] = useState('');
   const [isAlcance, setAlcance] = useState();
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
-  const { idTienda, nombreTienda } = route.params;
+  const {idTienda, nombreTienda} = route.params;
   //AuthFlow
-  const { estado } = React.useContext(EstatusContext);
-  const { authFlow } = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
 
-  const [openExibido, setOpenExibido] = useState(false)
-  const [openAlcance, setOpenAlcance] = useState(false)
-  const [openSurtido, setOpenSurtido] = useState(false)
+  const [openExibido, setOpenExibido] = useState(false);
+  const [openAlcance, setOpenAlcance] = useState(false);
+  const [openSurtido, setOpenSurtido] = useState(false);
 
-  const terminaTienda = async () => {
+  async function terminaTienda() {
     if (cantNoFashion < 0) {
       alert('Cantidad de lentes no fashion invalida');
-      console.log(estado);
+      //console.log(estado);
     } else {
       const form = {
         // idVisita: 1,
@@ -43,64 +55,70 @@ export default function TerminaViaje({ route, navigation }) {
         comentarios: comentarios,
         visitada: true,
       };
-
       try {
-        await axios
-          .post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form)
-          .then((res) => {
-            const result = JSON.parse(res.data);
-            console.log(result);
-            if (result[0].result == 'okay') {
-              authFlow.setEstatus(6, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
-
-                Alert.alert('Listo', 'Se ha guardado el checklist', [
-                  {
-                    text: 'Aceptar',
-                    // onPress: () => (
-                    //   navigation.navigate('LandingScreen')
-                    // ),
-                  },
-                ])
-              ));
-
-            }
-          });
+        let res = await axios.post(
+          `${BASE_URL}Tiendas/InsertaChecklistTienda`,
+          form,
+        );
+        if (res) {
+          const result = JSON.parse(res.data);
+          console.log(result);
+          if (result[0].result == 'okay') {
+            await authFlow.setEstatus(
+              6,
+              idTienda,
+              user.IdUsuario,
+              estado.IdViaje,
+            );
+            await authFlow.getEstatus(0, user.IdUsuario);
+            Alert.alert('Listo', 'Se ha guardado el checklist', [
+              {
+                text: 'Aceptar',
+                onPress: () => navigation.navigate('LandingScreen'),
+              },
+            ]);
+          }
+        }
       } catch (error) {
         alert(error);
       }
     }
-  };
+  }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(async () => {
-    if (estado) {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: estado.Modulo,
-          // params: {
-          //   user: 'jane',
-          // },
-        }),
-      );
-    }
+  useEffect(() => {
+    return () => {
+      if (estado) {
+        //navega a la ultima pantalla en que se encontraba el usuario
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: estado.Modulo,
+            // params: {
+            //   user: 'jane',
+            // },
+          }),
+        );
+      }
+    };
   }, [estado]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white', paddingHorizontal:15}}>{user.name}</Text>,
+      headerRight: () => (
+        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+      ),
     });
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={{ alignItems: 'center' }}>
+    <ScrollView estedScrollEnabled={true} style={styles.container}>
+      <View style={{alignItems: 'center', padding: 10}}>
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
-        <Text style={{ fontStyle: 'italic' }}>
+        <Text style={{fontStyle: 'italic'}}>
           <Icon
             name="info-circle"
             type="font-awesome-5"
@@ -109,72 +127,83 @@ export default function TerminaViaje({ route, navigation }) {
           Completa el checklist para finalizar esta Visita
         </Text>
       </View>
-      <View style={styles.checkboxContainer}>
-        <Text style={styles.label}>Exh, colocado al alcance publico </Text>
-        <View style={{ width: '20%' }}>
-
-          <DropDownPicker
-            placeholder="---"
-            value={isExhibido}
-            open={openExibido}
-            setOpen={setOpenExibido}
-            setValue={setExhibido}
-            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
-            zIndex={300}
-          />
-        </View>
-        {/* <CheckBox
+      <Text style={{marginHorizontal: 10}}>
+        Exh, colocado al alcance publico
+      </Text>
+      <View
+        style={
+          Platform.OS === 'ios' ? {zIndex: 300, padding: 10} : {width: '20%'}
+        }>
+        <DropDownPicker
+          placeholder="---"
           value={isExhibido}
-          onValueChange={setExhibido}
-          tintColors={{ true: 'rgb(27,67,136)' }}
-          style={styles.checkbox}
-        /> */}
-      </View>
-      <View style={styles.checkboxContainer}>
-        <Text style={styles.label}> No permitido surtir al 100% </Text>
-        <View style={{ width: '20%' }}>
-          <DropDownPicker
-            placeholder="---"
-            value={isSurtido}
-            setValue={setSurtido}
-            open={openSurtido}
-            setOpen={setOpenSurtido}
-            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
-            zIndex={250}
-          />
-
-        </View>
-        {/* <CheckBox
-          value={isSurtido}
-          onValueChange={setSurtido}
-          tintColors={{ true: 'rgb(27,67,136)' }}
-          style={styles.checkbox}
-        /> */}
-      </View>
-      <View style={styles.checkboxContainer}>
-        <Text style={styles.label}>Lentes no fashion en el exh Cantidad </Text>
-        <TextInput
-          keyboardType="numeric"
-          textAlign="center"
-          style={styles.ipCantNoFashion}
-          placeholder="0"
-          value={cantNoFashion.toString()}
-          onChangeText={(text) => setCantNoFashion(text)}
+          open={openExibido}
+          setOpen={setOpenExibido}
+          setValue={setExhibido}
+          listMode="SCROLLVIEW"
+          items={[
+            {label: 'Si', value: true},
+            {label: 'No', value: false},
+          ]}
+          zIndex={300}
         />
       </View>
-      <View style={styles.checkboxContainer}>
-        <Text style={styles.label}>Lentes al alcance para el cliente S/N</Text>
-        <View style={{ width: '20%' }}>
-          <DropDownPicker
-            placeholder="---"
-            value={isAlcance}
-            setValue={setAlcance}
-            open={openAlcance}
-            setOpen={setOpenAlcance}
-            items={[{ label: 'Si', value: true }, { label: 'No', value: false }]}
-            zIndex={200}
-          />
-        </View>
+
+      <Text style={{marginHorizontal: 10}}>No permitido surtir al 100%</Text>
+      <View
+        style={
+          Platform.OS === 'ios' ? {zIndex: 250, padding: 10} : {width: '20%'}
+        }>
+        <DropDownPicker
+          placeholder="---"
+          value={isSurtido}
+          setValue={setSurtido}
+          open={openSurtido}
+          setOpen={setOpenSurtido}
+          position="relative"
+          listMode="SCROLLVIEW"
+          items={[
+            {label: 'Si', value: true},
+            {label: 'No', value: false},
+          ]}
+          zIndex={250}
+        />
+      </View>
+
+      <Text style={{marginHorizontal: 10}}>
+        Lentes no fashion en el exh Cantidad
+      </Text>
+      <View style={{padding: 10}}>
+        <TextInput
+          keyboardType="numeric"
+          //textAlign="center"
+          style={styles.ipCantNoFashion}
+          placeholder="Lentes no fashion en el exh Cantidad"
+          value={cantNoFashion.toString()}
+          onChangeText={text => setCantNoFashion(text)}
+        />
+      </View>
+      <Text style={{marginHorizontal: 10}}>
+        Lentes al alcance para el cliente S/N
+      </Text>
+      <View
+        style={
+          Platform.OS === 'ios' ? {zIndex: 200, margin: 10} : {width: '20%'}
+        }>
+        <DropDownPicker
+          placeholder="---"
+          value={isAlcance}
+          setValue={setAlcance}
+          open={openAlcance}
+          setOpen={setOpenAlcance}
+          listMode="SCROLLVIEW"
+          items={[
+            {label: 'Si', value: true},
+            {label: 'No', value: false},
+          ]}
+          zIndex={200}
+        />
+
         {/* <CheckBox
           value={isAlcance}
           onValueChange={setAlcance}
@@ -183,16 +212,23 @@ export default function TerminaViaje({ route, navigation }) {
           style={styles.checkbox}
         /> */}
       </View>
-      <View style={styles.comentsContainer}>
-        <Text style={styles.label}>Comentarios:</Text>
-        <TextInput
-          style={styles.textInput}
-          multiline
-          numberOfLines={5}
-          value={comentarios}
-          placeholder="Agregue comentarios"
-          onChangeText={(val) => setComentarios(val)}></TextInput>
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.comentsContainer}>
+            <Text style={styles.label}>Comentarios:</Text>
+            <TextInput
+              style={styles.textInput}
+              multiline
+              numberOfLines={5}
+              value={comentarios}
+              placeholder="Agregue comentarios"
+              placeholderTextColor="#000"
+              onChangeText={setComentarios}></TextInput>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity
           style={styles.btnSubmit}
@@ -211,7 +247,7 @@ const styles = StyleSheet.create({
     alignContent: 'space-around',
   },
   comentsContainer: {
-    paddingHorizontal: '7%',
+    paddingHorizontal: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -223,11 +259,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   label: {
-    margin: 8,
+    marginVertical: 10,
     width: 250,
   },
   textInput: {
     backgroundColor: 'white',
+
+    borderColor: 'gray',
+    borderWidth: 2,
+    fontSize: 15,
+    height: 40,
   },
   btnSubmit: {
     marginTop: 40,
@@ -255,7 +296,7 @@ const styles = StyleSheet.create({
   ipCantNoFashion: {
     borderColor: 'gray',
     borderWidth: 2,
-    fontSize: 10,
+    fontSize: 18,
     height: 35,
   },
 });

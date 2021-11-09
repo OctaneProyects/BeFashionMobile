@@ -19,7 +19,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { EstatusContext } from '../context/EstatusContext';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
-export default function CapturaKilometraje({ route, navigation }) {
+export default function CapturaKilometraje({route, navigation }) {
   const user = React.useContext(UserContext);
   const [ruta, setRuta] = useState([]);
   const [km, setkm] = useState(0);
@@ -35,18 +35,18 @@ export default function CapturaKilometraje({ route, navigation }) {
 
   const { logout } = React.useContext(AuthContext);
 
-  var objImg = {
+  var objImg ={
     uri: '',
     base64: '',
     contentType: 'img/jpeg'
   }
 
-  console.log('route.params')
-  console.log(route)
-  if (route.params) {
-    objImg.uri = route.params.uri,
-      objImg.base64 = route.params.base64
-  }
+console.log('route.params')
+console.log(route)
+if (route.params) {
+  objImg.uri = route.params.uri,
+  objImg.base64= route.params.base64
+}
 
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
@@ -76,23 +76,21 @@ export default function CapturaKilometraje({ route, navigation }) {
       Imagen: objImg.base64,
       contentType: objImg.contentType,
     };
-
-    console.log('RUTAA  ');
+    // console.log(ruta.Id);
     try {
-      await axios
-        .post(`${BASE_URL}vehiculos/InsertaViaje`, viaje)
-        .then((res) => {
+      const res = await axios.post(`${BASE_URL}vehiculos/InsertaViaje`, viaje);
+      if (res) {
           const result = JSON.parse(res.data);
-          console.log('resultado de insertar viaje', res.data);
+          console.log('resultado de insertar viaje',res.data);
           if (result[0].result == 'OK') {
-            authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje),
-              authFlow.getEstatus(0, user.IdUsuario).then(
-                Alert.alert('Listo', 'Se ha iniciado correctamente', [
-                  {
-                    text: 'Continuar',
+            await authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje);
+            await authFlow.getEstatus(0, user.IdUsuario);
+            Alert.alert('Listo', 'Se ha iniciado correctamente', [
+                {
+                  text: 'Continuar',
                     onPress: () => navigation.navigate('LandingScreen', { IdViaje: result[0].IdViaje, }),
                   },
-                ]));
+                ]);
           } else {
             Alert.alert('Aviso', `${res.data}`, [
               {
@@ -101,8 +99,9 @@ export default function CapturaKilometraje({ route, navigation }) {
               },
             ]);
           }
-        });
+        }
     } catch (error) {
+      console.log('Error al insertar el viaje.');
       alert(error);
     }
   }
@@ -145,18 +144,15 @@ export default function CapturaKilometraje({ route, navigation }) {
   };
 
   useEffect(() => {
+    console.log('Validando permisos de ubicacion');
     handleLocationPermission();
-    console.log(`El usuario es: ${user}`);
-    if (user.IdUsuario) {
-      authFlow.getEstatus(1, user.IdUsuario).then(()=>{
-        GetRuta();
-      });
-      
-    }
+    console.log('GetRuta');
+    GetRuta();
+    authFlow.getEstatus(1, user.IdUsuario);
     return () => { };
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     console.log(estado)
     if (estado.result == 'true') {
       authFlow.getEstatus(0, user.IdUsuario).then(
@@ -168,7 +164,6 @@ export default function CapturaKilometraje({ route, navigation }) {
           },
         ]));
     }
-    return ()=>{}
   }, [estado]);
 
   const handleLocationPermission = async () => {
@@ -202,7 +197,7 @@ export default function CapturaKilometraje({ route, navigation }) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white',paddingHorizontal:15 }}>{user.name}</Text>,
     });
   }, []);
 
@@ -243,7 +238,7 @@ export default function CapturaKilometraje({ route, navigation }) {
                 color="gray"
                 padding={20}
                 // onPress={() => launchCamera()}
-                onPress={() => navigation.navigate('CameraScreen', { screen: 'CapturaKilometraje' })}
+                onPress={() => navigation.navigate('CameraScreen', {screen: 'CapturaKilometraje'})}
               />
             </TouchableOpacity>
           </View>

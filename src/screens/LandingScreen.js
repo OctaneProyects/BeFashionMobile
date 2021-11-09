@@ -75,10 +75,23 @@ export function LandingScreen({route, navigation}) {
   async function validateDistance(latTienda, longTienda, pos) {
     //si se presiona la tienda anterior()
     if (pos == estado.PasoActual - 1) {
-      Alert.alert('Reiniciar tienda', 'Estas seguro de reiniciar esta tienda', [
-        {text: 'Ok', onPress: () => resetUltimaTienda(pos)},
-        {text: 'Cancelar'},
-      ]);
+      console.log(estado.ViajeTerminado);
+      if (estado.ViajeTerminado == 'false') {
+        Alert.alert(
+          'Reiniciar tienda',
+          'Estas seguro de reiniciar esta tienda',
+          [
+            {text: 'Ok', onPress: () => resetUltimaTienda(pos)},
+            {text: 'Cancelar'},
+          ],
+        );
+      } else {
+        Alert.alert(
+          'Ya terminaste tu viaje!',
+          'No es posible reiniciar la tienda cuando tu viaje ha terminado.',
+          [{text: 'Entendido'}],
+        );
+      }
     } else {
       getLocation();
 
@@ -93,43 +106,59 @@ export function LandingScreen({route, navigation}) {
       console.log(`idTienda>>>>>>>>>>>>: ${tiendas[pos].Id}`);
       console.log(`nombre>>>>>>>>>>>>: ${tiendas[pos].Nombre}`);
       console.log(`Distancia: ${dis}`);
-
-      {
-        dis <= parseInt(tiendas[pos].RadioGeocerca)
-          ? (authFlow.setEstatus(
+      if (dis <= parseInt(tiendas[pos].RadioGeocerca)) {
+        await authFlow.getEstatus(0, user.IdUsuario);
+        console.log('El modulo al que vamos es:');
+        console.log(estado.Modulo);
+        if (estado) {
+          if (
+            estado.Modulo &&
+            ['MostradorAntesServicio', 'LandingScreen'].includes(estado.Modulo)
+          ) {
+            await authFlow.setEstatus(
               8,
               tiendas[pos].Id,
               user.IdUsuario,
               estado.IdViaje,
-            ),
-            //authFlow.getEstatus(0, user.IdUsuario),
+            );
             navigation.navigate('MostradorAntesServicio', {
               idTienda: tiendas[pos].Id,
               nombreTienda: tiendas[pos].Nombre,
               idViaje: estado.IdViaje,
-            }))
-          : Alert.alert(
-              'No puedes ingresar a esta tienda',
-              'Estas fuera de rango',
-              [{text: 'OK'}],
-            );
+            });
+          } else {
+            navigation.navigate(estado.Modulo, {
+              idTienda: tiendas[pos].Id,
+              nombreTienda: tiendas[pos].Nombre,
+              idViaje: estado.IdViaje,
+            });
+          }
+        }
+      }
+      //authFlow.getEstatus(0, user.IdUsuario),
+      else {
+        Alert.alert(
+          'No puedes ingresar a esta tienda',
+          'Estas fuera de rango',
+          [{text: 'OK'}],
+        );
       }
     }
   }
   //FUNCION PARA RESETEAR LA ULTIMA VISITA
   async function resetUltimaTienda(pos) {
     try {
-      console.log(`Reiniciando la tienda...`);
-      const reset = await axios.post(
-        `${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,
-        {},
-      );
-      console.log(`Peticion resuelta...`);
-      if (reset) {
-        console.log(`Actualizando estado...`);
-        authFlow.getEstatus(0, user.IdUsuario);
-        console.log(`Estatus obtenido: ${estado}`);
-      }
+        console.log(`Reiniciando la tienda...`);
+        const reset = await axios.post(
+          `${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,
+          {},
+        );
+        console.log(`Peticion resuelta...`);
+        if (reset) {
+          console.log(`Actualizando estado...`);
+          authFlow.getEstatus(0, user.IdUsuario);
+          console.log(`Estatus obtenido: ${estado}`);
+        }
     } catch (e) {
       alert(`Ocurrio un error al reiniciar la tienda ${e}`);
     }
@@ -219,13 +248,13 @@ export function LandingScreen({route, navigation}) {
     return () => {};
   }, [ruta]);
 
-  //Este Este useEffect se detona cuando se modifica el estado del viaje
-  /*useEffect(async () => {
-    //verifica que si ya se completo la ultima tienda
+  useEffect(() => {
+    if (stepValue != estado.PasoActual) {
+      setStep(estado.PasoActual);
+    }
     verificaCompletado();
-    if (estado.Modulo) {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      return () => {
+    if (estado.Modulo && estado.Modulo != 'landingScreen') {
+      if (tiendas > 0) {
         navigation.dispatch(
           CommonActions.navigate({
             name: estado.Modulo,
@@ -236,15 +265,8 @@ export function LandingScreen({route, navigation}) {
             },
           }),
         );
-      };
+      }
     }
-  }, [estado]);*/
-  useEffect(() => {
-    if (stepValue != estado.PasoActual) {
-      setStep(estado.PasoActual);
-    }
-    verificaCompletado();
-
     return () => {
       console.log(`El paso ${estado.PasoActual}`);
     };
