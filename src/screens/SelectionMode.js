@@ -21,7 +21,7 @@ export function SelectionMode({navigation}) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
+      {/*<View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('addSite')}>
@@ -30,7 +30,7 @@ export function SelectionMode({navigation}) {
             <Icon name="map-marker" size={25} color="gray" padding={20} />
           </Text>
         </TouchableOpacity>
-      </View>
+      </View>*/}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
