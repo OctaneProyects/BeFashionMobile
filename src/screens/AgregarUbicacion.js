@@ -9,6 +9,9 @@ import {Input} from '../components/Input';
 import axios from 'axios';
 import {UserContext} from '../context/UserContext';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import { AuthContext } from '../context/AuthContext';
+import { EstatusContext } from '../context/EstatusContext';
+
 
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -23,12 +26,15 @@ export function AgregarUbicacion({navigation}) {
   const user = React.useContext(UserContext);
   const [openCli, setOpenCli] = useState(false);
   const [openSuc, setOpenSuc] = useState(false);
+  const { authFlow } = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
 
   //UseEffect para cuando renderisa
   useEffect(async () => {
     //setIsLoading(true); //cargando
     // setStepCant();
     handleLocationPermission();
+    authFlow.getEstatus(0, user.IdUsuario);
     await getLocation();
     await GetClientes();
     await GetSucursales(); // obtiene las sedes de befashion
@@ -132,6 +138,7 @@ export function AgregarUbicacion({navigation}) {
     }
   };
   const insertTienda = async () => {
+    await getLocation();
     if (cliente == null || sucursal == null || nombreTienda == '') {
       Alert.alert(
         'Verifique datos',
@@ -140,27 +147,17 @@ export function AgregarUbicacion({navigation}) {
       );
       return;
     }
-    console.log(`API liga`);
-    console.log(`${BASE_URL}Tiendas/InsertTienda`);
     try {
-      await axios
-        .post(
-          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario}&IdSucursal=${sucursal}`,
-          {},
-        )
+      await axios.post(`${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario}&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${estado.PasoActual+1}`,{},)
         .then(res => {
           const result = res.data;
           let jsonTiendaResult = JSON.parse(result);
-
           Alert.alert('Listo', 'Se han registrado correctamente', [
             {
               text: 'Aceptar',
             },
           ]);
-
-          console.log('clientes');
           console.log(jsonTiendaResult);
-          // setIsLoading(false);
         });
     } catch (e) {
       console.log(e);
