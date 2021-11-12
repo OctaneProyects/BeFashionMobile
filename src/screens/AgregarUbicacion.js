@@ -9,9 +9,8 @@ import {Input} from '../components/Input';
 import axios from 'axios';
 import {UserContext} from '../context/UserContext';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import { AuthContext } from '../context/AuthContext';
-import { EstatusContext } from '../context/EstatusContext';
-
+import {AuthContext} from '../context/AuthContext';
+import {EstatusContext} from '../context/EstatusContext';
 
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -26,8 +25,8 @@ export function AgregarUbicacion({navigation}) {
   const user = React.useContext(UserContext);
   const [openCli, setOpenCli] = useState(false);
   const [openSuc, setOpenSuc] = useState(false);
-  const { authFlow } = React.useContext(EstatusContext);
-  const { estado } = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
 
   //UseEffect para cuando renderisa
   useEffect(async () => {
@@ -39,7 +38,7 @@ export function AgregarUbicacion({navigation}) {
     await GetClientes();
     await GetSucursales(); // obtiene las sedes de befashion
     //await getClientes(3);
-                        
+
     console.log('SI LLEGA PARIENTE');
   }, []);
   const handleLocationPermission = async () => {
@@ -76,7 +75,7 @@ export function AgregarUbicacion({navigation}) {
     console.log(`GETLOCATION`);
     await new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
-        position => {
+        (position) => {
           const {latitude, longitude} = position.coords;
           console.log(`${latitude}`);
           console.log(`${longitude}`);
@@ -87,7 +86,7 @@ export function AgregarUbicacion({navigation}) {
           // console.log(`location: ${location.latitude}`);
           return resolve();
         },
-        error => {
+        (error) => {
           console.log('valio nepe');
           return reject(error);
         },
@@ -97,12 +96,12 @@ export function AgregarUbicacion({navigation}) {
   }
   const GetClientes = async () => {
     try {
-      await axios.get(`${BASE_URL}clientes/GetClientes`, {}).then(res => {
+      await axios.get(`${BASE_URL}clientes/GetClientes`, {}).then((res) => {
         const result = res.data;
         let jsonClientes = JSON.parse(result);
 
         setClientes(
-          jsonClientes.map(cli => {
+          jsonClientes.map((cli) => {
             return {label: cli.Nombre, value: cli.Id};
           }),
         );
@@ -120,12 +119,12 @@ export function AgregarUbicacion({navigation}) {
     try {
       await axios
         .get(`${BASE_URL}sucursales/GetSucursales?opc=3`, {})
-        .then(res => {
+        .then((res) => {
           const result = res.data;
           let jsonSucursal = JSON.parse(result);
 
           setSucursales(
-            jsonSucursal.map(suc => {
+            jsonSucursal.map((suc) => {
               return {label: suc.Nombre, value: suc.Id};
             }),
           );
@@ -148,13 +147,24 @@ export function AgregarUbicacion({navigation}) {
       return;
     }
     try {
-      await axios.post(`${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario}&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${estado.PasoActual+1}`,{},)
-        .then(res => {
+      await axios
+        .post(
+          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${
+            user.IdUsuario
+          }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${
+            estado.PasoActual + 1
+          }`,
+          {},
+        )
+        .then((res) => {
           const result = res.data;
           let jsonTiendaResult = JSON.parse(result);
           Alert.alert('Listo', 'Se han registrado correctamente', [
             {
               text: 'Aceptar',
+              onPress: () => {
+                navigation.navigate('LandingScreen');
+              },
             },
           ]);
           console.log(jsonTiendaResult);
@@ -168,13 +178,14 @@ export function AgregarUbicacion({navigation}) {
   };
   useEffect(() => {
     setClienteNom(
-      clientes.filter(c => c.value == cliente).map(c => c.label)[0],
+      clientes.filter((c) => c.value == cliente).map((c) => c.label)[0],
     );
   }, [cliente]);
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <View style={(styles.rowView, (Platform.OS === 'ios' ? {zIndex: 300} :{}))}>
+        <View
+          style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
           <DropDownPicker
             placeholder="Selecciona un cliente"
             value={cliente}
@@ -183,7 +194,7 @@ export function AgregarUbicacion({navigation}) {
             items={clientes}
             setItems={setClientes}
             setOpen={setOpenCli}
-            setValue={value => {
+            setValue={(value) => {
               setCliente(value);
             }}
             zIndex={300}></DropDownPicker>
@@ -209,7 +220,11 @@ export function AgregarUbicacion({navigation}) {
           )}
         </>
 
-        <View style={(styles.rowView,  (Platform.OS === 'ios' ? {zIndex: 200,paddingTop:8} :{}))}>
+        <View
+          style={
+            (styles.rowView,
+            Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
+          }>
           <DropDownPicker
             placeholder="Selecciona un sucursal"
             value={sucursal}
