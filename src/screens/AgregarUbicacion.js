@@ -1,10 +1,18 @@
 import React, {useState, useEffect} from 'react';
 import {BASE_URL} from '../config';
-import {View, SafeAreaView, StyleSheet, Text, Alert} from 'react-native';
+import {
+  AppState,
+  View,
+  StyleSheet,
+  Text,
+  Alert,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation, {watchPosition} from 'react-native-geolocation-service';
 import {Input} from '../components/Input';
 import axios from 'axios';
 import {UserContext} from '../context/UserContext';
@@ -27,20 +35,24 @@ export function AgregarUbicacion({navigation}) {
   const [openSuc, setOpenSuc] = useState(false);
   const {authFlow} = React.useContext(EstatusContext);
   const {estado} = React.useContext(EstatusContext);
-
+  const [location, setLocation] = useState({latitude: 33, longitude: -111});
+  const [region, setRegion] = useState({
+    latitude: location.latitude,
+    longitude: location.longitude,
+    latitudeDelta: 0.001,
+    longitudeDelta: 0.0,
+  });
+  const _mapView = React.createRef();
   //UseEffect para cuando renderisa
   useEffect(async () => {
-    //setIsLoading(true); //cargando
-    // setStepCant();
     handleLocationPermission();
+    getLocation();
     authFlow.getEstatus(0, user.IdUsuario);
-    await getLocation();
     await GetClientes();
     await GetSucursales(); // obtiene las sedes de befashion
     //await getClientes(3);
-
-    console.log('SI LLEGA PARIENTE');
   }, []);
+
   const handleLocationPermission = async () => {
     let permissionCheck = '';
     if (Platform.OS === 'ios') {
@@ -69,11 +81,24 @@ export function AgregarUbicacion({navigation}) {
       }
     }
   };
-
   //obtiene ubicacion actual del dispositivo fisico
   async function getLocation() {
     console.log(`GETLOCATION`);
-    await new Promise((resolve, reject) => {
+    console.log(location);
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const {latitude, longitude} = position.coords;
+        setLatitud(latitude);
+        setLongitud(longitude);
+        setLocation({latitude, longitude});
+      },
+      (error) => {
+        console.log('Error al obtener coordenadas: ', error.message);
+        //return reject(error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+    /*await new Promise((resolve, reject) => {
       Geolocation.getCurrentPosition(
         (position) => {
           const {latitude, longitude} = position.coords;
@@ -92,8 +117,11 @@ export function AgregarUbicacion({navigation}) {
         },
         {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
       );
-    });
+      setLocation({latitude: latitudActual, longitude: longitudActual});
+      console.log(location);
+    });*/
   }
+
   const GetClientes = async () => {
     try {
       await axios.get(`${BASE_URL}clientes/GetClientes`, {}).then((res) => {
@@ -181,66 +209,89 @@ export function AgregarUbicacion({navigation}) {
       clientes.filter((c) => c.value == cliente).map((c) => c.label)[0],
     );
   }, [cliente]);
+  useEffect(() => {
+    setRegion({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 0.001,
+      longitudeDelta: 0.0,
+    });
+    console.log('nueva region: ',location);
+    _mapView.current.animateToRegion(region);
+    return () => {
+      console.log('Region actualizada');
+    };
+    
+  }, [location]);
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View
-          style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
-          <DropDownPicker
-            placeholder="Selecciona un cliente"
-            value={cliente}
-            open={openCli}
-            //searchable={true}
-            items={clientes}
-            setItems={setClientes}
-            setOpen={setOpenCli}
-            setValue={(value) => {
-              setCliente(value);
-            }}
-            zIndex={300}></DropDownPicker>
-        </View>
-        <View style={styles.rowView}>
-          <Input
-            style={{borderWidth: 1.3}}
-            placeholder="Nombre"
-            onChangeText={setnombreTienda}
-          />
-        </View>
-        <>
-          {clienteNom == 'Oxxo' ? (
-            <View style={styles.rowView}>
-              <Input
-                style={{borderWidth: 1.3}}
-                placeholder="CR"
-                onChangeText={setCR}
-              />
-            </View>
-          ) : (
-            <></>
-          )}
-        </>
-
-        <View
-          style={
-            (styles.rowView,
-            Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
-          }>
-          <DropDownPicker
-            placeholder="Selecciona un sucursal"
-            value={sucursal}
-            open={openSuc}
-            items={sucursales}
-            setOpen={setOpenSuc}
-            setValue={setSucursal}
-            setItems={setSucursales}
-            zIndex={100}></DropDownPicker>
-        </View>
-        <View style={(styles.rowView, {paddingTop: 20})}>
-          <Text>Latitud: {latitudActual}</Text>
-          <Text>Longitud: {longitudActual}</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View
+        style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
+        <DropDownPicker
+          placeholder="Selecciona un cliente"
+          value={cliente}
+          open={openCli}
+          //searchable={true}
+          items={clientes}
+          setItems={setClientes}
+          setOpen={setOpenCli}
+          setValue={(value) => {
+            setCliente(value);
+          }}
+          zIndex={300}></DropDownPicker>
       </View>
-      <View style={styles.container}>
+      <View style={styles.rowView}>
+        <Input
+          style={{borderWidth: 1.3}}
+          placeholder="Nombre"
+          onChangeText={setnombreTienda}
+        />
+      </View>
+      <>
+        {clienteNom == 'Oxxo' ? (
+          <View style={styles.rowView}>
+            <Input
+              style={{borderWidth: 1.3}}
+              placeholder="CR"
+              onChangeText={setCR}
+            />
+          </View>
+        ) : (
+          <></>
+        )}
+      </>
+
+      <View
+        style={
+          (styles.rowView,
+          Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
+        }>
+        <DropDownPicker
+          placeholder="Selecciona un sucursal"
+          value={sucursal}
+          open={openSuc}
+          items={sucursales}
+          setOpen={setOpenSuc}
+          setValue={setSucursal}
+          setItems={setSucursales}
+          zIndex={100}></DropDownPicker>
+      </View>
+
+      <View style={({flex: 1, padding: 0, margin: 2}, styles.containermap)}>
+        <StatusBar barStyle="dark-content" />
+        {location && (
+          <MapView
+            ref={_mapView}
+            style={styles.map}
+            provider={PROVIDER_GOOGLE}
+            showsUserLocation={true}
+            initialRegion={region}
+            //onUserLocationChange={(res)=>{getLocation()}}
+          />
+        )}
+      </View>
+
+      <View>
         <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => insertTienda()}>
@@ -292,5 +343,16 @@ const styles = StyleSheet.create({
   rowView: {
     flexDirection: 'row',
     paddingTop: 8,
+  },
+  containermap: {
+    marginVertical: 8,
+    paddingTop: 8,
+    minHeight: '50%',
+    maxHeight: '60%',
+    width: '100%',
+    alignItems: 'center',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
