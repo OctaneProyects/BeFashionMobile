@@ -1,16 +1,16 @@
-import React,{useState, useContext} from 'react';
-import {StyleSheet, View, Image} from 'react-native';
-import {FilledButton} from '../components/Button';
-import {Error} from '../components/Error';
-import {Heading} from '../components/Heading';
-import {Input} from '../components/Input';
-import {TextButton} from '../components/TextButton';
-import {AuthContext} from '../context/AuthContext';
-import {Loading} from '../components/Loading';
-import {UserContext} from '../context/UserContext';
+import React, { useState, useContext, useEffect } from 'react';
+import { StyleSheet, View, Image, Alert } from 'react-native';
+import { FilledButton } from '../components/Button';
+import { Error } from '../components/Error';
+import { Heading } from '../components/Heading';
+import { Input } from '../components/Input';
+import { TextButton } from '../components/TextButton';
+import { AuthContext } from '../context/AuthContext';
+import { Loading } from '../components/Loading';
+import { UserContext } from '../context/UserContext';
 
-export function LoginScreen({navigation}) {
-  const {login} = useContext(AuthContext);
+export function LoginScreen({ navigation }) {
+  const { login } = useContext(AuthContext);
   // const user = React.useContext(UserContext);
 
   const [usr, setUser] = useState('');
@@ -46,8 +46,11 @@ export function LoginScreen({navigation}) {
             setLoading(true);
             await login(usr, pass);
           } catch (e) {
-           console.log(e)
-            setError(e.message);
+            console.log(e);
+            //setError(e.message);
+            Alert.alert("Uy, algo salio mal.",
+              "Verifica tus datos y tu conexión a internet",
+              [{ text: 'Aceptar' }])
             setLoading(false);
           }
         }}
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     color: 'black',
     borderWidth: 4,
-    borderColor:'black',
+    borderColor: 'black',
   },
   tinyLogo: {
     resizeMode: 'stretch',

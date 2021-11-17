@@ -18,6 +18,7 @@ import { UserContext } from '../context/UserContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { EstatusContext } from '../context/EstatusContext';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Loading } from '../components/Loading';
 
 export default function CapturaKilometraje({ route, navigation }) {
   const user = React.useContext(UserContext);
@@ -32,6 +33,7 @@ export default function CapturaKilometraje({ route, navigation }) {
   const [IdEstatus, setIdEstatus] = useState(null);
   const { estado } = React.useContext(EstatusContext);
   const { authFlow } = React.useContext(EstatusContext);
+  const [loading, setLoading] = useState(false);
 
   const { logout } = React.useContext(AuthContext);
 
@@ -143,26 +145,30 @@ export default function CapturaKilometraje({ route, navigation }) {
     }
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     console.log('Validando permisos de ubicacion');
     handleLocationPermission();
     console.log('GetRuta');
-    GetRuta();
+    
+    await GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
+
     return () => { };
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     console.log(estado)
     if (estado.result == 'true') {
-      authFlow.getEstatus(0, user.IdUsuario).then(
+      authFlow.getEstatus(0, user.IdUsuario).then(() => {
+        setLoading(false);
         //navega a la ultima pantalla en que se enc ontraba el usuario
         Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
           {
             text: 'Continuar',
             onPress: () => (navigation.navigate('LandingScreen', { IdViaje: estado.IdViaje }))
-          },
-        ]));
+          },]);
+      });
     }
   }, [estado]);
 
@@ -266,6 +272,7 @@ export default function CapturaKilometraje({ route, navigation }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Loading loading={loading} />
     </SafeAreaView>
   );
 }
