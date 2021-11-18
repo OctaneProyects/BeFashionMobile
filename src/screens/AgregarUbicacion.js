@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BASE_URL } from '../config';
+import React, {useState, useEffect} from 'react';
+import {BASE_URL} from '../config';
 import {
   AppState,
   View,
@@ -10,18 +10,18 @@ import {
   StatusBar,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import Geolocation, { watchPosition } from 'react-native-geolocation-service';
-import { Input } from '../components/Input';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import Geolocation, {watchPosition} from 'react-native-geolocation-service';
+import {Input} from '../components/Input';
 import axios from 'axios';
-import { UserContext } from '../context/UserContext';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { AuthContext } from '../context/AuthContext';
-import { EstatusContext } from '../context/EstatusContext';
-import { useFocusEffect } from '@react-navigation/core';
+import {UserContext} from '../context/UserContext';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {AuthContext} from '../context/AuthContext';
+import {EstatusContext} from '../context/EstatusContext';
+import {useFocusEffect} from '@react-navigation/core';
 
-export function AgregarUbicacion({ navigation }) {
+export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
   const [longitudActual, setLongitud] = useState(0);
   const [clientes, setClientes] = useState([]);
@@ -34,9 +34,9 @@ export function AgregarUbicacion({ navigation }) {
   const user = React.useContext(UserContext);
   const [openCli, setOpenCli] = useState(false);
   const [openSuc, setOpenSuc] = useState(false);
-  const { authFlow } = React.useContext(EstatusContext);
-  const { estado } = React.useContext(EstatusContext);
-  const [location, setLocation] = useState({ latitude: 33, longitude: -111 });
+  const {authFlow} = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
+  const [location, setLocation] = useState({latitude: 33, longitude: -111});
 
   const [region, setRegion] = useState({
     latitude: location.latitude,
@@ -46,19 +46,20 @@ export function AgregarUbicacion({ navigation }) {
   });
   const _mapView = React.createRef();
   useEffect(() => {
-    const _watchId = Geolocation.watchPosition(position => {
-      const { latitude, longitude } = position.coords;
-      setLatitud(latitude);
-      setLongitud(longitude);
-      setLocation({ latitude: latitude, longitude: longitude });
-      setRegion({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: 0.001,
-        longitudeDelta: 0.0,
-      })
-    },
-      error => {
+    const _watchId = Geolocation.watchPosition(
+      (position) => {
+        const {latitude, longitude} = position.coords;
+        setLatitud(latitude);
+        setLongitud(longitude);
+        setLocation({latitude: latitude, longitude: longitude});
+        setRegion({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.0,
+        });
+      },
+      (error) => {
         console.log(`Error al iniciar el watch: ${error}`);
       },
       {
@@ -66,12 +67,10 @@ export function AgregarUbicacion({ navigation }) {
         distanceFilter: 0,
         interval: 5000,
         fastestInterval: 2000,
-      }
+      },
     );
     return () => {
-      if (_watchId) {
-        Geolocation.clearWatch(_watchId);
-      }
+      Geolocation.clearWatch(_watchId);
     };
   }, []);
 
@@ -120,7 +119,7 @@ export function AgregarUbicacion({ navigation }) {
         let jsonClientes = JSON.parse(result);
         setClientes(
           jsonClientes.map((cli) => {
-            return { label: cli.Nombre, value: cli.Id };
+            return {label: cli.Nombre, value: cli.Id};
           }),
         );
       });
@@ -131,14 +130,17 @@ export function AgregarUbicacion({ navigation }) {
   const GetSucursales = async () => {
     try {
       await axios
-        .get(`${BASE_URL}sucursales/GetSucursales?opc=4&usr=${user.IdUsuario}`, {})
+        .get(
+          `${BASE_URL}sucursales/GetSucursales?opc=4&usr=${user.IdUsuario}`,
+          {},
+        )
         .then((res) => {
           const result = res.data;
           let jsonSucursal = JSON.parse(result);
 
           setSucursales(
             jsonSucursal.map((suc) => {
-              return { label: suc.Nombre, value: suc.Id };
+              return {label: suc.Nombre, value: suc.Id};
             }),
           );
           console.log('Sucursales');
@@ -150,12 +152,16 @@ export function AgregarUbicacion({ navigation }) {
     }
   };
   const insertTienda = async () => {
-
-    if (cliente == null || sucursal == null || nombreTienda == '' || sucursal == null) {
+    if (
+      cliente == null ||
+      sucursal == null ||
+      nombreTienda == '' ||
+      sucursal == null
+    ) {
       Alert.alert(
         'Verifique datos',
         'Verifique que todos los campos contengan datos validos',
-        [{ text: 'Aceptar' }],
+        [{text: 'Aceptar'}],
       );
       return;
     }
@@ -163,8 +169,10 @@ export function AgregarUbicacion({ navigation }) {
       //await getLocation();
       await axios
         .post(
-          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario
-          }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${estado.PasoActual + 1
+          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${
+            user.IdUsuario
+          }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${
+            estado.PasoActual + 1
           }`,
           {},
         )
@@ -205,12 +213,11 @@ export function AgregarUbicacion({ navigation }) {
     return () => {
       console.log('Region actualizada');
     };
-
   }, [location]);
   return (
     <SafeAreaView style={styles.container}>
       <View
-        style={(styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})}>
+        style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
         <DropDownPicker
           placeholder="Selecciona un cliente"
           value={cliente}
@@ -226,7 +233,7 @@ export function AgregarUbicacion({ navigation }) {
       </View>
       <View style={styles.rowView}>
         <Input
-          style={{ borderWidth: 1.3 }}
+          style={{borderWidth: 1.3}}
           placeholder="Nombre"
           onChangeText={setnombreTienda}
         />
@@ -235,7 +242,7 @@ export function AgregarUbicacion({ navigation }) {
         {clienteNom == 'Oxxo' ? (
           <View style={styles.rowView}>
             <Input
-              style={{ borderWidth: 1.3 }}
+              style={{borderWidth: 1.3}}
               placeholder="CR"
               onChangeText={setCR}
             />
@@ -248,7 +255,7 @@ export function AgregarUbicacion({ navigation }) {
       <View
         style={
           (styles.rowView,
-            Platform.OS === 'ios' ? { zIndex: 200, paddingTop: 8 } : {})
+          Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
         }>
         <DropDownPicker
           placeholder="Selecciona un sucursal"
@@ -260,13 +267,9 @@ export function AgregarUbicacion({ navigation }) {
           setItems={setSucursales}
           zIndex={100}></DropDownPicker>
       </View>
-      <View style={styles.rowView, { paddingTop: 20 }}>
-        <Text>
-          Latitud: {latitudActual}
-        </Text>
-        <Text>
-          Longitud: {longitudActual}
-        </Text>
+      <View style={(styles.rowView, {paddingTop: 20})}>
+        <Text>Latitud: {latitudActual}</Text>
+        <Text>Longitud: {longitudActual}</Text>
       </View>
       {/*   <View style={({ flex: 1, padding: 0, margin: 2 }, styles.containermap)}>
         <StatusBar barStyle="dark-content" />
