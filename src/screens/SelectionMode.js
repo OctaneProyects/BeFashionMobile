@@ -1,24 +1,89 @@
-import React, {useState, useContext} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {FilledButton} from '../components/Button';
-import {Error} from '../components/Error';
-import {Heading} from '../components/Heading';
-import {Input} from '../components/Input';
-import {TextButton} from '../components/TextButton';
-import {AuthContext} from '../context/AuthContext';
-import {Loading} from '../components/Loading';
-import {UserContext} from '../context/UserContext';
+import React, { useState, useContext, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Platform } from 'react-native';
+import { UserContext } from '../context/UserContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { useIsFocused } from '@react-navigation/native';
 
-export function SelectionMode({navigation}) {
+export function SelectionMode({ navigation }) {
+  const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
+  const handleLocationPermission = async () => {
+    let permissionCheck = '';
+    if (Platform.OS === 'ios') {
+      permissionCheck = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+      if (permissionCheck === RESULTS.DENIED) {
+        const permissionRequest = await request(
+          PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+        );
+        permissionRequest === RESULTS.GRANTED
+          ? console.warn('Location permission granted.')
+          : console.warn('Location perrmission denied.');
+      }
+    }
+
+    if (Platform.OS === 'android') {
+      permissionCheck = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+
+      if (permissionCheck === RESULTS.DENIED) {
+        const permissionRequest = await request(
+          PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        );
+        permissionRequest === RESULTS.GRANTED
+          ? console.warn('Location permission granted.')
+          : console.warn('Location perrmission denied.');
+      }
+    }
+  };
+  const requestCameraPermission = async () => {
+    let permissionCheck = '';
+    try {
+      if (Platform.OS === 'ios') {
+        permissionCheck = await check(PERMISSIONS.IOS.CAMERA);
+
+        if (permissionCheck === RESULTS.DENIED) {
+          const permissionRequest = await request(
+            PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+          );
+          permissionRequest === RESULTS.GRANTED
+            ? console.warn('Camera permission granted.')
+            : console.warn('Camera perrmission denied.');
+        }
+      }
+      if (Platform.OS === 'android') {
+        permissionCheck = await check(PERMISSIONS.ANDROID.CAMERA);
+        if (permissionCheck === RESULTS.DENIED) {
+          const permissionRequest = await request(
+            PERMISSIONS.ANDROID.CAMERA,
+          );
+          permissionRequest === RESULTS.GRANTED
+            ? console.warn('Camera permission granted.')
+            : console.warn('Camera perrmission denied.');
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+  useEffect(async () => {
+    if (isFocused === true) {
+      console.log('Validando permisos de ubicacion');
+      await handleLocationPermission();
+      console.log('Validando permisos de camara');
+      await requestCameraPermission();
+    }
+    return () => { 
+      console.log('SelectionMode');
+    };
+  }, []);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white',paddingHorizontal:15 }}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>,
     });
   }, []);
-
+ 
   return (
     <View style={styles.container}>
       {/*<View style={styles.buttonContainer}>
