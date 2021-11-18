@@ -44,7 +44,7 @@ export function SelectionMode({ navigation }) {
 
         if (permissionCheck === RESULTS.DENIED) {
           const permissionRequest = await request(
-            PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
+            PERMISSIONS.IOS.CAMERA,
           );
           permissionRequest === RESULTS.GRANTED
             ? console.warn('Camera permission granted.')
@@ -66,12 +66,13 @@ export function SelectionMode({ navigation }) {
       console.warn(err);
     }
   };
-  useEffect(async () => {
+  useEffect(() => {
     if (isFocused === true) {
-      console.log('Validando permisos de ubicacion');
-      await handleLocationPermission();
       console.log('Validando permisos de camara');
-      await requestCameraPermission();
+      requestCameraPermission();
+      console.log('Validando permisos de ubicacion');
+      handleLocationPermission();
+      
     }
     return () => { 
       console.log('SelectionMode');
