@@ -157,9 +157,9 @@ export default function CapturaKilometraje({ route, navigation }) {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
     console.log(estado)
     if (estado.result == 'true') {
+      setLoading(true);
       authFlow.getEstatus(0, user.IdUsuario).then(() => {
         setLoading(false);
         //navega a la ultima pantalla en que se enc ontraba el usuario
