@@ -19,6 +19,7 @@ import { UserContext } from '../context/UserContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AuthContext } from '../context/AuthContext';
 import { EstatusContext } from '../context/EstatusContext';
+import { useFocusEffect } from '@react-navigation/core';
 
 export function AgregarUbicacion({ navigation }) {
   const [latitudActual, setLatitud] = useState(0);
@@ -36,6 +37,7 @@ export function AgregarUbicacion({ navigation }) {
   const { authFlow } = React.useContext(EstatusContext);
   const { estado } = React.useContext(EstatusContext);
   const [location, setLocation] = useState({ latitude: 33, longitude: -111 });
+
   const [region, setRegion] = useState({
     latitude: location.latitude,
     longitude: location.longitude,
@@ -43,10 +45,39 @@ export function AgregarUbicacion({ navigation }) {
     longitudeDelta: 0.0,
   });
   const _mapView = React.createRef();
+  useEffect(() => {
+    const _watchId = Geolocation.watchPosition(position => {
+      const { latitude, longitude } = position.coords;
+      setLatitud(latitude);
+      setLongitud(longitude);
+      setLocation({ latitude: latitude, longitude: longitude });
+      setRegion({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: 0.001,
+        longitudeDelta: 0.0,
+      })
+    },
+      error => {
+        console.log(`Error al iniciar el watch: ${error}`);
+      },
+      {
+        enableHighAccuracy: true,
+        distanceFilter: 0,
+        interval: 5000,
+        fastestInterval: 2000,
+      }
+    );
+    return () => {
+      if (_watchId) {
+        Geolocation.clearWatch(_watchId);
+      }
+    };
+  }, []);
+
   //UseEffect para cuando renderisa
   useEffect(async () => {
     handleLocationPermission();
-    getLocation();
     authFlow.getEstatus(0, user.IdUsuario);
     await GetClientes();
     await GetSucursales(); // obtiene las sedes de befashion
@@ -81,68 +112,22 @@ export function AgregarUbicacion({ navigation }) {
       }
     }
   };
-  //obtiene ubicacion actual del dispositivo fisico
-  async function getLocation() {
-    console.log(`GETLOCATION`);
-    console.log(location);
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLatitud(latitude);
-        setLongitud(longitude);
-        setLocation({ latitude, longitude });
-      },
-      (error) => {
-        console.log('Error al obtener coordenadas: ', error.message);
-        //return reject(error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-    );
-    /*await new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const {latitude, longitude} = position.coords;
-          console.log(`${latitude}`);
-          console.log(`${longitude}`);
-          setLatitud(latitude);
-          setLongitud(longitude);
-
-          console.log(`latitud: ${latitude} y longitud: ${longitude}`);
-          // console.log(`location: ${location.latitude}`);
-          return resolve();
-        },
-        (error) => {
-          console.log('valio nepe');
-          return reject(error);
-        },
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
-      setLocation({latitude: latitudActual, longitude: longitudActual});
-      console.log(location);
-    });*/
-  }
 
   const GetClientes = async () => {
     try {
       await axios.get(`${BASE_URL}clientes/GetClientes`, {}).then((res) => {
         const result = res.data;
         let jsonClientes = JSON.parse(result);
-
         setClientes(
           jsonClientes.map((cli) => {
             return { label: cli.Nombre, value: cli.Id };
           }),
         );
-        //console.log('clientes');
-        //console.log(jsonClientes);
-
-        // setIsLoading(false);
       });
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
     }
   };
-
   const GetSucursales = async () => {
     try {
       await axios
@@ -165,7 +150,7 @@ export function AgregarUbicacion({ navigation }) {
     }
   };
   const insertTienda = async () => {
-    await getLocation();
+
     if (cliente == null || sucursal == null || nombreTienda == '' || sucursal == null) {
       Alert.alert(
         'Verifique datos',
@@ -175,6 +160,7 @@ export function AgregarUbicacion({ navigation }) {
       return;
     }
     try {
+      //await getLocation();
       await axios
         .post(
           `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario
@@ -215,7 +201,7 @@ export function AgregarUbicacion({ navigation }) {
       longitudeDelta: 0.0,
     });
     console.log('nueva region: ', location);
-    _mapView.current.animateToRegion(region);
+    //_mapView.current.animateToRegion(region);
     return () => {
       console.log('Region actualizada');
     };
@@ -258,7 +244,7 @@ export function AgregarUbicacion({ navigation }) {
           <></>
         )}
       </>
-
+      <></>
       <View
         style={
           (styles.rowView,
@@ -274,7 +260,15 @@ export function AgregarUbicacion({ navigation }) {
           setItems={setSucursales}
           zIndex={100}></DropDownPicker>
       </View>
-      <View style={({ flex: 1, padding: 0, margin: 2 }, styles.containermap)}>
+      <View style={styles.rowView, { paddingTop: 20 }}>
+        <Text>
+          Latitud: {latitudActual}
+        </Text>
+        <Text>
+          Longitud: {longitudActual}
+        </Text>
+      </View>
+      {/*   <View style={({ flex: 1, padding: 0, margin: 2 }, styles.containermap)}>
         <StatusBar barStyle="dark-content" />
         {location && (
           <MapView
@@ -283,13 +277,11 @@ export function AgregarUbicacion({ navigation }) {
             provider={PROVIDER_GOOGLE}
             showsUserLocation={true}
             followUserLocation={true}
-            region = {region}
-            //initialRegion={region}
-          //onUserLocationChange={(res)=>{getLocation()}}
+            region={region}
           />
         )}
       </View>
-
+*/}
       <View>
         <TouchableOpacity
           style={styles.btnSubmit}
