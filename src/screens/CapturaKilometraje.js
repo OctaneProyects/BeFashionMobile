@@ -85,7 +85,7 @@ export default function CapturaKilometraje({ route, navigation }) {
         const result = JSON.parse(res.data);
         console.log('resultado de insertar viaje', res.data);
         if (result[0].result == 'OK') {
-          await authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje);
+          //await authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje);
           await authFlow.getEstatus(0, user.IdUsuario);
           Alert.alert('Listo', 'Se ha iniciado correctamente', [
             {
@@ -149,26 +149,32 @@ export default function CapturaKilometraje({ route, navigation }) {
     console.log('Validando permisos de ubicacion');
     handleLocationPermission();
     console.log('GetRuta');
-    
     await GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
+    return () => {
 
-    return () => { };
+    };
   }, []);
 
   useEffect(() => {
-    console.log(estado)
-    if (estado.result == 'true') {
-      setLoading(true);
-      authFlow.getEstatus(0, user.IdUsuario).then(() => {
-        setLoading(false);
-        //navega a la ultima pantalla en que se enc ontraba el usuario
-        Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
-          {
-            text: 'Continuar',
-            onPress: () => (navigation.navigate('LandingScreen', { IdViaje: estado.IdViaje }))
-          },]);
-      });
+    if (estado != null) {
+      console.log('USE EFFECT DEL ESTADO');
+      console.log(estado);
+      if (estado.result == "true") {
+        setLoading(true);
+        authFlow.getEstatus(0, user.IdUsuario).then(() => {
+          setLoading(false);
+          //navega a la ultima pantalla en que se enc ontraba el usuario
+          Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
+            {
+              text: 'Continuar',
+              onPress: () => (navigation.navigate('LandingScreen', { IdViaje: estado.IdViaje }))
+            },]);
+        });
+      }
+      return () => {
+        console.log("termina el estado");
+      }
     }
   }, [estado]);
 
