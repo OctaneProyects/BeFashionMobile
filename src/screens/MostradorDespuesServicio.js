@@ -78,6 +78,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           contentType: fileMContentType,
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
+          idTienda: estado.IdTienda,
         },
         {
           idTipo: 5,
@@ -85,6 +86,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           contentType: ContentType,
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
+          idTienda: estado.IdTienda,
         },
       ],
     };
