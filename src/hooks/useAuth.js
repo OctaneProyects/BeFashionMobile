@@ -31,13 +31,13 @@ export function useAuth() {
                     return {
                         ...state,
                         loading: action.payload,
-                     };
+                    };
                 default:
                     return state;
             }
         },
         {
-            user:undefined,
+            user: undefined,
             loading: true,
         },
     );
@@ -47,19 +47,23 @@ export function useAuth() {
 
         login: async (user, password) => {
 
+            console.log(BASE_URL)
+
             const { data } = await axios.post(`${BASE_URL}usuarios/validaAcceso`, {
                 Usuario: user,
                 Pwd: password,
                 // IdLink: '57E17CA4-F402-4BBF-8A36-3CF11BCC7E06'
             });
+
             const usr = {
                 name: data.Nombre,
                 IdUsuario: data.Id,
                 idvehiculo: data.Vehiculo.split('|')[0],
-                vehiculo: data.Vehiculo.split('|')[2]
+                vehiculo: data.Vehiculo.split('|')[2],
+                articulos:data.Inventario
             }
 
-            // console.log(usr);
+             console.log(usr);
             dispatch(createAction('SET_USER', usr));
         },
 
@@ -83,7 +87,7 @@ export function useAuth() {
         iniciar: async () => {
             const estado = true;
             dispatch(createAction('BEGIN_ROUTE', estado));
-          },
+        },
 
     }))
     return { auth, state }

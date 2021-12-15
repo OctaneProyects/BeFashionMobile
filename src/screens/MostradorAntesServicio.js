@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 import {FilledButton} from '../components/Button';
@@ -15,8 +16,7 @@ import {UserContext} from '../context/UserContext';
 import axios from 'axios';
 import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
-import { CommonActions } from '@react-navigation/native';
-
+import {CommonActions} from '@react-navigation/native';
 
 export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
@@ -26,20 +26,20 @@ export function MostradorAntesServicio({route, navigation}) {
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
-  const { idTienda, nombreTienda, idViaje } = route.params;
+  const {idTienda, nombreTienda, idViaje} = route.params;
   const user = React.useContext(UserContext);
 
-
-
-  launchCamera = () => {
+  const launchCamera = () => {
     let options = {
+      maxWidth: 1024,
+      maxHeight: 768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, (response) => {
+    ImagePicker.launchCamera(options, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -51,7 +51,10 @@ export function MostradorAntesServicio({route, navigation}) {
         alert(response.customButton);
       } else {
         const source = {uri: response.uri};
-        console.log('response', JSON.stringify(response));
+        console.log(
+          'response de launch camera >>>>>>>>>>>>>>>',
+          JSON.stringify(response),
+        );
         setFilePath(response.assets[0].uri);
         setFile64(response.assets[0].base64);
         setContentType(response.assets[0].type);
@@ -59,75 +62,78 @@ export function MostradorAntesServicio({route, navigation}) {
     });
   };
 
-  guardarImagen = async () => {
+  const guardarImagen = async () => {
     let img = {
       idTipo: 3,
       contenido: file64,
       contentType: contentType,
-      UsuarioRegistro: 0,
+      UsuarioRegistro: user.IdUsuario,
+      idViaje: estado.IdViaje,
+      idTienda: estado.IdTienda,
     };
-    console.log(`aqui llega pariente: ${BASE_URL}Tiendas/InsertImagen`, img);
-    try 
-    {
-        
 
-      await axios.post(`${BASE_URL}Tiendas/InsertImagen`, img).then((res) => {
+    try {
+      const res = await axios.post(`${BASE_URL}Tiendas/InsertImagen`, img);
+      if (res) {
         const result = res.data;
         let jsonMostradorResulto = JSON.parse(result);
-
-        authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0,user.IdUsuario).then(
-          Alert.alert('Listo', 'Se ha guardado la imagen', [
-            {
-              text: 'Aceptar',
-              onPress: () =>(
-              navigation.navigate('FormularioEntrega', {idTienda: idTienda, nombreTienda: nombreTienda})),
-              // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
+        console.log(res);
+        await authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje);
+        authFlow.getEstatus(0, user.IdUsuario);
+        setIsLoading(false);
+        Alert.alert('Listo', 'Se ha guardado la imagen', [
+          {
+            text: 'Aceptar',
+            onPress: () => {
+              navigation.navigate('FormularioEntrega', {
+                idTienda: idTienda,
+                nombreTienda: nombreTienda,
+              });
             },
-          ])
-
-        ));
-  
-
-        console.log('Resultado');
-        console.log(jsonMostradorResulto);
-        // setIsLoading(false);
-      });
+            // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
+          },
+        ]);
+      }
     } catch (error) {
-      console.log(`valio verga pariente`, error);
+      console.log(`Ocurrio un error`, error);
     }
   };
 
-//Este Este useEffect se detona cuando se modifica el estado del viaje
-useEffect(async () => {
-  console.log("PANTALLA");
-  console.log(estado);
-  //navega a la ultima pantalla en que se encontraba el usuario 
-  navigation.dispatch(
-    CommonActions.navigate({
-      name: estado.Modulo,
-      params: {
-        idTienda,
-        nombreTienda
-      },
-    })
-  )
-}, [estado]);
+  //Este Este useEffect se detona cuando se modifica el estado del viaje
+  useEffect(() => {
+    console.log('PANTALLA');
+    console.log(estado);
+    //navega a la ultima pantalla en que se encontraba el usuario
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: estado.Modulo,
+        params: {
+          idTienda,
+          nombreTienda,
+        },
+      }));
+  }, [estado]);
+  useEffect(() => {
+    authFlow.getEstatus(0, user.IdUsuario);
+  }, []);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => (
+        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+      ),
     });
   }, []);
   return (
     <SafeAreaView>
       <View style={styles.container}>
-      <View style={styles.header}>
+        <View style={styles.header}>
           {/* <Text> idTienda: {idTienda}</Text> */}
           {/* <Text>nombreTienda: {nombreTienda}</Text> */}
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas 
+          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas
         </Text>
         <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
         <View style={styles.row}>

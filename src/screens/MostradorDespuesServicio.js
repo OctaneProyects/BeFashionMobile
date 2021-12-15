@@ -21,28 +21,33 @@ import {EstatusContext} from '../context/EstatusContext';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
-  const [filePathM3, setFilePathM3] = useState('FileM3');
   const [filePathM64, setFilePathM64] = useState();
-  const [filePathM364, setFilePathM364] = useState();
   const [fileMContentType, setFileMContentType] = useState();
-  const [fileM3ContentType, setFileM3ContentType] = useState();
+
+  // const [filePathM364, setFilePathM364] = useState();
+  // const [filePathM3, setFilePathM3] = useState('FileM3');
+  // const [fileM3ContentType, setFileM3ContentType] = useState();
+
+  const ContentType = 'image/jpeg';
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda} = route.params;
+  const {idTienda, nombreTienda, uri, base64} = route.params;
 
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
-  launchCamera = (tipo) => {
+  launchCamera = tipo => {
     let options = {
+      maxWidth: 1024,
+      maxHeight: 768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, (response) => {
+    ImagePicker.launchCamera(options, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -59,66 +64,57 @@ export function MostradorDespuesServicio({route, navigation}) {
           setFilePathM(response.assets[0].uri);
           setFilePathM64(response.assets[0].base64);
           setFileMContentType(response.assets[0].type);
-        } else if (tipo == 2) {
-          setFilePathM3(response.assets[0].uri);
-          setFilePathM364(response.assets[0].base64);
-          setFileM3ContentType(response.assets[0].type);
         }
       }
     });
   };
 
-  guardarImagen = async () => {
+  async function guardarImagen() {
     let img = {
       img: [
         {
           idTipo: 4,
           contenido: filePathM64,
           contentType: fileMContentType,
-          UsuarioRegistro: 0,
+          UsuarioRegistro: user.IdUsuario,
+          IdViaje: estado.IdViaje,
+          idTienda: estado.IdTienda,
         },
         {
           idTipo: 5,
-          contenido: filePathM364,
-          contentType: fileM3ContentType,
-          UsuarioRegistro: 0,
+          contenido: base64,
+          contentType: ContentType,
+          UsuarioRegistro: user.IdUsuario,
+          IdViaje: estado.IdViaje,
+          idTienda: estado.IdTienda,
         },
       ],
     };
 
     try {
       console.log(estado);
-      await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img).then((res) => {
-        if (res) {
-          authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje).then(authFlow.getEstatus(0, user.IdUsuario).then(
-            Alert.alert(
-              'Listo',
-              'Se han guardado las imagenes',
-              [
-                {
-                  text: 'Aceptar',
-                  onPress: () =>
-                    navigation.navigate('ChecklistTienda', {
-                      idTienda,
-                      nombreTienda,
-                    }),
-                },
-              ],
-            )
-          ));
-          
-   
-        }
-      });
+      const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
+      if (res) {
+        await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
+        authFlow.getEstatus(0, user.IdUsuario);
+        Alert.alert('Listo', 'Se han guardado las imagenes', [
+          {
+            text: 'Aceptar',
+            onPress: () =>
+              navigation.navigate('ChecklistTienda', {
+                idTienda,
+                nombreTienda,
+              }),
+          },
+        ]);
+      }
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(async () => {
-    console.log('SI ESTA RECARGANDO');
-
+  useEffect(() => {
     if (estado) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
@@ -128,11 +124,16 @@ export function MostradorDespuesServicio({route, navigation}) {
         }),
       );
     }
+    return () => {
+      console.log('SI ESTA RECARGANDO');
+    };
   }, [estado]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => (
+        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+      ),
     });
   }, []);
 
@@ -145,7 +146,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Cuarto paso: Tomar capturar con caracteristicas x
+          Cuarto paso: Tomar capturar con las siguientes caracteristicas
         </Text>
         <Text>Tome una foto despues de surtir el exibidor</Text>
         <View style={styles.row}>
@@ -170,13 +171,18 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{paddingLeft: 2}}
             size={20}
             name="camera"
-            onPress={() => launchCamera(2)}
+            // onPress={() => launchCamera(2)}
+            onPress={() =>
+              navigation.navigate('PictureScreenScan', {
+                screen: 'MostradorDespuesServicio',
+              })
+            }
           />
           <Image
             resizeMode="cover"
             resizeMethod="scale"
             style={{width: '10%', height: '50%', marginLeft: 20}}
-            source={{uri: filePathM3}}></Image>
+            source={{uri: uri}}></Image>
         </View>
 
         <View style={styles.row}>
@@ -206,7 +212,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignContent: 'flex-start',
-    paddingVertical:'5%'
+    paddingVertical: '5%',
   },
   title: {
     paddingBottom: 50,

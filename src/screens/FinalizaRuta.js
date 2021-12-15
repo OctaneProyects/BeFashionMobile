@@ -9,8 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {CheckBox, Input} from 'react-native-elements';
-import {Heading} from '../components/Heading';
+
 import axios from 'axios';
 import {BASE_URL} from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -26,7 +25,7 @@ export function FinalizaViaje({route, navigation}) {
   //variable id vijae por parametros
   const {idViaje} = route.params;
   // const [idViaje, setIdViaje] = useState(1)
-  const [entMercancia, setEntMerc] = useState(0);
+  //const [entMercancia, setEntMerc] = useState(0);
   const [entDevolucion, setEntDev] = useState(0);
 
   const [totalPz, setTotalPz] = useState(0);
@@ -75,7 +74,7 @@ export function FinalizaViaje({route, navigation}) {
       imagen64: imagen64,
       contentType: contentType,
       usuarioRegistro: user.IdUsuario,
-      entMercancia: parseInt(entMercancia),
+      // entMercancia: parseInt(entMercancia),
       devolucion: parseInt(entDevolucion),
     };
     console.log(viaje);
@@ -86,22 +85,54 @@ export function FinalizaViaje({route, navigation}) {
     );
     const res = JSON.parse(result.data);
     if (res[0].MENSAJE == 'ok') {
-      authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje),
-        authFlow.getEstatus(0, user.IdUsuario);
-      Alert.alert('Listo!', 'Haz terminado tu ruta por hoy', [
-        {text: 'Terminar', onPress: () => navigation.navigate('LandingScreen')},
-      ]);
+      authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje).then(
+        authFlow.getEstatus(0, user.IdUsuario).then(
+          Alert.alert('Listo!', 'Haz terminado tu ruta por hoy', [
+            {
+              text: 'Terminar',
+              onPress: () => navigation.navigate('LandingScreen'),
+            },
+          ]),
+        ),
+      );
     } else {
       alert(result);
     }
     console.log(res);
   };
+  // if (!imagen64) {
+  //   Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
+  //     {text: 'Aceptar'},
+  //   ]);
+  //   return;
+  // }
+
+  // const viaje = {
+  //   IdViaje: parseInt(idViaje),
+  //   InventarioFinalPzs: parseInt(totalPz),
+  //   KmInicial: parseInt(kmInicial),
+  //   KMFinal: parseInt(kmFinal),
+  //   HoraInicial: hrInicial,
+  //   HoraFinal: hrFinal,
+  //   PzVendidas: parseInt(pzVendidas),
+  //   PzDanadas: parseInt(pzDanadas),
+  //   PzDefectuosasFabrica: parseInt(pzDefectuosa),
+  //   VisitaDiaria: parseInt(visitasDiarias),
+  //   VisitasEfectivas: parseInt(visitasEfectivas),
+  //   imagen64: imagen64,
+  //   contentType: contentType,
+  //   usuarioRegistro: user.IdUsuario,
+  //   entMercancia: parseInt(entMercancia),
+  //   devolucion: parseInt(entDevolucion),
+  // };
+  // console.log(viaje);
+
   const getFinalRuta = async () => {
     console.log('IDVIAJE');
     console.log(idViaje);
     await axios
       .get(`${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`)
-      .then((result) => {
+      .then(result => {
         const res = JSON.parse(result.data)[0];
         console.log(res);
         setTotalPz(res.totalPz);
@@ -126,16 +157,17 @@ export function FinalizaViaje({route, navigation}) {
         setHrFinal(datetime);
       });
   };
-
   launchCamera = () => {
     let options = {
+      maxWidth: 1024,
+      maxHeight: 768,
       includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, (response) => {
+    ImagePicker.launchCamera(options, response => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -161,9 +193,9 @@ export function FinalizaViaje({route, navigation}) {
   return (
     <SafeAreaView>
       <View style={{paddingTop: 10}}>
+        {/* <View style={styles.checkboxContainer}> */}
         {/* entrada de mercancia por vehiculo */}
-        {/* <View style={styles.checkboxContainer}>
-                    <TextInput
+        {/* <TextInput
                         value={entMercancia}
                         onChangeText={setEntMerc}
                         keyboardType="numeric"
@@ -189,24 +221,17 @@ export function FinalizaViaje({route, navigation}) {
       </View>
       <View style={{paddingLeft: 70, paddingRight: 10, alignContent: 'center'}}>
         <View>
-          <Text style={{padding: 5}}>{totalPz} Total de piezas en carro</Text>
+          <Text style={{padding: 5}}>Total de piezas en carro: {totalPz} </Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>{vehiculo} No. Vehiculo</Text>
+          <Text style={{padding: 5}}>No. Vehiculo: {vehiculo} </Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>{kmInicial} KM inicial</Text>
+          <Text style={{padding: 5}}>KM inicial: {kmInicial} </Text>
         </View>
 
         <View style={{flexDirection: 'row'}}>
-          <TextInput
-            placeholder="0"
-            onChangeText={setKmFinal}
-            keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
-          />
           <Text style={{padding: 5}}>KM final</Text>
-
           <Icon
             name="camera"
             size={25}
@@ -214,37 +239,65 @@ export function FinalizaViaje({route, navigation}) {
             padding={20}
             onPress={() => launchCamera()}
           />
+          <TextInput
+            placeholder="0"
+            placeholderTextColor="black"
+            onChangeText={setKmFinal}
+            keyboardType="numeric"
+            style={{
+              height: 35,
+              borderWidth: 1,
+              minWidth: 20,
+              textAlign: 'center',
+              marginHorizontal: 10,
+            }}
+          />
         </View>
         <View>
-          <Text style={{padding: 5}}>{hrInicial} Hora de salida</Text>
+          <Text style={{padding: 5}}>Hora de salida: {hrInicial}</Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>{hrFinal} Hora de llegada</Text>
+          <Text style={{padding: 5}}>Hora de llegada: {hrFinal} </Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>{pzVendidas} Piezas vendidas</Text>
+          <Text style={{padding: 5}}>Piezas vendidas: {pzVendidas} </Text>
         </View>
 
         <View style={{flexDirection: 'row'}}>
+        <Text style={{padding: 5}}>Piezas dañadas</Text>
           <TextInput
             placeholder="0"
+            placeholderTextColor="black"
             onChangeText={setPzDanadas}
             keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
+            style={{
+              height: 35,
+              borderWidth: 1,
+              minWidth: 20,
+              textAlign: 'center',
+              marginHorizontal: 10,
+            }}
           />
-          <Text style={{padding: 5}}>Piezas dañadas</Text>
+          
         </View>
 
         <View style={{flexDirection: 'row'}}>
+          <Text style={{padding: 5}}>Defectuosas de fabrica</Text>
           <TextInput
             placeholder="0"
+            placeholderTextColor="black"
             onChangeText={setPzDefectuosa}
             keyboardType="numeric"
-            style={{height: 35, borderWidth: 1}}
+            style={{
+              height: 35,
+              borderWidth: 1,
+              minWidth: 20,
+              textAlign: 'center',
+              marginHorizontal: 10,
+            }}
           />
-          <Text style={{padding: 5}}>Defectuosas de fabrica</Text>
         </View>
 
         {/* <View>
@@ -261,9 +314,9 @@ export function FinalizaViaje({route, navigation}) {
                     </Text>
                 </View> */}
 
-        <View>
-          <Text style={{padding: 5}}>{promocion} Promocion</Text>
-        </View>
+        {/*<View>
+          <Text style={{padding: 5}}>Promocion: {promocion}</Text>
+        </View>*/}
       </View>
       <View style={styles.btnSubmitContainer}>
         <TouchableOpacity

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   AppState,
   View,
@@ -8,24 +8,24 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import {HeaderIconButton} from '../components/HeaderIconButton';
-import {AuthContext} from '../context/AuthContext';
-import {UserContext} from '../context/UserContext';
-import {PieChart} from 'react-native-chart-kit';
-import {Dimensions} from 'react-native';
+import { HeaderIconButton } from '../components/HeaderIconButton';
+import { AuthContext } from '../context/AuthContext';
+import { UserContext } from '../context/UserContext';
+import { PieChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
-import {FilledButton} from '../components/Button';
+import { FilledButton } from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
-import {BASE_URL} from '../config';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { BASE_URL } from '../config';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
-import {getDistance, getPreciseDistance} from 'geolib';
-import {EstatusContext} from '../context/EstatusContext';
-import {CommonActions} from '@react-navigation/native';
-import {IconButton} from '../components/IconButton';
+import { getDistance, getPreciseDistance } from 'geolib';
+import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions, useIsFocused } from '@react-navigation/native';
+import { IconButton } from '../components/IconButton';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -54,117 +54,162 @@ const customStyles = {
 };
 var labels = [];
 
-export function LandingScreen({route, navigation}) {
+export function LandingScreen({ route, navigation }) {
   const appState = useRef(AppState.currentState);
   const [isLoading, setIsLoading] = useState(true);
-  const {logout} = React.useContext(AuthContext);
+  const { logout } = React.useContext(AuthContext);
   const user = React.useContext(UserContext);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
   const [stepValue, setStep] = useState(0);
-  const {IdViaje} = route.params;
-  // const [stepCant, setStepCant] = useState(0);
-  // const [statusViaje, setStatusViaje] = useState(0);
-
+  const { IdViaje } = route.params;
   const [ruta, setRuta] = useState({});
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
-  const [location, setLocation] = useState({latitude: 0, longitude: 0});
+  const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
   const [cantTiendas, setCanTiendas] = useState(0);
   const [btnContinuar, setBtnContinuar] = useState(false);
+  const isFocused = useIsFocused();
+  const [inventario, setInventario] = useState(0);
 
+  useEffect(() => {
+    if (isFocused === true) {
+      if (ruta) {
+        GetTiendas();
+      }
+      if (estado == null) {
+        authFlow.getEstatus(1, user.IdUsuario);
+      }
+    }
+    return () => { };
+  }, [isFocused]);
   //Esta funcion valida la distancia entre el dispositivo y la tienda
   async function validateDistance(latTienda, longTienda, pos) {
     //si se presiona la tienda anterior()
     if (pos == estado.PasoActual - 1) {
-      Alert.alert('Reiniciar tienda', 'Estas seguro de reiniciar esta tienda', [
-        {text: 'Ok', onPress: () => resetUltimaTienda(pos)},
-        {text: 'Cancelar'},
-      ]);
-    } else {
-      await getLocation();
-
+      console.log(estado.ViajeTerminado);
+      if (estado.ViajeTerminado == 'false') {
+        Alert.alert(
+          'Reiniciar tienda',
+          'Estas seguro de reiniciar esta tienda',
+          [
+            { text: 'Ok', onPress: () => resetUltimaTienda(pos) },
+            { text: 'Cancelar' },
+          ],
+        );
+      } else {
+        Alert.alert(
+          'Ya terminaste tu viaje!',
+          'No es posible reiniciar la tienda cuando tu viaje ha terminado.',
+          [{ text: 'Entendido' }],
+        );
+      }
+    } else if (pos == estado.PasoActual) {
+      getLocation();
       var dis = getDistance(
-        {latitude: latTienda, longitude: longTienda},
-        {latitude: location.latitude, longitude: location.longitude},
+        { latitude: latTienda, longitude: longTienda },
+        { latitude: location.latitude, longitude: location.longitude },
       );
-
       console.log(tiendas);
       console.log([pos]);
 
       console.log(`idTienda>>>>>>>>>>>>: ${tiendas[pos].Id}`);
       console.log(`nombre>>>>>>>>>>>>: ${tiendas[pos].Nombre}`);
       console.log(`Distancia: ${dis}`);
-
-      {
-        dis <= parseInt(tiendas[pos].RadioGeocerca)
-          ? (authFlow.setEstatus(
+      if (dis <= parseInt(tiendas[pos].RadioGeocerca)) {
+        await authFlow.getEstatus(0, user.IdUsuario);
+        console.log('El modulo al que vamos es:');
+        console.log(estado.Modulo);
+        if (estado) {
+          if (
+            estado.Modulo &&
+            ['MostradorAntesServicio', 'LandingScreen'].includes(estado.Modulo)
+          ) {
+            await authFlow.setEstatus(
               8,
               tiendas[pos].Id,
               user.IdUsuario,
               estado.IdViaje,
-            ),
-            authFlow.getEstatus(0, user.IdUsuario),
+            );
             navigation.navigate('MostradorAntesServicio', {
               idTienda: tiendas[pos].Id,
               nombreTienda: tiendas[pos].Nombre,
               idViaje: estado.IdViaje,
-            }))
-          : Alert.alert(
-              'No puedes ingresar a esta tienda',
-              'Estas fuera de rango',
-              [{text: 'OK'}],
-            );
+            });
+          } else {
+            navigation.navigate(estado.Modulo, {
+              idTienda: tiendas[pos].Id,
+              nombreTienda: tiendas[pos].Nombre,
+              idViaje: estado.IdViaje,
+            });
+          }
+        }
+      }
+      //authFlow.getEstatus(0, user.IdUsuario),
+      else {
+        Alert.alert(
+          'No puedes ingresar a esta tienda',
+          'Estas fuera de rango',
+          [{ text: 'OK' }],
+        );
       }
     }
   }
-//FUNCION PARA RESETEAR LA ULTIMA VISITA
-  function resetUltimaTienda(pos) {
-    const params = {
-      IdTienda: tiendas[pos].IdTienda,
-    };
-    console.log(params);
-
+  //FUNCION PARA RESETEAR LA ULTIMA VISITA
+  async function resetUltimaTienda(pos) {
     try {
-      axios.post(`${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,{}).then((res) => {
-        const result = res.data;
-        // let jsontiendas = JSON.parse(result);
-        authFlow.getEstatus(0, user.IdUsuario)
-      });
+      console.log(`Reiniciando la tienda...`);
+      const reset = await axios.post(
+        `${BASE_URL}Tiendas/resetTienda?IdTienda=${tiendas[pos].IdTienda}&IdViaje=${estado.IdViaje}&IdUsuario=${user.IdUsuario}`,
+        {},
+      );
+      console.log(`Peticion resuelta...`);
+      if (reset) {
+        console.log(`Actualizando estado...`);
+        authFlow.getEstatus(0, user.IdUsuario);
+        console.log(`Estatus obtenido: ${estado}`);
+      }
     } catch (e) {
-      alert(`Ocurrio un error ${e}`);
+      alert(`Ocurrio un error al reiniciar la tienda ${e}`);
     }
-    setIsLoading(false);
+    return () => {
+      setIsLoading(false);
+    };
   }
 
   //Este useEffect se detona cuando el usuario sale y regresa a la APP.
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        appState.current = nextAppState;
-        console.log('modulo ');
-
-        //console.log(estado.Modulo);
-        if (
-          appState.current == 'active' &&
-          estado.Modulo != 'MostradorAntesServicio' &&
-          estado.Modulo != 'MostradorDespuesServicio'
-        ) {
-          console.log('si entro ');
-          GetRuta();
-          authFlow.getEstatus(0, user.IdUsuario);
-        }
-      }
-      //el estado actual sera el nuevo
-      console.log(estado);
-      appState.current = nextAppState;
-    });
-
     return () => {
-      subscription.remove();
+      const subscription = AppState.addEventListener(
+        'change',
+        (nextAppState) => {
+          if (
+            appState.current.match(/inactive|background/) &&
+            nextAppState === 'active'
+          ) {
+            appState.current = nextAppState;
+            console.log('modulo ');
+
+            //console.log(estado.Modulo);
+            if (
+              appState.current == 'active' &&
+              estado.Modulo != 'MostradorAntesServicio' &&
+              estado.Modulo != 'MostradorDespuesServicio'
+            ) {
+              console.log('si entro ');
+              GetRuta();
+              //authFlow.getEstatus(0, user.IdUsuario);
+            }
+          }
+          //el estado actual sera el nuevo
+          console.log(estado);
+          appState.current = nextAppState;
+        },
+      );
+
+      return () => {
+        subscription.remove();
+      };
     };
   }, []);
 
@@ -174,11 +219,11 @@ export function LandingScreen({route, navigation}) {
     // setStepCant();
     await GetRuta();
     await getLocation();
-
     console.log('ESTADO');
     console.log(estado);
     console.log('RUTA');
     console.log(ruta);
+
     // getStatusViaje();
     if (ruta) {
       GetTiendas(); // invoca al metodo de GetTiendas para obtener los datos
@@ -190,13 +235,12 @@ export function LandingScreen({route, navigation}) {
       }
       setIsLoading(false);
     }
+    return () => {
+      console.log('cargo');
+    };
   }, []);
 
   useEffect(() => {
-    // console.log('estado.PasoActual');
-    // console.log(estado.PasoActual);
-    // console.log('cantidad');
-    // console.log(cantTiendas);
     if (ruta) {
       GetTiendas(); // invoca al metodo de GetTiendas para obtener los datos
     } else {
@@ -213,32 +257,56 @@ export function LandingScreen({route, navigation}) {
       }
       setIsLoading(false);
     }
-    return () => {};
+    return () => { };
   }, [ruta]);
 
-  //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(async () => {
-    console.log('PANTALLA');
-    console.log('PASO ACTUAL');
-
-    //verifica que si ya se completo la ultima tienda
-    verificaCompletado();
-
-    if (estado.Modulo) {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: estado.Modulo,
-          params: {
-            idTienda: tiendas[stepValue].Id,
-            nombreTienda: tiendas[stepValue].Nombre,
-            idviaje: estado.IdViaje,
-          },
-        }),
-      );
+  useEffect(() => {
+    console.log('USE EFFECT DEL ESTADO');
+    console.log(estado);
+    console.log(`Tiendas: ${tiendas}`);
+    if (estado != null && tiendas.length > 0) {
+      if (stepValue != estado.PasoActual) {
+        setStep(estado.PasoActual);
+      }
+      verificaCompletado();
+      if (estado.Modulo && estado.Modulo != 'landingScreen') {
+        if (tiendas > 0) {
+          navigation.dispatch(
+            CommonActions.navigate({
+              name: estado.Modulo,
+              params: {
+                idTienda: tiendas[stepValue].Id,
+                nombreTienda: tiendas[stepValue].Nombre,
+                idviaje: estado.IdViaje,
+              },
+            }),
+          );
+        }
+      }
     }
+    return () => {
+      console.log('Terminando con el estado');
+    };
   }, [estado]);
-
+  //Este useEffect se detona cuando se cambia se completa/omite una tienda
+  //Construye la grafica y obtiene la ubicacion de la siguiente tienda
+  useEffect(() => {
+    chartConstructor();
+    //getLocation();
+    return () => {
+      console.log('Desmontado despues del cambio de paso');
+    };
+  }, [stepValue]);
+  //Este Est para la cantiendas
+  useEffect(() => {
+    chartConstructor();
+    if (cantTiendas > 0 && estado != null) {
+      verificaCompletado();
+    }
+    return () => {
+      console.log('Desmontado despues del cambio de cantidad de tiendas');
+    };
+  }, [cantTiendas]);
   function verificaCompletado() {
     setStep(estado.PasoActual);
     //verifica que si ya se completo la ultima tienda
@@ -255,20 +323,6 @@ export function LandingScreen({route, navigation}) {
       setBtnContinuar(false);
     }
   }
-
-  //Este useEffect se detona cuando se cambia se completa/omite una tienda
-  //Construye la grafica y obtiene la ubicacion de la siguiente tienda
-  useEffect(() => {
-    chartConstructor();
-    getLocation();
-  }, [stepValue]);
-
-  //Este Est para la cantiendas
-  useEffect(() => {
-    chartConstructor();
-    verificaCompletado();
-  }, [cantTiendas]);
-
   //constructor de la grafica
   function chartConstructor() {
     console.log(`Terminados: ${stepValue}`);
@@ -295,18 +349,18 @@ export function LandingScreen({route, navigation}) {
   }
 
   //obtiene ubicacion actual del dispositivo fisico
-  async function getLocation() {
+  function getLocation() {
     Geolocation.getCurrentPosition(
       (position) => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         // console.log(`lat:: ${latitude}`);
         // console.log(`long::${longitude}`);
-        setLocation({latitude, longitude});
+        setLocation({ latitude, longitude });
       },
       (error) => {
         console.log(error.code, error.message);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   }
   //fucnion para regresar las tiendas
@@ -316,7 +370,7 @@ export function LandingScreen({route, navigation}) {
       idRuta: ruta.Id, //agregar id usuario REAL
     };
     try {
-      axios.get(`${BASE_URL}rutas/GetTiendas`, {params}).then((res) => {
+      axios.get(`${BASE_URL}rutas/GetTiendas`, { params }).then((res) => {
         const result = res.data;
         let jsontiendas = JSON.parse(result);
 
@@ -343,7 +397,7 @@ export function LandingScreen({route, navigation}) {
 
     try {
       await axios
-        .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
+        .get(`${BASE_URL}rutas/GetRutaUsuario`, { params })
         .then((res) => {
           const result = res.data;
           let jsonRuta = JSON.parse(result);
@@ -371,35 +425,39 @@ export function LandingScreen({route, navigation}) {
       comentarios: 'NO VISITADO (OMITIDO)',
       visitada: false,
     };
-
     console.log(tiendas[stepValue]);
     console.log(form);
     try {
-      await axios
-        .post(`${BASE_URL}Tiendas/InsertaChecklistTienda`, form)
-        .then((res) => {
-          const result = JSON.parse(res.data);
-          console.log(result);
-          if (result[0].result == 'okay') {
-            authFlow.setEstatus(
-              6,
-              tiendas[stepValue].Id,
-              user.IdUsuario,
-              IdViaje,
-            ),
-              Alert.alert(
-                'Listo',
-                `Se ha omitido la tienda: ${tiendas[stepValue].Nombre}`,
-                [
-                  {
-                    text: 'Aceptar',
-                    onPress: () => authFlow.getEstatus(0, user.IdUsuario),
-                    // navigation.navigate('LandingScreen')
-                  },
-                ],
-              );
-          }
-        });
+      const res = await axios.post(
+        `${BASE_URL}Tiendas/InsertaChecklistTienda`,
+        form,
+      );
+      console.log(`El resultado de insertar el checklist: ${res}`);
+      if (res) {
+        const result = JSON.parse(res.data);
+        console.log(result);
+        if (result[0].result == 'okay') {
+          await authFlow.setEstatus(
+            6,
+            tiendas[stepValue].Id,
+            user.IdUsuario,
+            IdViaje,
+          );
+          authFlow.getEstatus(0, user.IdUsuario);
+
+          Alert.alert(
+            'Listo',
+            `Se ha omitido la tienda: ${tiendas[stepValue].Nombre}`,
+            [
+              {
+                text: 'Aceptar',
+                // onPress: () => authFlow.getEstatus(0, user.IdUsuario),
+                // navigation.navigate('LandingScreen')
+              },
+            ],
+          );
+        }
+      }
     } catch (error) {
       alert(error);
     }
@@ -436,15 +494,15 @@ export function LandingScreen({route, navigation}) {
                 onPress={() => {
                   navigation.navigate('addSite');
                 }}>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                   <Icon name={'plus-circle'} color="black"></Icon>
-                  <Text style={{color: 'blue'}}> Agregar tienda</Text>
+                  <Text style={{ color: 'blue' }}> Agregar tienda</Text>
                 </View>
               </TouchableOpacity>
             </View>
 
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View>
                 <Text>Bienvenido:</Text>
                 <Text>{user.name}!</Text>
@@ -473,11 +531,14 @@ export function LandingScreen({route, navigation}) {
                   />
                 </View>
                 <View>
-                  <Text>144 PIEZAS EN CARRO</Text>
+                  <Text>
+                    {estado.Articulos ? estado.Articulos : user.Articulos}{' '}
+                    PIEZAS EN CARRO
+                  </Text>
                 </View>
 
                 <View>
-                  <View style={{alignItems: 'flex-end', marginVertical: '5%'}}>
+                  <View style={{ alignItems: 'flex-end', marginVertical: '5%' }}>
                     <TouchableOpacity
                       style={styles.skipTienda}
                       onPress={() =>
@@ -491,18 +552,18 @@ export function LandingScreen({route, navigation}) {
                                 skipTienda();
                               },
                             },
-                            {text: 'cancelar'},
+                            { text: 'cancelar' },
                           ],
                         )
                       }>
-                      <Text style={{fontSize: 12, color: 'black'}}>
+                      <Text style={{ fontSize: 12, color: 'black' }}>
                         Omitir tienda{' '}
                         <Icon name="ban" size={15} color="red"></Icon>
                       </Text>
                     </TouchableOpacity>
                   </View>
                   <ScrollView horizontal={true}>
-                    <View style={{alignContent: 'center'}}>
+                    <View style={{ alignContent: 'center' }}>
                       <StepIndicator
                         customStyles={customStyles}
                         currentPosition={stepValue}
@@ -519,7 +580,7 @@ export function LandingScreen({route, navigation}) {
                     </View>
                   </ScrollView>
                 </View>
-                <View style={{flex: 1, padding: 0, margin: 0}}>
+                <View style={{ flex: 1, padding: 0, margin: 0 }}>
                   <SafeAreaView style={styles.containermap}>
                     <StatusBar barStyle="dark-content" />
                     {location && (
@@ -568,7 +629,7 @@ export function LandingScreen({route, navigation}) {
               </TouchableOpacity>
             ) : null}
           </View>
-          <View style={{flex: 1, padding: 0, margin: 0}}>
+          <View style={{ flex: 1, padding: 0, margin: 0 }}>
             {/* <SafeAreaView style={styles.containermap}>
               <StatusBar barStyle="dark-content" />
               {location && (

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,31 +9,47 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
-import {AuthContext} from '../context/AuthContext';
-import {BASE_URL} from '../config';
+import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../config';
 import * as ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {Alert} from 'react-native';
-import {UserContext} from '../context/UserContext';
-import {ScrollView} from 'react-native-gesture-handler';
-import {EstatusContext} from '../context/EstatusContext';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { Alert } from 'react-native';
+import { UserContext } from '../context/UserContext';
+import { ScrollView } from 'react-native-gesture-handler';
+import { EstatusContext } from '../context/EstatusContext';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Loading } from '../components/Loading';
 
-export default function CapturaKilometraje({navigation}) {
+export default function CapturaKilometraje({ route, navigation }) {
   const user = React.useContext(UserContext);
   const [ruta, setRuta] = useState([]);
   const [km, setkm] = useState(0);
   const [imagen, setImagen] = useState();
-  const [contentType, setContentType] = useState();
+  // const [contentType, setContentType] = useState();
   const [imagen64, setImagen64] = useState();
   const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
   const [IdRuta, setIdRuta] = useState(null);
   const [IdVehiculo, setIdVehiculo] = useState(user.idvehiculo);
   const [IdEstatus, setIdEstatus] = useState(null);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
+  const [loading, setLoading] = useState(false);
 
-  const {logout} = React.useContext(AuthContext);
+  const { logout } = React.useContext(AuthContext);
+
+  var objImg = {
+    uri: '',
+    base64: '',
+    contentType: 'img/jpeg'
+  }
+
+  console.log('route.params')
+  console.log(route)
+  if (route.params) {
+    objImg.uri = route.params.uri,
+      objImg.base64 = route.params.base64
+  }
+
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
     //valida que se ingrese km
@@ -41,18 +57,14 @@ export default function CapturaKilometraje({navigation}) {
       Alert.alert('Verifique los datos', 'Agregue un kilometraje inicial', [
         {
           text: 'Aceptar',
-          // onPress: () => (
-          //   authFlow.setEstatus(6, 26, 1, 20),
-          //   navigation.navigate('LandingScreen')
-          // ),
         },
       ]);
       return;
     }
     //valida que se adjunte imagen
-    if (!imagen64) {
+    if (objImg.base64 == '') {
       Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-        {text: 'Aceptar'},
+        { text: 'Aceptar' },
       ]);
       return;
     }
@@ -63,77 +75,38 @@ export default function CapturaKilometraje({navigation}) {
       IdUsuario: IdUsuario,
       KmInicial: km,
       IdEstatus: 1, //agregar
-      Imagen: imagen64,
-      contentType: contentType,
+      Imagen: objImg.base64,
+      contentType: objImg.contentType,
     };
-
-    console.log('RUTAA  ');
     // console.log(ruta.Id);
     try {
-      await axios
-        .post(`${BASE_URL}vehiculos/InsertaViaje`, viaje)
-        .then((res) => {
-          const result = JSON.parse(res.data);
-          console.log(res.data);
-          if (result[0].result == 'OK') {
-            authFlow.setEstatus(6, 0, user.IdUsuario, result[0].IdViaje),
-              authFlow.getEstatus(0, user.IdUsuario).then(
-                Alert.alert('Listo', 'Se ha iniciado correctamente', [
-                  {
-                    text: 'Continuar',
-                    onPress: () =>
-                      navigation.navigate('LandingScreen', {
-                        IdViaje: result[0].IdViaje,
-                      }),
-                  },
-                ]),
-              );
-          } else {
-            Alert.alert('Aviso', `${res.data}`, [
-              {
-                text: 'Aceptar',
-                // onPress: () => navigation.navigate('LandingScreen'),
-              },
-            ]);
-          }
-        });
+      const res = await axios.post(`${BASE_URL}vehiculos/InsertaViaje`, viaje);
+      if (res) {
+        const result = JSON.parse(res.data);
+        console.log('resultado de insertar viaje', res.data);
+        if (result[0].result == 'OK') {
+          //await authFlow.setEstatus(6, result[0].IdTienda, user.IdUsuario, result[0].IdViaje);
+          await authFlow.getEstatus(0, user.IdUsuario);
+          Alert.alert('Listo', 'Se ha iniciado correctamente', [
+            {
+              text: 'Continuar',
+              onPress: () => navigation.navigate('LandingScreen', { IdViaje: result[0].IdViaje, }),
+            },
+          ]);
+        } else {
+          Alert.alert('Aviso', `${res.data}`, [
+            {
+              text: 'Aceptar',
+              // onPress: () => navigation.navigate('LandingScreen'),
+            },
+          ]);
+        }
+      }
     } catch (error) {
+      console.log('Error al insertar el viaje.');
       alert(error);
     }
   }
-
-  launchCamera = () => {
-    let options = {
-      includeBase64: true,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-        fileName: 'imagenmuestra',
-      },
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      console.log('Response = ', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
-      } else {
-        const source = response.assets[0].uri;
-        const base64 = response.assets[0].base64;
-        const contentType = response.assets[0].type;
-
-        // console.log(JSON.stringify(response.assets[0].base64));
-        // console.log(JSON.stringify(response.assets[0].uri));
-        setImagen64(base64);
-        setImagen(source);
-        setContentType(contentType);
-      }
-    });
-  };
 
   //fucnion para regresar las tiendas
   const GetRuta = async () => {
@@ -144,7 +117,7 @@ export default function CapturaKilometraje({navigation}) {
 
     try {
       await axios
-        .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
+        .get(`${BASE_URL}rutas/GetRutaUsuario`, { params })
         .then((res) => {
           const result = res.data;
           let jsonRuta = JSON.parse(result);
@@ -157,11 +130,11 @@ export default function CapturaKilometraje({navigation}) {
           } else {
             Alert.alert(
               'Aviso',
-              'No tienes ruta asignada, contacta a un administrador',
+              'No tienes ruta asignada el día de hoy, contacta a un administrador',
               [
                 {
                   text: 'Aceptar',
-                  onPress: () => logout(),
+                  onPress: () => navigation.goBack(),
                 },
               ],
             );
@@ -172,29 +145,36 @@ export default function CapturaKilometraje({navigation}) {
     }
   };
 
-  useEffect(() => {
+  useEffect(async () => {
+    console.log('Validando permisos de ubicacion');
+    handleLocationPermission();
     console.log('GetRuta');
-    GetRuta();
+    await GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
-    return () => {};
+    return () => {
+
+    };
   }, []);
 
-  useEffect(async () => {
-    if (estado.result == 'true') {
-      authFlow.getEstatus(0, user.IdUsuario).then(
-        //navega a la ultima pantalla en que se enc ontraba el usuario
-        Alert.alert(
-          'Aviso',
-          `Su usuario tiene un viaje activo ${estado.IdViaje}`,
-          [
+  useEffect(() => {
+    if (estado != null) {
+      console.log('USE EFFECT DEL ESTADO');
+      console.log(estado);
+      if (estado.result == "true") {
+        setLoading(true);
+        authFlow.getEstatus(0, user.IdUsuario).then(() => {
+          setLoading(false);
+          //navega a la ultima pantalla en que se enc ontraba el usuario
+          Alert.alert('Aviso', `Su usuario tiene un viaje activo ${estado.IdViaje}`, [
             {
               text: 'Continuar',
-              onPress: () =>
-                navigation.navigate('LandingScreen', {IdViaje: estado.IdViaje}),
-            },
-          ],
-        ),
-      );
+              onPress: () => (navigation.navigate('LandingScreen', { IdViaje: estado.IdViaje }))
+            },]);
+        });
+      }
+      return () => {
+        console.log("termina el estado");
+      }
     }
   }, [estado]);
 
@@ -227,30 +207,28 @@ export default function CapturaKilometraje({navigation}) {
     }
   };
 
-  useEffect(() => {
-    handleLocationPermission();
-  }, []);
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>,
     });
   }, []);
 
   return (
     <SafeAreaView>
-      <ScrollView style={{height: '100%'}}>
+      <ScrollView style={{ height: '100%' }}>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Iniciar Ruta</Text>
           <Text>Placas: </Text>
           <Text style={styles.placasText}>{user.vehiculo}</Text>
+          <Text>Articulos:</Text>
+          <Text style={styles.placasText}>{user.articulos}</Text>
         </View>
-        <Text style={{paddingHorizontal: 20, fontWeight: 'bold'}}>
+        <Text style={{ paddingHorizontal: 20, fontWeight: 'bold' }}>
           Primer paso: Captura kilometraje inicial
         </Text>
 
-        <View style={{alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic'}}>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ fontStyle: 'italic' }}>
             <Icon name="info-circle" size={15} color="blue"></Icon> Captura los
             Siguientes datos antes de iniciar tu ruta
           </Text>
@@ -271,21 +249,22 @@ export default function CapturaKilometraje({navigation}) {
                 size={25}
                 color="gray"
                 padding={20}
-                onPress={() => launchCamera()}
+                // onPress={() => launchCamera()}
+                onPress={() => navigation.navigate('CameraScreen', { screen: 'CapturaKilometraje' })}
               />
             </TouchableOpacity>
           </View>
           <View>
-            <Text style={{fontStyle: 'italic', fontSize: 11}}>
+            <Text style={{ fontStyle: 'italic', fontSize: 11 }}>
               toma una foto del odómetro de tu vehiculo
             </Text>
           </View>
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Image
               resizeMode="cover"
               resizeMethod="scale"
-              style={{justifyContent: 'center', width: 100, height: 100}}
-              source={{uri: imagen}}></Image>
+              style={{ justifyContent: 'center', width: 100, height: 100 }}
+              source={{ uri: objImg.uri }}></Image>
           </View>
         </View>
         <View style={styles.btnSubmitContainer}>
@@ -299,6 +278,7 @@ export default function CapturaKilometraje({navigation}) {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Loading loading={loading} />
     </SafeAreaView>
   );
 }
