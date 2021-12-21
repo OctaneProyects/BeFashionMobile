@@ -175,7 +175,7 @@ export function SelectionMode({ navigation }) {
       console.log('Concluyendo el useEffect de los viajes sin empezar');
     }
   }, [unstartedTrips]);
-  useEffect(() => {
+  /*useEffect(() => {
     function ShowUnfinishedMessage() {
       if (Array.isArray(unfinishedTrips) && unfinishedTrips.length > 0) {
         Alert.alert(
@@ -191,7 +191,7 @@ export function SelectionMode({ navigation }) {
     }
    
     ShowUnfinishedMessage();
-  }, [unfinishedTrips])
+  }, [unfinishedTrips])*/
 
 
   React.useLayoutEffect(() => {
