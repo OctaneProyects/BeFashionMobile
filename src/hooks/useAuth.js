@@ -57,6 +57,7 @@ export function useAuth() {
 
             const usr = {
                 name: data.Nombre,
+                Usuario : data.Usuario,
                 IdUsuario: data.Id,
                 idvehiculo: data.Vehiculo.split('|')[0],
                 vehiculo: data.Vehiculo.split('|')[2],
