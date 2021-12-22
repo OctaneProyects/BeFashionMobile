@@ -117,6 +117,7 @@ export default function Formulario({route, navigation}) {
   useEffect(() => {
     entregas.length = 0;
     GetArticulos(idTienda);
+    console.log(`Este es el estado: ${estado}`);
 
     return () => {};
   }, []);
@@ -126,6 +127,7 @@ export default function Formulario({route, navigation}) {
     return () => {
       console.log('PANTALLA');
       console.log(estado.Modulo);
+      console.log(estado);
       if (estado.Modulo && estado.Modulo != 'FormularioEntrega') {
         //navega a la ultima pantalla en que se encontraba el usuario
         navigation.dispatch(
@@ -155,6 +157,7 @@ export default function Formulario({route, navigation}) {
           {/* <Text> idTienda: {idTienda}</Text> */}
           {/* <Text>nombreTienda: {nombreTienda}</Text> */}
           <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
 
         <Text style={{padding: 20, fontWeight: 'bold'}}>

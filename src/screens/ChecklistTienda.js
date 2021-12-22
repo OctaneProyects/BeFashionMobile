@@ -117,6 +117,7 @@ export default function TerminaViaje({route, navigation}) {
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{fontStyle: 'italic'}}>
           <Icon
