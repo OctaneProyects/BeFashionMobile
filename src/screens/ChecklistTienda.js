@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Keyboard,
+  TextComponent,
 } from 'react-native';
 import {
   ScrollView,
@@ -211,6 +212,11 @@ export default function TerminaViaje({route, navigation}) {
           tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         /> */}
+      </View>
+      <View>
+      <Text style={styles.label}>Boletos: {estado.Boletos} </Text>
+
+        
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
