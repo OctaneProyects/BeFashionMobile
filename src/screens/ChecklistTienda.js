@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Keyboard,
+  TextComponent,
 } from 'react-native';
 import {
   ScrollView,
@@ -15,24 +16,24 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext';
-import {CommonActions} from '@react-navigation/native';
+import { UserContext } from '../context/UserContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
-import {BASE_URL} from '../config';
+import { BASE_URL } from '../config';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-export default function TerminaViaje({route, navigation}) {
+export default function TerminaViaje({ route, navigation }) {
   const [isExhibido, setExhibido] = useState();
   const [isSurtido, setSurtido] = useState();
   const [cantNoFashion, setCantNoFashion] = useState('');
   const [isAlcance, setAlcance] = useState();
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda} = route.params;
+  const { idTienda, nombreTienda } = route.params;
   //AuthFlow
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
 
   const [openExibido, setOpenExibido] = useState(false);
   const [openAlcance, setOpenAlcance] = useState(false);
@@ -105,21 +106,21 @@ export default function TerminaViaje({route, navigation}) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+        <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>
       ),
     });
   }, []);
 
   return (
     <ScrollView estedScrollEnabled={true} style={styles.container}>
-      <View style={{alignItems: 'center', padding: 10}}>
+      <View style={{ alignItems: 'center', padding: 10 }}>
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
-        <Text style={{fontStyle: 'italic'}}>
+        <Text style={{ fontStyle: 'italic' }}>
           <Icon
             name="info-circle"
             type="font-awesome-5"
@@ -128,13 +129,13 @@ export default function TerminaViaje({route, navigation}) {
           Completa el checklist para finalizar esta Visita
         </Text>
       </View>
-      <Text style={{marginHorizontal: 10}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Exh, colocado al alcance publico
       </Text>
       <View
         style={
-          Platform.OS === 'ios' ? {zIndex: 300, padding: 10} : {width: '20%'}
-        }>
+          Platform.OS === 'ios' ? { zIndex: 300, padding: 10 } : { width: '20%' }
+          , styles.dropdown}>
         <DropDownPicker
           placeholder="---"
           value={isExhibido}
@@ -143,18 +144,18 @@ export default function TerminaViaje({route, navigation}) {
           setValue={setExhibido}
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={300}
         />
       </View>
 
-      <Text style={{marginHorizontal: 10}}>No permitido surtir al 100%</Text>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>No permitido surtir al 100%</Text>
       <View
         style={
-          Platform.OS === 'ios' ? {zIndex: 250, padding: 10} : {width: '20%'}
-        }>
+          Platform.OS === 'ios' ? { zIndex: 250, padding: 10 } : { width: '20%' }
+          , styles.dropdown}>
         <DropDownPicker
           placeholder="---"
           value={isSurtido}
@@ -164,17 +165,17 @@ export default function TerminaViaje({route, navigation}) {
           position="relative"
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={250}
         />
       </View>
 
-      <Text style={{marginHorizontal: 10}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Lentes no fashion en el exh Cantidad
       </Text>
-      <View style={{padding: 10}}>
+      <View style={{ padding: 10 }}>
         <TextInput
           keyboardType="numeric"
           //textAlign="center"
@@ -184,13 +185,13 @@ export default function TerminaViaje({route, navigation}) {
           onChangeText={text => setCantNoFashion(text)}
         />
       </View>
-      <Text style={{marginHorizontal: 10}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Lentes al alcance para el cliente S/N
       </Text>
       <View
         style={
-          Platform.OS === 'ios' ? {zIndex: 200, margin: 10} : {width: '20%'}
-        }>
+          Platform.OS === 'ios' ? { zIndex: 200, margin: 10 } : { width: '20%' }
+          , styles.dropdown}>
         <DropDownPicker
           placeholder="---"
           value={isAlcance}
@@ -199,8 +200,8 @@ export default function TerminaViaje({route, navigation}) {
           setOpen={setOpenAlcance}
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={200}
         />
@@ -212,6 +213,9 @@ export default function TerminaViaje({route, navigation}) {
           tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         /> */}
+      </View>
+      <View>
+        <Text style={{ margin: 10, fontSize: 18, fontWeight: 'bold' }}>Boletos: {estado.Boletos} </Text>
       </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -265,7 +269,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: 'white',
-
     borderColor: 'gray',
     borderWidth: 2,
     fontSize: 15,
@@ -294,10 +297,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
   },
+  dropdown: {
+    marginHorizontal: 10,
+  },
   ipCantNoFashion: {
     borderColor: 'gray',
     borderWidth: 2,
     fontSize: 18,
     height: 35,
+    paddingVertical: 1,
   },
 });
