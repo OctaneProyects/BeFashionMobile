@@ -214,7 +214,7 @@ export default function TerminaViaje({route, navigation}) {
         /> */}
       </View>
       <View>
-      <Text style={styles.label}>Boletos: {estado.Boletos} </Text>
+      <Text style={{margin: 10, fontSize: 18,fontWeight: 'bold' }}>Boletos: {estado.Boletos} </Text>
 
         
       </View>
