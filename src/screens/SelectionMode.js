@@ -185,6 +185,7 @@ export function SelectionMode({ navigation }) {
             {
               text: 'Aceptar',
               onPress: () => { console.log('cerrando viaje')}
+              //REVISENLO
             }
           ]);
       }
