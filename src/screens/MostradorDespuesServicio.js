@@ -144,6 +144,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con las siguientes caracteristicas
