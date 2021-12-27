@@ -133,9 +133,9 @@ export default function TerminaViaje({ route, navigation }) {
         Exh, colocado al alcance publico
       </Text>
       <View
-        style={
-          Platform.OS === 'ios' ? { zIndex: 300, padding: 10 } : { width: '20%' }
-          , styles.dropdown}>
+        style={[
+          Platform.OS === 'ios' ? { zIndex: 3000, zIndexInverse:1000} : { width: '20%' }
+          , styles.dropdown]}>
         <DropDownPicker
           placeholder="---"
           value={isExhibido}
@@ -153,9 +153,9 @@ export default function TerminaViaje({ route, navigation }) {
 
       <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>No permitido surtir al 100%</Text>
       <View
-        style={
-          Platform.OS === 'ios' ? { zIndex: 250, padding: 10 } : { width: '20%' }
-          , styles.dropdown}>
+        style={[
+          Platform.OS === 'ios' ? { zIndex: 2000, zIndexInverse:2000} : { width: '20%' }
+          , styles.dropdown]}>
         <DropDownPicker
           placeholder="---"
           value={isSurtido}
@@ -189,9 +189,9 @@ export default function TerminaViaje({ route, navigation }) {
         Lentes al alcance para el cliente S/N
       </Text>
       <View
-        style={
-          Platform.OS === 'ios' ? { zIndex: 200, margin: 10 } : { width: '20%' }
-          , styles.dropdown}>
+        style={[
+          Platform.OS === 'ios' ? { zIndex: 1000, zIndexInverse:3000, margin: 10 } : { width: '20%' }
+          , styles.dropdown]}>
         <DropDownPicker
           placeholder="---"
           value={isAlcance}
