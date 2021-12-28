@@ -150,7 +150,6 @@ export default function TerminaViaje({ route, navigation }) {
           zIndex={300}
         />
       </View>
-
       <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>No permitido surtir al 100%</Text>
       <View
         style={[
@@ -171,7 +170,6 @@ export default function TerminaViaje({ route, navigation }) {
           zIndex={250}
         />
       </View>
-
       <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Lentes no fashion en el exh Cantidad
       </Text>

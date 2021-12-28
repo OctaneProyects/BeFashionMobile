@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   SafeAreaView,
@@ -11,19 +11,19 @@ import {
 } from 'react-native';
 
 import axios from 'axios';
-import {BASE_URL} from '../config';
+import { BASE_URL } from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
-import {EstatusContext} from '../context/EstatusContext';
+import { EstatusContext } from '../context/EstatusContext';
 
-export function FinalizaViaje({route, navigation}) {
+export function FinalizaViaje({ route, navigation }) {
   const user = React.useContext(UserContext);
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
 
   //variable id vijae por parametros
-  const {idViaje} = route.params;
+  const { idViaje } = route.params;
   // const [idViaje, setIdViaje] = useState(1)
   //const [entMercancia, setEntMerc] = useState(0);
   const [entDevolucion, setEntDev] = useState(0);
@@ -54,7 +54,7 @@ export function FinalizaViaje({route, navigation}) {
     }
     if (!imagen64) {
       Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-        {text: 'Aceptar'},
+        { text: 'Aceptar' },
       ]);
       return;
     }
@@ -178,7 +178,7 @@ export function FinalizaViaje({route, navigation}) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = {uri: response.uri};
+        const source = { uri: response.uri };
         console.log('response', JSON.stringify(response));
 
         setImagen64(response.assets[0].base64);
@@ -192,19 +192,16 @@ export function FinalizaViaje({route, navigation}) {
   }, []);
   return (
     <SafeAreaView>
-      <View style={{paddingTop: 10}}>
-        {/* <View style={styles.checkboxContainer}> */}
-        {/* entrada de mercancia por vehiculo */}
-        {/* <TextInput
-                        value={entMercancia}
-                        onChangeText={setEntMerc}
-                        keyboardType="numeric"
-                        style={{ borderWidth: 2, borderColor: 'black', width: 70, height: 35 }}
-                    />
-                    <Text style={styles.label}>Entrada de mercancia por vehiculo </Text>
-                </View> */}
+      <View style={styles.header}>
+        <Text style={[styles.headerText]}>Finalización de ruta</Text>
+        <Text style={[styles.headerText]}>Ruta: </Text>
+        <Text style={[styles.headerText]}>Fecha: </Text>
+      </View>
+      <View style={{ marginHorizontal: 10, paddingTop: 10 }}>
         <View style={styles.checkboxContainer}>
           {/* Devoluciones */}
+
+          <Text style={styles.label}>Entrada por devolucion:</Text>
           <TextInput
             value={entDevolucion}
             onChangeText={setEntDev}
@@ -213,25 +210,24 @@ export function FinalizaViaje({route, navigation}) {
               borderWidth: 2,
               borderColor: 'black',
               width: 70,
-              height: 35,
+              maxHeight: 40,
             }}
           />
-          <Text style={styles.label}>Entrada por devolucion</Text>
         </View>
       </View>
-      <View style={{paddingLeft: 70, paddingRight: 10, alignContent: 'center'}}>
+      <View style={{ paddingLeft: 70, paddingRight: 10, alignContent: 'center' }}>
         <View>
-          <Text style={{padding: 5}}>Total de piezas en carro: {totalPz} </Text>
+          <Text style={{ padding: 5 }}>Total de piezas en carro: {totalPz} </Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>No. Vehiculo: {vehiculo} </Text>
+          <Text style={{ padding: 5 }}>No. Vehiculo: {vehiculo} </Text>
         </View>
         <View>
-          <Text style={{padding: 5}}>KM inicial: {kmInicial} </Text>
+          <Text style={{ padding: 5 }}>KM inicial: {kmInicial} </Text>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
-          <Text style={{padding: 5}}>KM final</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ padding: 5 }}>KM final</Text>
           <Icon
             name="camera"
             size={25}
@@ -254,19 +250,19 @@ export function FinalizaViaje({route, navigation}) {
           />
         </View>
         <View>
-          <Text style={{padding: 5}}>Hora de salida: {hrInicial}</Text>
+          <Text style={{ padding: 5 }}>Hora de salida: {hrInicial}</Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>Hora de llegada: {hrFinal} </Text>
+          <Text style={{ padding: 5 }}>Hora de llegada: {hrFinal} </Text>
         </View>
 
         <View>
-          <Text style={{padding: 5}}>Piezas vendidas: {pzVendidas} </Text>
+          <Text style={{ padding: 5 }}>Piezas vendidas: {pzVendidas} </Text>
         </View>
 
-        <View style={{flexDirection: 'row'}}>
-        <Text style={{padding: 5}}>Piezas dañadas</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ padding: 5 }}>Piezas dañadas</Text>
           <TextInput
             placeholder="0"
             placeholderTextColor="black"
@@ -280,11 +276,11 @@ export function FinalizaViaje({route, navigation}) {
               marginHorizontal: 10,
             }}
           />
-          
+
         </View>
 
-        <View style={{flexDirection: 'row'}}>
-          <Text style={{padding: 5}}>Defectuosas de fabrica</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ padding: 5 }}>Defectuosas de fabrica</Text>
           <TextInput
             placeholder="0"
             placeholderTextColor="black"
@@ -368,5 +364,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 24,
   },
 });

@@ -15,7 +15,7 @@ export function SelectionMode({ navigation }) {
   const [unstartedTrips, setUnstartedTrips] = useState([]);
   const [unfinishedTrips, setUnfinishedTrips] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     const handleLocationPermission = async () => {
       let permissionCheck = '';
       if (Platform.OS === 'ios') {
@@ -74,7 +74,7 @@ export function SelectionMode({ navigation }) {
         console.warn(err);
       }
     };
-    function getPendingTrips(opc, usr) {
+    async function getPendingTrips(opc, usr) {
       try {
         let params = {
           opc: opc,
@@ -102,11 +102,11 @@ export function SelectionMode({ navigation }) {
     }
     if (isFocused === true) {
       console.log('Validando permisos de camara');
-      requestCameraPermission();
+      await requestCameraPermission();
       console.log('Validando permisos de ubicacion');
-      handleLocationPermission();
-      getPendingTrips(1, user.Usuario);
-      getPendingTrips(2, user.Usuario);
+      await handleLocationPermission();
+      //await getPendingTrips(1, user.Usuario);
+      await getPendingTrips(2, user.Usuario);
 
     }
 
@@ -184,14 +184,19 @@ export function SelectionMode({ navigation }) {
           [
             {
               text: 'Aceptar',
-              onPress: () => { console.log('cerrando viaje')}
+              onPress: () => { 
+                //console.log('cerrando viaje')
+                navigation.navigate('FinalizarRuta', {
+                  idViaje: unfinishedTrips[0].Viaje,
+                });
+              }
             }
           ]);
       }
     }
    
     ShowUnfinishedMessage();
-  }, [unfinishedTrips])
+  }, [unfinishedTrips]);
 
 
   React.useLayoutEffect(() => {
