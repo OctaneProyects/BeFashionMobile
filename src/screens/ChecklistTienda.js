@@ -22,6 +22,7 @@ import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import DropDownPicker from 'react-native-dropdown-picker';
+import {getDeviceDate} from '../hooks/common'
 
 export default function TerminaViaje({ route, navigation }) {
   const [isExhibido, setExhibido] = useState();
@@ -40,6 +41,9 @@ export default function TerminaViaje({ route, navigation }) {
   const [openSurtido, setOpenSurtido] = useState(false);
 
   async function terminaTienda() {
+
+    var fechaDispositivo= getDeviceDate();
+
     if (cantNoFashion < 0) {
       alert('Cantidad de lentes no fashion invalida');
       //console.log(estado);
@@ -55,6 +59,7 @@ export default function TerminaViaje({ route, navigation }) {
         isAlcance: isAlcance,
         comentarios: comentarios,
         visitada: true,
+        fechaDispositivo: fechaDispositivo // agregado para fecha del dispositivo
       };
       try {
         let res = await axios.post(

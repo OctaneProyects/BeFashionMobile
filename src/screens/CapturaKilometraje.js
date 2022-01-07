@@ -19,6 +19,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { EstatusContext } from '../context/EstatusContext';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { Loading } from '../components/Loading';
+import {getDeviceDate} from '../hooks/common'
+
 
 export default function CapturaKilometraje({ route, navigation }) {
   const user = React.useContext(UserContext);
@@ -36,6 +38,7 @@ export default function CapturaKilometraje({ route, navigation }) {
   const [loading, setLoading] = useState(false);
 
   const { logout } = React.useContext(AuthContext);
+//varibale para almacenar la fecha del dispositivo
 
   var objImg = {
     uri: '',
@@ -50,8 +53,14 @@ export default function CapturaKilometraje({ route, navigation }) {
       objImg.base64 = route.params.base64
   }
 
+
+
+  
   //asi se envia para POST (server recibe modelo)
   async function insertkm(km, imagen64, idvehiculo, IdUsuario, navigation) {
+    //obtener fecha del dispositivo
+    var fechaDispositivo = getDeviceDate()
+
     //valida que se ingrese km
     if (!km) {
       Alert.alert('Verifique los datos', 'Agregue un kilometraje inicial', [
@@ -77,6 +86,7 @@ export default function CapturaKilometraje({ route, navigation }) {
       IdEstatus: 1, //agregar
       Imagen: objImg.base64,
       contentType: objImg.contentType,
+      fechaDispositivo: fechaDispositivo //agregada para fecha del dispositivo
     };
     // console.log(ruta.Id);
     try {

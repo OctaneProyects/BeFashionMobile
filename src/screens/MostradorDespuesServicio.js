@@ -18,6 +18,7 @@ import {BASE_URL} from '../config';
 import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common'
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
@@ -70,6 +71,7 @@ export function MostradorDespuesServicio({route, navigation}) {
   };
 
   async function guardarImagen() {
+    var fechaDispositivo = getDeviceDate();
     let img = {
       img: [
         {
@@ -79,6 +81,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo //agregado para fecha del dispositivo
+
         },
         {
           idTipo: 5,
@@ -87,6 +91,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo //agregado para fecha del dispositivo
+
         },
       ],
     };

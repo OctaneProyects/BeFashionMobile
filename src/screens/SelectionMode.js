@@ -13,6 +13,7 @@ import axios from 'axios';
 import {BASE_URL} from '../config';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
+import {getDeviceDate} from '../hooks/common'
 
 export function SelectionMode({navigation}) {
   const isFocused = useIsFocused();
@@ -158,26 +159,24 @@ export function SelectionMode({navigation}) {
       );
     }
     function closeUnstartedTrips() {
+      var fechaDispositivo = getDeviceDate();
       try {
-        let form = {
-          usr: user.Usuario,
-        };
         axios
           .post(
-            `${BASE_URL}viajes/InsertViajesNoRealizados?usr=${user.Usuario}`,
+            `${BASE_URL}viajes/InsertViajesNoRealizados?usr=${user.Usuario}&fechaDispositivo=${fechaDispositivo}`,
             {},
           )
           .then((result) => {
             let res = result.data;
             let json = JSON.parse(res);
             // if (res && res[0].RES === 'success') {
-            if (json[0].RES ==='success') {
+            if (json[0].RES === 'success') {
               setUnstartedTrips([]);
               Alert.alert(json[0].TITLE, json[0].MENSAJE, [
                 {
                   text: 'Aceptar',
                   onPress: () => {
-                    getPendingTrips(2,user.Usuario);
+                    getPendingTrips(2, user.Usuario);
                   },
                 },
               ]);

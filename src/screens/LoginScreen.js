@@ -2,12 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, Image, Alert } from 'react-native';
 import { FilledButton } from '../components/Button';
 import { Error } from '../components/Error';
-import { Heading } from '../components/Heading';
 import { Input } from '../components/Input';
-import { TextButton } from '../components/TextButton';
 import { AuthContext } from '../context/AuthContext';
 import { Loading } from '../components/Loading';
-import { UserContext } from '../context/UserContext';
 
 export function LoginScreen({ navigation }) {
   const { login } = useContext(AuthContext);

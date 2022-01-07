@@ -20,6 +20,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AuthContext} from '../context/AuthContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {useFocusEffect} from '@react-navigation/core';
+import {getDeviceDate} from '../hooks/common'
 
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -44,6 +45,8 @@ export function AgregarUbicacion({navigation}) {
     latitudeDelta: 0.001,
     longitudeDelta: 0.0,
   });
+
+
   const _mapView = React.createRef();
   useEffect(() => {
     const _watchId = Geolocation.watchPosition(
@@ -152,6 +155,8 @@ export function AgregarUbicacion({navigation}) {
     }
   };
   const insertTienda = async () => {
+    //obtener fecha del dispositivo
+    var deviceDate=getDeviceDate();
     if (
       cliente == null ||
       sucursal == null ||
@@ -173,7 +178,7 @@ export function AgregarUbicacion({navigation}) {
             user.IdUsuario
           }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${
             estado.PasoActual + 1
-          }`,
+          }&deviceDate=${deviceDate}`,
           {},
         )
         .then((res) => {

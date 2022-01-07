@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { UserContext } from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import { EstatusContext } from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common'
 
 export function FinalizaViaje({ route, navigation }) {
   const user = React.useContext(UserContext);
@@ -47,6 +48,7 @@ export function FinalizaViaje({ route, navigation }) {
   const [promocion, setPromocion] = useState(0);
 
   const insertFinalaViaje = async () => {
+    var fechaDispositivo = getDeviceDate();
     console.log(`entra, KmFinal`, kmFinal);
     if (parseInt(kmFinal) <= 0) {
       Alert.alert('Verifique los datos', 'Agregue un kilometraje final');
@@ -76,6 +78,7 @@ export function FinalizaViaje({ route, navigation }) {
       usuarioRegistro: user.IdUsuario,
       // entMercancia: parseInt(entMercancia),
       devolucion: parseInt(entDevolucion),
+      fechaDispositivo: fechaDispositivo //agregada fecha del dispositivo
     };
     console.log(viaje);
 
@@ -100,32 +103,7 @@ export function FinalizaViaje({ route, navigation }) {
     }
     console.log(res);
   };
-  // if (!imagen64) {
-  //   Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-  //     {text: 'Aceptar'},
-  //   ]);
-  //   return;
-  // }
-
-  // const viaje = {
-  //   IdViaje: parseInt(idViaje),
-  //   InventarioFinalPzs: parseInt(totalPz),
-  //   KmInicial: parseInt(kmInicial),
-  //   KMFinal: parseInt(kmFinal),
-  //   HoraInicial: hrInicial,
-  //   HoraFinal: hrFinal,
-  //   PzVendidas: parseInt(pzVendidas),
-  //   PzDanadas: parseInt(pzDanadas),
-  //   PzDefectuosasFabrica: parseInt(pzDefectuosa),
-  //   VisitaDiaria: parseInt(visitasDiarias),
-  //   VisitasEfectivas: parseInt(visitasEfectivas),
-  //   imagen64: imagen64,
-  //   contentType: contentType,
-  //   usuarioRegistro: user.IdUsuario,
-  //   entMercancia: parseInt(entMercancia),
-  //   devolucion: parseInt(entDevolucion),
-  // };
-  // console.log(viaje);
+ 
 
   const getFinalRuta = async () => {
     console.log('IDVIAJE');

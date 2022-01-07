@@ -18,6 +18,7 @@ import {UserContext} from '../context/UserContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {LentesHandler} from '../components/LentesHandler';
 import {CommonActions} from '@react-navigation/native';
+import {getDeviceDate} from '../hooks/common'
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
@@ -31,6 +32,7 @@ export default function Formulario({route, navigation}) {
 
   //asi se envia para POST (server recibe modelo)
   async function insertFormulario(navigation, cant) {
+    var fechaDispositivo=getDeviceDate();
     if (cant <= 0) {
       Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
         {text: 'Aceptar'},
@@ -44,6 +46,7 @@ export default function Formulario({route, navigation}) {
       idViaje: estado.IdViaje, //agregar
       cant: cant,
       idUsuario: user.IdUsuario,
+      fechaDispositivo: fechaDispositivo, // agregado para la fecha del dispositivo
     };
 
     console.log(formulario);
@@ -103,7 +106,7 @@ export default function Formulario({route, navigation}) {
     try {
       await axios
         .get(`${BASE_URL}Articulos/GetArticulos`, {params})
-        .then(res => {
+        .then((res) => {
           const result = res.data;
           let jsonArticulos = JSON.parse(result);
 

@@ -17,6 +17,7 @@ import axios from 'axios';
 import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
+import {getDeviceDate} from '../hooks/common'
 
 export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
@@ -28,6 +29,8 @@ export function MostradorAntesServicio({route, navigation}) {
   const {authFlow} = React.useContext(EstatusContext);
   const {idTienda, nombreTienda, idViaje} = route.params;
   const user = React.useContext(UserContext);
+
+
 
   const launchCamera = () => {
     let options = {
@@ -63,6 +66,7 @@ export function MostradorAntesServicio({route, navigation}) {
   };
 
   const guardarImagen = async () => {
+    var fechaDispositivo = getDeviceDate();
     let img = {
       idTipo: 3,
       contenido: file64,
@@ -70,6 +74,7 @@ export function MostradorAntesServicio({route, navigation}) {
       UsuarioRegistro: user.IdUsuario,
       idViaje: estado.IdViaje,
       idTienda: estado.IdTienda,
+      fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
     };
 
     try {

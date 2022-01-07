@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {UserContext} from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import {EstatusContext} from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common'
 
 export function FinalizaViajeDirecta({route, navigation}) {
   const contador = 0;
@@ -46,6 +47,7 @@ export function FinalizaViajeDirecta({route, navigation}) {
   const [promocion, setPromocion] = useState(0);
 
   const insertFinalaViaje = async () => {
+    var fechaDispositivo = getDeviceDate();
     console.log(`entra, KmFinal`, kmFinal);
     if (parseInt(kmFinal) <= 0) {
       Alert.alert('Verifique los datos', 'Agregue un kilometraje final');
@@ -75,9 +77,10 @@ export function FinalizaViajeDirecta({route, navigation}) {
       usuarioRegistro: user.IdUsuario,
       // entMercancia: parseInt(entMercancia),
       devolucion: parseInt(entDevolucion),
+      fechaDispositivo: fechaDispositivo // agregada fecha del dispositivo
     };
-    console.log('viaje')
-    console.log(viaje)
+    console.log('viaje');
+    console.log(viaje);
 
     if (forms.unfinishedForms.length > 0) {
       console.log;
