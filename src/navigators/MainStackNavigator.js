@@ -5,6 +5,7 @@ import CapturaKilometraje from '../screens/CapturaKilometraje';
 import FormularioEntrega from '../screens/FormularioEntrega';
 import ChecklistTienda from '../screens/ChecklistTienda';
 import {FinalizaViaje} from '../screens/FinalizaRuta';
+import {FinalizaViajeDirecta} from '../screens/FinalizaRutaDirecta';
 import {MostradorAntesServicio} from '../screens/MostradorAntesServicio';
 import {MostradorDespuesServicio} from '../screens/MostradorDespuesServicio';
 import { SelectionMode } from '../screens/SelectionMode';
@@ -164,6 +165,19 @@ export function MainStackNavigator() {
         component={CameraScreen}
         options={{
           title: 'camera',
+          headerLeft: () => null,
+          headerStyle: {backgroundColor: 'rgb(27,67,136)'},
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+        }}></MainStack.Screen>
+
+<MainStack.Screen
+        name={'FinalizarRutaDirecta'}
+        component={FinalizaViajeDirecta}
+        options={{
+          title: 'Be Fashion Eyewear',
           headerLeft: () => null,
           headerStyle: {backgroundColor: 'rgb(27,67,136)'},
           headerTintColor: '#fff',
