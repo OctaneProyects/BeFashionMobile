@@ -59,7 +59,8 @@ export default function TerminaViaje({ route, navigation }) {
         isAlcance: isAlcance,
         comentarios: comentarios,
         visitada: true,
-        fechaDispositivo: fechaDispositivo // agregado para fecha del dispositivo
+        fechaDispositivo: fechaDispositivo, // agregado para fecha del dispositivo
+        idVisita: estado.Visita
       };
       try {
         let res = await axios.post(

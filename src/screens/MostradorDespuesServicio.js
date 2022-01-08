@@ -81,7 +81,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
-          fechaDispositivo: fechaDispositivo //agregado para fecha del dispositivo
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita
 
         },
         {
@@ -91,8 +92,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
-          fechaDispositivo: fechaDispositivo //agregado para fecha del dispositivo
-
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita
         },
       ],
     };

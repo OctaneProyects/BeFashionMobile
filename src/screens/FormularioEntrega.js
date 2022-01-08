@@ -47,6 +47,7 @@ export default function Formulario({route, navigation}) {
       cant: cant,
       idUsuario: user.IdUsuario,
       fechaDispositivo: fechaDispositivo, // agregado para la fecha del dispositivo
+      idVisita: estado.Visita
     };
 
     console.log(formulario);

@@ -19,8 +19,8 @@ export function SelectionMode({navigation}) {
   const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
   const [havePendingTrips, setPendingTrips] = useState(true);
-  const [unstartedTrips, setUnstartedTrips] = useState([]);
-  const [unfinishedForms, setUnfinishedForms] = useState([]);
+  const [unstartedTrips, setUnstartedTrips] = useState(null);
+  const [unfinishedForms, setUnfinishedForms] = useState(null);
 
   const getPendingTrips = async (opc, usr) => {
     try {
@@ -34,6 +34,9 @@ export function SelectionMode({navigation}) {
           let res = JSON.parse(result.data);
           switch (opc) {
             case 1:
+              if(Array.isArray(res) && res.length <=0){
+                getPendingTrips(2,user.Usuario)
+              }
               setUnstartedTrips(res);
               break;
             case 2:
@@ -111,6 +114,7 @@ export function SelectionMode({navigation}) {
       await handleLocationPermission();
       //obtiene viajes pendientes y sin terminar
       await getPendingTrips(1, user.Usuario);
+  
     }
 
     return () => {

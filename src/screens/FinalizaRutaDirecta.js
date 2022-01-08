@@ -98,9 +98,9 @@ export function FinalizaViajeDirecta({route, navigation}) {
 
     console.log('result');
     console.log(result.data);
-    // const res = JSON.parse(result.data);
-    // if (res[0].MENSAJE == 'ok') {
-    if (result.data == 'ok') {
+    const res = JSON.parse(result.data);
+    if (res[0].MENSAJE == 'ok') {
+    // if (result.data == 'ok') {
       Alert.alert('Listo!', 'Haz terminado esta ruta', [
         {
           text: 'Terminar',
