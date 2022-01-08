@@ -156,7 +156,7 @@ export function AgregarUbicacion({navigation}) {
   };
   const insertTienda = async () => {
     //obtener fecha del dispositivo
-    var deviceDate=getDeviceDate();
+    var fechaDispositivo=getDeviceDate();
     if (
       cliente == null ||
       sucursal == null ||
@@ -178,7 +178,7 @@ export function AgregarUbicacion({navigation}) {
             user.IdUsuario
           }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${
             estado.PasoActual + 1
-          }&deviceDate=${deviceDate}`,
+          }&fechaDispositivo=${fechaDispositivo}`,
           {},
         )
         .then((res) => {
