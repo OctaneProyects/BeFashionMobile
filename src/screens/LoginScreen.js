@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, View, Image, Alert } from 'react-native';
+import { StyleSheet, View, Image, Alert , Text} from 'react-native';
 import { FilledButton } from '../components/Button';
 import { Error } from '../components/Error';
 import { Input } from '../components/Input';
@@ -52,7 +52,9 @@ export function LoginScreen({ navigation }) {
           }
         }}
       />
-
+      <Text>
+        V 1.4.2
+      </Text>
       <Loading loading={loading} />
     </View>
   );

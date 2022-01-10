@@ -14,6 +14,7 @@ import {BASE_URL} from '../config';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common'
+import { Loading } from '../components/Loading';
 
 export function SelectionMode({navigation}) {
   const isFocused = useIsFocused();
@@ -21,8 +22,10 @@ export function SelectionMode({navigation}) {
   const [havePendingTrips, setPendingTrips] = useState(true);
   const [unstartedTrips, setUnstartedTrips] = useState(null);
   const [unfinishedForms, setUnfinishedForms] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const getPendingTrips = async (opc, usr) => {
+    setLoading(true);
     try {
       let params = {
         opc: opc,
@@ -49,6 +52,7 @@ export function SelectionMode({navigation}) {
       console.log(`Ocurrio un error ${e}`);
       return '';
     }
+    setLoading(false);
   };
 
   useEffect(async () => {
@@ -264,7 +268,8 @@ export function SelectionMode({navigation}) {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+      <Loading loading={loading} />
+      </View>
   );
 }
 const styles = StyleSheet.create({
