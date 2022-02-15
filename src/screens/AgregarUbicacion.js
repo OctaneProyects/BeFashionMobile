@@ -21,7 +21,7 @@ import {AuthContext} from '../context/AuthContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {useFocusEffect} from '@react-navigation/core';
 import {getDeviceDate} from '../hooks/common'
-
+// v1.4.4
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
   const [longitudActual, setLongitud] = useState(0);
