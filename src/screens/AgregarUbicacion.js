@@ -20,7 +20,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AuthContext} from '../context/AuthContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {useFocusEffect} from '@react-navigation/core';
-import {getDeviceDate} from '../hooks/common'
+import {getDeviceDate} from '../hooks/common';
 // v1.4.4 maps
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -37,15 +37,19 @@ export function AgregarUbicacion({navigation}) {
   const [openSuc, setOpenSuc] = useState(false);
   const {authFlow} = React.useContext(EstatusContext);
   const {estado} = React.useContext(EstatusContext);
-  const [location, setLocation] = useState({latitude: 33, longitude: -111});
+  const [location, setLocation] = useState({
+    latitude: 32.65,
+    longitude: -115.39,
+    latitudeDelta: 3,
+    longitudeDelta: 3,
+  });
 
   const [region, setRegion] = useState({
     latitude: location.latitude,
     longitude: location.longitude,
-    latitudeDelta: 0.001,
-    longitudeDelta: 0.0,
+    latitudeDelta: 0.09,
+    longitudeDelta: 0.04,
   });
-
 
   const _mapView = React.createRef();
   useEffect(() => {
@@ -58,8 +62,8 @@ export function AgregarUbicacion({navigation}) {
         setRegion({
           latitude: location.latitude,
           longitude: location.longitude,
-          latitudeDelta: 0.001,
-          longitudeDelta: 0.0,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         });
       },
       (error) => {
@@ -156,7 +160,7 @@ export function AgregarUbicacion({navigation}) {
   };
   const insertTienda = async () => {
     //obtener fecha del dispositivo
-    var fechaDispositivo=getDeviceDate();
+    var fechaDispositivo = getDeviceDate();
     if (
       cliente == null ||
       sucursal == null ||
@@ -201,18 +205,21 @@ export function AgregarUbicacion({navigation}) {
       alert(`Ocurrio un error ${e}`);
     }
   };
+
   useEffect(() => {
     setClienteNom(
       clientes.filter((c) => c.value == cliente).map((c) => c.label)[0],
     );
   }, [cliente]);
+  
   useEffect(() => {
     setRegion({
       latitude: location.latitude,
       longitude: location.longitude,
       latitudeDelta: 0.001,
-      longitudeDelta: 0.0,
+      longitudeDelta: 0.001,
     });
+    
     console.log('nueva region: ', location);
     //_mapView.current.animateToRegion(region);
     return () => {
@@ -276,20 +283,22 @@ export function AgregarUbicacion({navigation}) {
         <Text>Latitud: {latitudActual}</Text>
         <Text>Longitud: {longitudActual}</Text>
       </View>
-      {/*   <View style={({ flex: 1, padding: 0, margin: 2 }, styles.containermap)}>
+      <View style={({flex: 1, padding: 0, margin: 2}, styles.containermap)}>
         <StatusBar barStyle="dark-content" />
         {location && (
           <MapView
             ref={_mapView}
             style={styles.map}
             provider={PROVIDER_GOOGLE}
+            initialRegion={location}
             showsUserLocation={true}
             followUserLocation={true}
-            region={region}
+            // region={region}
+            // onRegionChangeComplete={(location) => setLocation(location)}
           />
         )}
       </View>
-*/}
+
       <View>
         <TouchableOpacity
           style={styles.btnSubmit}
