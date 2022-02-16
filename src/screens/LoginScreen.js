@@ -53,7 +53,7 @@ export function LoginScreen({ navigation }) {
         }}
       />
       <Text>
-        V 1.4.2
+        V 1.4.4
       </Text>
 
       <Loading loading={loading} />
