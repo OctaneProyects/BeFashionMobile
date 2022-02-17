@@ -8,13 +8,14 @@ import {
   Alert,
 } from 'react-native';
 import {UserContext} from '../context/UserContext';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import {BASE_URL} from '../config';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common'
-import { Loading } from '../components/Loading';
+import {getDeviceDate} from '../hooks/common';
+import {Loading} from '../components/Loading';
+import { LogOutUser } from '../components/LogOutUser';
 
 export function SelectionMode({navigation}) {
   const isFocused = useIsFocused();
@@ -37,8 +38,8 @@ export function SelectionMode({navigation}) {
           let res = JSON.parse(result.data);
           switch (opc) {
             case 1:
-              if(Array.isArray(res) && res.length <=0){
-                getPendingTrips(2,user.Usuario)
+              if (Array.isArray(res) && res.length <= 0) {
+                getPendingTrips(2, user.Usuario);
               }
               setUnstartedTrips(res);
               break;
@@ -118,7 +119,6 @@ export function SelectionMode({navigation}) {
       await handleLocationPermission();
       //obtiene viajes pendientes y sin terminar
       await getPendingTrips(1, user.Usuario);
-  
     }
 
     return () => {
@@ -239,7 +239,7 @@ export function SelectionMode({navigation}) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+       <LogOutUser></LogOutUser>
       ),
     });
   }, []);

@@ -26,6 +26,7 @@ import {getDistance, getPreciseDistance} from 'geolib';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions, useIsFocused} from '@react-navigation/native';
 import {IconButton} from '../components/IconButton';
+import {LogOutUser} from '../components/LogOutUser';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -471,22 +472,7 @@ export function LandingScreen({route, navigation}) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Icon
-          name="sign-out-alt"
-          size={15}
-          color="blue"
-          onPress={() => {
-            logout();
-          }}></Icon>
-
-        // <HeaderIconButton
-        //     name={'log-out'}
-        //     onPress={() => {
-        //         logout();
-        //     }}
-        // />
-      ),
+      headerRight: () => <LogOutUser></LogOutUser>,
     });
   }, [navigation, logout]);
 
@@ -494,7 +480,7 @@ export function LandingScreen({route, navigation}) {
     <>
       {isLoading ? null : (
         <View style={styles.globalContainer}>
-          <View  style={styles.containerUp}>
+          <View style={styles.containerUp}>
             <View style={styles.rightText}>
               <TouchableOpacity
                 onPress={() => {
@@ -636,8 +622,7 @@ export function LandingScreen({route, navigation}) {
               </TouchableOpacity>
             </View>
           ) : (
-            <View
-              style={styles.containermap}>
+            <View style={styles.containermap}>
               <StatusBar barStyle="dark-content" />
               {location && (
                 <MapView
@@ -688,8 +673,8 @@ const styles = StyleSheet.create({
   },
 
   containermap: {
-    flex:1,
-    paddingBottom:10,
+    flex: 1,
+    paddingBottom: 10,
     // ...StyleSheet.absoluteFillObject,
   },
   map: {

@@ -20,6 +20,7 @@ import { EstatusContext } from '../context/EstatusContext';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { Loading } from '../components/Loading';
 import {getDeviceDate} from '../hooks/common'
+import { LogOutUser } from '../components/LogOutUser';
 
 
 export default function CapturaKilometraje({ route, navigation }) {
@@ -219,7 +220,7 @@ export default function CapturaKilometraje({ route, navigation }) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>,
+      headerRight: () => (<LogOutUser></LogOutUser>),
     });
   }, []);
 
