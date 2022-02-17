@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   btnSubmit: {
-    marginTop: 40,
+    marginTop: 10,
     padding: 10,
     alignItems: 'center',
     borderWidth: 1,
@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
   rowView: {
     flexDirection: 'row',
     paddingTop: 8,
+    paddingBottom: 8,
   },
   containermap: {
     marginVertical: 8,
