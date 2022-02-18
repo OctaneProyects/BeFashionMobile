@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   AppState,
   Alert,
+  Button,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -18,7 +19,7 @@ import {UserContext} from '../context/UserContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {LentesHandler} from '../components/LentesHandler';
 import {CommonActions} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common'
+import {getDeviceDate} from '../hooks/common';
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
@@ -30,9 +31,12 @@ export default function Formulario({route, navigation}) {
   const {idTienda, nombreTienda} = route.params;
   const user = React.useContext(UserContext);
 
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
+
   //asi se envia para POST (server recibe modelo)
   async function insertFormulario(navigation, cant) {
-    var fechaDispositivo=getDeviceDate();
+    var fechaDispositivo = getDeviceDate();
     if (cant <= 0) {
       Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
         {text: 'Aceptar'},
@@ -47,11 +51,13 @@ export default function Formulario({route, navigation}) {
       cant: cant,
       idUsuario: user.IdUsuario,
       fechaDispositivo: fechaDispositivo, // agregado para la fecha del dispositivo
-      idVisita: estado.Visita
+      idVisita: estado.Visita,
     };
 
     console.log(formulario);
-
+    //deshabilitar boton
+    setDisabled(true);
+    
     const result = await axios.post(
       `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
@@ -63,6 +69,8 @@ export default function Formulario({route, navigation}) {
     if (res[0].result == 'ok') {
       await authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje);
       await authFlow.getEstatus(0, user.IdUsuario);
+      //habilitar boton 
+      setDisabled(false);
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
           text: 'Aceptar',
@@ -76,7 +84,8 @@ export default function Formulario({route, navigation}) {
     } else {
       alert('error');
     }
-
+     //habilitar boton 
+    setDisabled(false);
     console.log(result.data);
     return result;
   }
@@ -194,13 +203,12 @@ export default function Formulario({route, navigation}) {
       </View>
 
       <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity
-          style={styles.btnSubmit}
+        <Button
+          color="rgb(27,67,136)"
+          title="Enviar"
+          disabled={disabled}
           onPress={() => insertFormulario(navigation)}
-          // onPress={() => navigation.navigate('MostradorDespues')}
-        >
-          <Text style={styles.btnSubmitText}>Siguiente</Text>
-        </TouchableOpacity>
+        />
       </View>
     </SafeAreaView>
   );

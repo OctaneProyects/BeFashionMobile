@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   Alert,
+  Button,
   SafeAreaView,
   View,
   StyleSheet,
@@ -18,7 +19,7 @@ import {BASE_URL} from '../config';
 import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
-import {getDeviceDate} from '../hooks/common'
+import {getDeviceDate} from '../hooks/common';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
@@ -38,7 +39,10 @@ export function MostradorDespuesServicio({route, navigation}) {
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
-  launchCamera = tipo => {
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
+
+  launchCamera = (tipo) => {
     let options = {
       maxWidth: 1024,
       maxHeight: 768,
@@ -48,7 +52,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, response => {
+    ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -82,8 +86,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
           fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
-          idVisita: estado.Visita
-
+          idVisita: estado.Visita,
         },
         {
           idTipo: 5,
@@ -93,17 +96,21 @@ export function MostradorDespuesServicio({route, navigation}) {
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
           fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
-          idVisita: estado.Visita
+          idVisita: estado.Visita,
         },
       ],
     };
 
     try {
       console.log(estado);
+      //deshabilitar boton
+      setDisabled(true);
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
       if (res) {
         await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
         authFlow.getEstatus(0, user.IdUsuario);
+        //habilitar boton
+        setDisabled(false);
         Alert.alert('Listo', 'Se han guardado las imagenes', [
           {
             text: 'Aceptar',
@@ -117,7 +124,11 @@ export function MostradorDespuesServicio({route, navigation}) {
       }
     } catch (error) {
       console.log(error);
+      //habilitar boton
+      setDisabled(false);
     }
+    //habilitar boton
+    setDisabled(false);
   }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
@@ -192,20 +203,14 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{width: '10%', height: '50%', marginLeft: 20}}
             source={{uri: uri}}></Image>
         </View>
-
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.btnSubmit}
-            onPress={
-              () => guardarImagen()
-              //enviar === 0
-              //  ? () => navigation.navigate('TerminaTienda')
-              //  : () => {
-              //Llamada api para guardar
-            }>
-            <Text style={styles.btnSubmitText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View style={{paddingHorizontal: 20}}>
+        <Button
+          color="rgb(27,67,136)"
+          title="Siguiente"
+          disabled={disabled}
+          onPress={() => guardarImagen()}
+        />
       </View>
     </SafeAreaView>
   );

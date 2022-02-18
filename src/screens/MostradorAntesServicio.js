@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
+  Button,
   SafeAreaView,
   View,
   StyleSheet,
@@ -17,7 +18,7 @@ import axios from 'axios';
 import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common'
+import {getDeviceDate} from '../hooks/common';
 
 export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
@@ -29,8 +30,8 @@ export function MostradorAntesServicio({route, navigation}) {
   const {authFlow} = React.useContext(EstatusContext);
   const {idTienda, nombreTienda, idViaje} = route.params;
   const user = React.useContext(UserContext);
-
-
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
 
   const launchCamera = () => {
     let options = {
@@ -42,7 +43,7 @@ export function MostradorAntesServicio({route, navigation}) {
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, response => {
+    ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -78,6 +79,9 @@ export function MostradorAntesServicio({route, navigation}) {
     };
 
     try {
+      //deshabilitar boton
+      setDisabled(true);
+
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagen`, img);
       if (res) {
         const result = res.data;
@@ -86,6 +90,9 @@ export function MostradorAntesServicio({route, navigation}) {
         await authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje);
         authFlow.getEstatus(0, user.IdUsuario);
         setIsLoading(false);
+        //habilitar boton
+        setDisabled(false);
+
         Alert.alert('Listo', 'Se ha guardado la imagen', [
           {
             text: 'Aceptar',
@@ -100,6 +107,8 @@ export function MostradorAntesServicio({route, navigation}) {
         ]);
       }
     } catch (error) {
+      //habilitar boton
+      setDisabled(false);
       console.log(`Ocurrio un error`, error);
     }
   };
@@ -116,7 +125,8 @@ export function MostradorAntesServicio({route, navigation}) {
           idTienda,
           nombreTienda,
         },
-      }));
+      }),
+    );
   }, [estado]);
   useEffect(() => {
     authFlow.getEstatus(0, user.IdUsuario);
@@ -159,19 +169,21 @@ export function MostradorAntesServicio({route, navigation}) {
             source={{uri: filePath}}></Image>
         </View>
       </View>
-      <View style={styles.row}>
-        {/* <FilledButton
-          title="Siguiente"
-          style={{marginVertical: 20, alignContent: 'center', width: '100%'}}
-          onPress={
-            enviar === 0 ? () => navigation.navigate('Formulario') : () => {}
-          }></FilledButton> */}
+      <View style={{paddingHorizontal: 20}}>
 
+
+        <Button
+          color="rgb(27,67,136)"
+          title="Enviar"
+          disabled={disabled}
+          onPress={() =>  guardarImagen()}
+        />
+        {/* 
         <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => guardarImagen()}>
           <Text style={styles.btnSubmitText}>Enviar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
