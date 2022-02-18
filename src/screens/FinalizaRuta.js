@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
@@ -11,20 +11,20 @@ import {
 } from 'react-native';
 
 import axios from 'axios';
-import { BASE_URL } from '../config';
+import {BASE_URL} from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { UserContext } from '../context/UserContext';
+import {UserContext} from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
-import { EstatusContext } from '../context/EstatusContext';
-import {getDeviceDate} from '../hooks/common'
+import {EstatusContext} from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common';
 
-export function FinalizaViaje({ route, navigation }) {
+export function FinalizaViaje({route, navigation}) {
   const user = React.useContext(UserContext);
-  const { estado } = React.useContext(EstatusContext);
-  const { authFlow } = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
 
   //variable id vijae por parametros
-  const { idViaje } = route.params;
+  const {idViaje} = route.params;
   // const [idViaje, setIdViaje] = useState(1)
   //const [entMercancia, setEntMerc] = useState(0);
   const [entDevolucion, setEntDev] = useState(0);
@@ -47,6 +47,9 @@ export function FinalizaViaje({ route, navigation }) {
   const [visitasEfectivas, setVisitasEfectivas] = useState(0);
   const [promocion, setPromocion] = useState(0);
 
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
+
   const insertFinalaViaje = async () => {
     var fechaDispositivo = getDeviceDate();
     console.log(`entra, KmFinal`, kmFinal);
@@ -56,7 +59,7 @@ export function FinalizaViaje({ route, navigation }) {
     }
     if (!imagen64) {
       Alert.alert('Verifique los datos', 'Adjunte una imagen del odómetro', [
-        { text: 'Aceptar' },
+        {text: 'Aceptar'},
       ]);
       return;
     }
@@ -78,9 +81,11 @@ export function FinalizaViaje({ route, navigation }) {
       usuarioRegistro: user.IdUsuario,
       // entMercancia: parseInt(entMercancia),
       devolucion: parseInt(entDevolucion),
-      fechaDispositivo: fechaDispositivo //agregada fecha del dispositivo
+      fechaDispositivo: fechaDispositivo, //agregada fecha del dispositivo
     };
     console.log(viaje);
+    //deshabilita boton
+    setDisabled(true);
 
     const result = await axios.post(
       `${BASE_URL}viajes/InsertFinalViaje`,
@@ -100,17 +105,20 @@ export function FinalizaViaje({ route, navigation }) {
       );
     } else {
       alert(result);
+      //habilita boton
+      setDisabled(false);
     }
     console.log(res);
+    //habilita boton
+    setDisabled(false);
   };
- 
 
   const getFinalRuta = async () => {
     console.log('IDVIAJE');
     console.log(idViaje);
     await axios
       .get(`${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`)
-      .then(result => {
+      .then((result) => {
         const res = JSON.parse(result.data)[0];
         console.log(res);
         setTotalPz(res.totalPz);
@@ -145,7 +153,7 @@ export function FinalizaViaje({ route, navigation }) {
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, response => {
+    ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -156,7 +164,7 @@ export function FinalizaViaje({ route, navigation }) {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = { uri: response.uri };
+        const source = {uri: response.uri};
         console.log('response', JSON.stringify(response));
 
         setImagen64(response.assets[0].base64);
@@ -175,7 +183,7 @@ export function FinalizaViaje({ route, navigation }) {
         <Text style={[styles.headerText]}>Ruta: </Text>
         <Text style={[styles.headerText]}>Fecha: </Text>
       </View>
-      <View style={{ marginHorizontal: 10, paddingTop: 10 }}>
+      <View style={{marginHorizontal: 10, paddingTop: 10}}>
         <View style={styles.checkboxContainer}>
           {/* Devoluciones */}
 
@@ -193,19 +201,19 @@ export function FinalizaViaje({ route, navigation }) {
           />
         </View>
       </View>
-      <View style={{ paddingLeft: 70, paddingRight: 10, alignContent: 'center' }}>
+      <View style={{paddingLeft: 70, paddingRight: 10, alignContent: 'center'}}>
         <View>
-          <Text style={{ padding: 5 }}>Total de piezas en carro: {totalPz} </Text>
+          <Text style={{padding: 5}}>Total de piezas en carro: {totalPz} </Text>
         </View>
         <View>
-          <Text style={{ padding: 5 }}>No. Vehiculo: {vehiculo} </Text>
+          <Text style={{padding: 5}}>No. Vehiculo: {vehiculo} </Text>
         </View>
         <View>
-          <Text style={{ padding: 5 }}>KM inicial: {kmInicial} </Text>
+          <Text style={{padding: 5}}>KM inicial: {kmInicial} </Text>
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={{ padding: 5 }}>KM final</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{padding: 5}}>KM final</Text>
           <Icon
             name="camera"
             size={25}
@@ -228,19 +236,19 @@ export function FinalizaViaje({ route, navigation }) {
           />
         </View>
         <View>
-          <Text style={{ padding: 5 }}>Hora de salida: {hrInicial}</Text>
+          <Text style={{padding: 5}}>Hora de salida: {hrInicial}</Text>
         </View>
 
         <View>
-          <Text style={{ padding: 5 }}>Hora de llegada: {hrFinal} </Text>
+          <Text style={{padding: 5}}>Hora de llegada: {hrFinal} </Text>
         </View>
 
         <View>
-          <Text style={{ padding: 5 }}>Piezas vendidas: {pzVendidas} </Text>
+          <Text style={{padding: 5}}>Piezas vendidas: {pzVendidas} </Text>
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={{ padding: 5 }}>Piezas dañadas</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{padding: 5}}>Piezas dañadas</Text>
           <TextInput
             placeholder="0"
             placeholderTextColor="black"
@@ -254,11 +262,10 @@ export function FinalizaViaje({ route, navigation }) {
               marginHorizontal: 10,
             }}
           />
-
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={{ padding: 5 }}>Defectuosas de fabrica</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{padding: 5}}>Defectuosas de fabrica</Text>
           <TextInput
             placeholder="0"
             placeholderTextColor="black"
@@ -293,11 +300,17 @@ export function FinalizaViaje({ route, navigation }) {
         </View>*/}
       </View>
       <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => insertFinalaViaje()}>
           <Text style={styles.btnSubmitText}>Terminar mi ruta</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Button
+          color="rgb(27,67,136)"
+          title="Terminar mi ruta"
+          disabled={disabled}
+          onPress={() => insertFinalaViaje()}
+        />
       </View>
     </SafeAreaView>
   );
