@@ -8,6 +8,7 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
+  Button
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
@@ -37,6 +38,10 @@ export function AgregarUbicacion({navigation}) {
   const [openSuc, setOpenSuc] = useState(false);
   const {authFlow} = React.useContext(EstatusContext);
   const {estado} = React.useContext(EstatusContext);
+
+  //disabled de button
+  const [disabled,setDisabled]=useState(false)
+
   const [location, setLocation] = useState({
     latitude: 32.65,
     longitude: -115.39,
@@ -158,6 +163,7 @@ export function AgregarUbicacion({navigation}) {
       alert(`Ocurrio un error ${e}`);
     }
   };
+  
   const insertTienda = async () => {
     //obtener fecha del dispositivo
     var fechaDispositivo = getDeviceDate();
@@ -175,7 +181,8 @@ export function AgregarUbicacion({navigation}) {
       return;
     }
     try {
-      //await getLocation();
+      //deshabilitar al boton
+      setDisabled(true);
       await axios
         .post(
           `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${
@@ -188,6 +195,7 @@ export function AgregarUbicacion({navigation}) {
         .then((res) => {
           const result = res.data;
           let jsonTiendaResult = JSON.parse(result);
+          setDisabled(false)
           Alert.alert('Listo', 'Se han registrado correctamente', [
             {
               text: 'Aceptar',
@@ -203,6 +211,8 @@ export function AgregarUbicacion({navigation}) {
       console.log(`API liga`);
       console.log(`${BASE_URL}Tiendas/InsertTienda`);
       alert(`Ocurrio un error ${e}`);
+      //habilitar boton
+      setDisabled(false);
     }
   };
 
@@ -300,11 +310,18 @@ export function AgregarUbicacion({navigation}) {
       </View>
 
       <View>
-        <TouchableOpacity
+      <Button
+        color='rgb(27,67,136)'
+        title="Agregar"
+        disabled= {disabled}
+        onPress={() => insertTienda()}
+      />
+        {/* <TouchableOpacity
           style={styles.btnSubmit}
+          disabled={true}
           onPress={() => insertTienda()}>
           <Text style={styles.btnSubmitText}>Agregar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
