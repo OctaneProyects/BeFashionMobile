@@ -24,9 +24,9 @@ export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM64, setFilePathM64] = useState();
   const [fileMContentType, setFileMContentType] = useState();
 
-  // const [filePathM364, setFilePathM364] = useState();
-  // const [filePathM3, setFilePathM3] = useState('FileM3');
-  // const [fileM3ContentType, setFileM3ContentType] = useState();
+  const [filePathM364, setFilePathM364] = useState();
+  const [filePathM3, setFilePathM3] = useState('FileM3');
+  const [fileM3ContentType, setFileM3ContentType] = useState();
 
   const ContentType = 'image/jpeg';
   const [enviar, setEnviar] = useState(0);
@@ -37,7 +37,7 @@ export function MostradorDespuesServicio({route, navigation}) {
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
-  launchCamera = tipo => {
+  launchCamera = (tipo) => {
     let options = {
       maxWidth: 1024,
       maxHeight: 768,
@@ -47,7 +47,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, response => {
+    ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -64,7 +64,13 @@ export function MostradorDespuesServicio({route, navigation}) {
           setFilePathM(response.assets[0].uri);
           setFilePathM64(response.assets[0].base64);
           setFileMContentType(response.assets[0].type);
+        } else if (tipo == 2) {
+          setFilePathM3(response.assets[0].uri);
+          setFilePathM364(response.assets[0].base64);
+          setFileM3ContentType(response.assets[0].type);
         }
+
+
       }
     });
   };
@@ -82,8 +88,10 @@ export function MostradorDespuesServicio({route, navigation}) {
         },
         {
           idTipo: 5,
-          contenido: base64,
-          contentType: ContentType,
+          // contenido: base64,
+          // contentType: ContentType,
+          contenido: filePathM364,
+          contentType: fileM3ContentType,
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
@@ -171,18 +179,18 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{paddingLeft: 2}}
             size={20}
             name="camera"
-            // onPress={() => launchCamera(2)}
-            onPress={() =>
-              navigation.navigate('PictureScreenScan', {
-                screen: 'MostradorDespuesServicio',
-              })
-            }
+            onPress={() => launchCamera(2)}
+            //onPress={() =>
+            //  navigation.navigate('PictureScreenScan', {
+            //    screen: 'MostradorDespuesServicio',
+            //  })
+            //}
           />
           <Image
             resizeMode="cover"
             resizeMethod="scale"
             style={{width: '10%', height: '50%', marginLeft: 20}}
-            source={{uri: uri}}></Image>
+            source={{uri: filePathM3}}></Image>
         </View>
 
         <View style={styles.row}>
