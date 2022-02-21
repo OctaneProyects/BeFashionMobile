@@ -33,7 +33,7 @@ export function MostradorDespuesServicio({route, navigation}) {
   const ContentType = 'image/jpeg';
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda, uri, base64} = route.params;
+  // const {idTienda, nombreTienda, uri, base64} = route.params;
 
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
@@ -115,7 +115,7 @@ export function MostradorDespuesServicio({route, navigation}) {
       setDisabled(true);
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
       if (res) {
-        await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
+        await authFlow.setEstatus(11, estado.IdTienda, user.IdUsuario, estado.IdViaje);
         authFlow.getEstatus(0, user.IdUsuario);
         //habilitar boton
         setDisabled(false);
@@ -124,8 +124,8 @@ export function MostradorDespuesServicio({route, navigation}) {
             text: 'Aceptar',
             onPress: () =>
               navigation.navigate('ChecklistTienda', {
-                idTienda,
-                nombreTienda,
+                idTienda: estado.IdTienda,
+                nombreTienda: estado.NombreTienda,
               }),
           },
         ]);
@@ -141,18 +141,18 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(() => {
-    if (estado) {
+    // if (estado) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
         CommonActions.navigate({
           name: estado.Modulo,
-          params: {idTienda, nombreTienda},
+          // params: {idTienda, nombreTienda},
         }),
       );
-    }
-    return () => {
-      console.log('SI ESTA RECARGANDO');
-    };
+    // }
+    // return () => {
+    //   console.log('SI ESTA RECARGANDO');
+    // };
   }, [estado]);
 
   React.useLayoutEffect(() => {
@@ -169,7 +169,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
-          <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>{estado.NombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>

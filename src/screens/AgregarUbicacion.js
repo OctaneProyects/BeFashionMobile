@@ -8,7 +8,7 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
-  Button
+  Button,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
@@ -40,7 +40,7 @@ export function AgregarUbicacion({navigation}) {
   const {estado} = React.useContext(EstatusContext);
 
   //disabled de button
-  const [disabled,setDisabled]=useState(false)
+  const [disabled, setDisabled] = useState(false);
 
   const [location, setLocation] = useState({
     latitude: 32.65,
@@ -163,7 +163,7 @@ export function AgregarUbicacion({navigation}) {
       alert(`Ocurrio un error ${e}`);
     }
   };
-  
+
   const insertTienda = async () => {
     //obtener fecha del dispositivo
     var fechaDispositivo = getDeviceDate();
@@ -195,7 +195,7 @@ export function AgregarUbicacion({navigation}) {
         .then((res) => {
           const result = res.data;
           let jsonTiendaResult = JSON.parse(result);
-          setDisabled(false)
+          setDisabled(false);
           Alert.alert('Listo', 'Se han registrado correctamente', [
             {
               text: 'Aceptar',
@@ -221,7 +221,7 @@ export function AgregarUbicacion({navigation}) {
       clientes.filter((c) => c.value == cliente).map((c) => c.label)[0],
     );
   }, [cliente]);
-  
+
   useEffect(() => {
     setRegion({
       latitude: location.latitude,
@@ -229,7 +229,7 @@ export function AgregarUbicacion({navigation}) {
       latitudeDelta: 0.001,
       longitudeDelta: 0.001,
     });
-    
+
     console.log('nueva region: ', location);
     //_mapView.current.animateToRegion(region);
     return () => {
@@ -260,20 +260,13 @@ export function AgregarUbicacion({navigation}) {
           onChangeText={setnombreTienda}
         />
       </View>
-      <>
-        {clienteNom == 'Oxxo' ? (
-          <View style={styles.rowView}>
-            <Input
-              style={{borderWidth: 1.3}}
-              placeholder="CR"
-              onChangeText={setCR}
-            />
-          </View>
-        ) : (
-          <></>
-        )}
-      </>
-      <></>
+      <View style={styles.rowView}>
+        <Input
+          style={{borderWidth: 1.3}}
+          placeholder="CR"
+          onChangeText={setCR}
+        />
+      </View>
       <View
         style={
           (styles.rowView,
@@ -290,8 +283,9 @@ export function AgregarUbicacion({navigation}) {
           zIndex={100}></DropDownPicker>
       </View>
       <View style={(styles.rowView, {paddingTop: 20})}>
-        <Text>Latitud: {latitudActual}</Text>
-        <Text>Longitud: {longitudActual}</Text>
+        <Text>
+          Latitud: {latitudActual}, Longitud: {longitudActual}
+        </Text>
       </View>
       <View style={({flex: 1, padding: 0, margin: 2}, styles.containermap)}>
         <StatusBar barStyle="dark-content" />
@@ -310,12 +304,12 @@ export function AgregarUbicacion({navigation}) {
       </View>
 
       <View>
-      <Button
-        color='rgb(27,67,136)'
-        title="Agregar"
-        disabled= {disabled}
-        onPress={() => insertTienda()}
-      />
+        <Button
+          color="rgb(27,67,136)"
+          title="Agregar"
+          disabled={disabled}
+          onPress={() => insertTienda()}
+        />
         {/* <TouchableOpacity
           style={styles.btnSubmit}
           disabled={true}
@@ -329,6 +323,7 @@ export function AgregarUbicacion({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     margin: 10,
   },
   comentsContainer: {
