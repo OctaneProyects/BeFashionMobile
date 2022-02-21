@@ -294,8 +294,7 @@ export function AgregarUbicacion({navigation}) {
                 zIndex={100}></DropDownPicker>
             </View>
             <View style={(styles.rowView, {paddingTop: 20})}>
-              <Text>Latitud: {latitudActual}</Text>
-              <Text>Longitud: {longitudActual}</Text>
+              <Text>Latitud: {latitudActual} Longitud: {longitudActual}</Text>
             </View>
 
             <View
@@ -339,6 +338,7 @@ export function AgregarUbicacion({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     margin: 10,
   },
   comentsContainer: {

@@ -104,8 +104,8 @@ export default function TerminaViaje({route, navigation}) {
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(() => {
-    return () => {
-      if (estado) {
+    // return () => {
+    //   if (estado) {
         //navega a la ultima pantalla en que se encontraba el usuario
         navigation.dispatch(
           CommonActions.navigate({
@@ -115,8 +115,8 @@ export default function TerminaViaje({route, navigation}) {
             // },
           }),
         );
-      }
-    };
+    //   }
+    // };
   }, [estado]);
 
   React.useLayoutEffect(() => {
