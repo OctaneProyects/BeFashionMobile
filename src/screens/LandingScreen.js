@@ -608,29 +608,7 @@ export function LandingScreen({route, navigation}) {
                     </View>
                   </ScrollView>
                 </View>
-                <View
-                  style={
-                    (styles.containermap, {flex: 1, padding: 0, margin: 0})
-                  }>
-                  <StatusBar barStyle="dark-content" />
-                  {location && (
-                    <MapView
-                      style={styles.map}
-                      provider={PROVIDER_GOOGLE}
-                      initialRegion={{
-                        latitude: location.latitude,
-                        longitude: location.longitude,
-                        latitudeDelta: 0.001,
-                        longitudeDelta: 0.0,
-                      }}
-                      showsUserLocation={true}
-                      // onUserLocationChange={(locationChangedResult) =>
-                      //   getLocation()
-                      // }
-                    />
-                  )}
-                </View>
-
+               
                 {/* <View>
                   <FilledButton
                     title={'Aumentar'}
@@ -671,7 +649,8 @@ export function LandingScreen({route, navigation}) {
                     latitudeDelta: 3,
                     longitudeDelta: 3,
                   }}
-                  showsUserLocation={true}>
+                  showsUserLocation={true}
+                  showsMyLocationButton={true}>
                   {tiendas.map((marker, index) => (
                     <Marker
                       key={index}

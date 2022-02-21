@@ -8,7 +8,10 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
-  Button
+  Button,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
@@ -17,11 +20,11 @@ import Geolocation, {watchPosition} from 'react-native-geolocation-service';
 import {Input} from '../components/Input';
 import axios from 'axios';
 import {UserContext} from '../context/UserContext';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {AuthContext} from '../context/AuthContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {useFocusEffect} from '@react-navigation/core';
 import {getDeviceDate} from '../hooks/common';
+import {globalStyles} from '../styles/styles';
 // v1.4.4 maps
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -40,7 +43,7 @@ export function AgregarUbicacion({navigation}) {
   const {estado} = React.useContext(EstatusContext);
 
   //disabled de button
-  const [disabled,setDisabled]=useState(false)
+  const [disabled, setDisabled] = useState(false);
 
   const [location, setLocation] = useState({
     latitude: 32.65,
@@ -57,7 +60,9 @@ export function AgregarUbicacion({navigation}) {
   });
 
   const _mapView = React.createRef();
+
   useEffect(() => {
+    console.log('este hook si se esta haciendo');
     const _watchId = Geolocation.watchPosition(
       (position) => {
         const {latitude, longitude} = position.coords;
@@ -163,7 +168,7 @@ export function AgregarUbicacion({navigation}) {
       alert(`Ocurrio un error ${e}`);
     }
   };
-  
+
   const insertTienda = async () => {
     //obtener fecha del dispositivo
     var fechaDispositivo = getDeviceDate();
@@ -195,7 +200,7 @@ export function AgregarUbicacion({navigation}) {
         .then((res) => {
           const result = res.data;
           let jsonTiendaResult = JSON.parse(result);
-          setDisabled(false)
+          setDisabled(false);
           Alert.alert('Listo', 'Se han registrado correctamente', [
             {
               text: 'Aceptar',
@@ -221,7 +226,7 @@ export function AgregarUbicacion({navigation}) {
       clientes.filter((c) => c.value == cliente).map((c) => c.label)[0],
     );
   }, [cliente]);
-  
+
   useEffect(() => {
     setRegion({
       latitude: location.latitude,
@@ -229,7 +234,7 @@ export function AgregarUbicacion({navigation}) {
       latitudeDelta: 0.001,
       longitudeDelta: 0.001,
     });
-    
+
     console.log('nueva region: ', location);
     //_mapView.current.animateToRegion(region);
     return () => {
@@ -238,91 +243,96 @@ export function AgregarUbicacion({navigation}) {
   }, [location]);
   return (
     <SafeAreaView style={styles.container}>
-      <View
-        style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
-        <DropDownPicker
-          placeholder="Selecciona un cliente"
-          value={cliente}
-          open={openCli}
-          //searchable={true}
-          items={clientes}
-          setItems={setClientes}
-          setOpen={setOpenCli}
-          setValue={(value) => {
-            setCliente(value);
-          }}
-          zIndex={300}></DropDownPicker>
-      </View>
-      <View style={styles.rowView}>
-        <Input
-          style={{borderWidth: 1.3}}
-          placeholder="Nombre"
-          onChangeText={setnombreTienda}
-        />
-      </View>
-      <>
-        {clienteNom == 'Oxxo' ? (
-          <View style={styles.rowView}>
-            <Input
-              style={{borderWidth: 1.3}}
-              placeholder="CR"
-              onChangeText={setCR}
-            />
-          </View>
-        ) : (
-          <></>
-        )}
-      </>
-      <></>
-      <View
-        style={
-          (styles.rowView,
-          Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
-        }>
-        <DropDownPicker
-          placeholder="Selecciona un sucursal"
-          value={sucursal}
-          open={openSuc}
-          items={sucursales}
-          setOpen={setOpenSuc}
-          setValue={setSucursal}
-          setItems={setSucursales}
-          zIndex={100}></DropDownPicker>
-      </View>
-      <View style={(styles.rowView, {paddingTop: 20})}>
-        <Text>Latitud: {latitudActual}</Text>
-        <Text>Longitud: {longitudActual}</Text>
-      </View>
-      <View style={({flex: 1, padding: 0, margin: 2}, styles.containermap)}>
-        <StatusBar barStyle="dark-content" />
-        {location && (
-          <MapView
-            ref={_mapView}
-            style={styles.map}
-            provider={PROVIDER_GOOGLE}
-            initialRegion={location}
-            showsUserLocation={true}
-            followUserLocation={true}
-            // region={region}
-            // onRegionChangeComplete={(location) => setLocation(location)}
-          />
-        )}
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View>
+            <View
+              style={
+                (styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})
+              }>
+              <DropDownPicker
+                placeholder="Selecciona un cliente"
+                value={cliente}
+                open={openCli}
+                //searchable={true}
+                items={clientes}
+                setItems={setClientes}
+                setOpen={setOpenCli}
+                setValue={(value) => {
+                  setCliente(value);
+                }}
+                zIndex={300}></DropDownPicker>
+            </View>
+            <View style={styles.rowView}>
+              <Input
+                style={{borderWidth: 1.3}}
+                placeholder="Nombre"
+                onChangeText={setnombreTienda}
+              />
+            </View>
+            <View style={styles.rowView}>
+              <Input
+                style={{borderWidth: 1.3}}
+                placeholder="CR"
+                onChangeText={setCR}
+              />
+            </View>
+            <View
+              style={
+                (styles.rowView,
+                Platform.OS === 'ios' ? {zIndex: 200, paddingTop: 8} : {})
+              }>
+              <DropDownPicker
+                placeholder="Selecciona un sucursal"
+                value={sucursal}
+                open={openSuc}
+                items={sucursales}
+                setOpen={setOpenSuc}
+                setValue={setSucursal}
+                setItems={setSucursales}
+                zIndex={100}></DropDownPicker>
+            </View>
+            <View style={(styles.rowView, {paddingTop: 20})}>
+              <Text>Latitud: {latitudActual}</Text>
+              <Text>Longitud: {longitudActual}</Text>
+            </View>
 
-      <View>
-      <Button
-        color='rgb(27,67,136)'
-        title="Agregar"
-        disabled= {disabled}
-        onPress={() => insertTienda()}
-      />
-        {/* <TouchableOpacity
+            <View
+              style={({flex: 1, padding: 0, margin: 2}, styles.containermap)}>
+              <StatusBar barStyle="dark-content" />
+              {location ? (
+                <MapView
+                  ref={_mapView}
+                  style={styles.map}
+                  provider={PROVIDER_GOOGLE}
+                  initialRegion={location}
+                  showsUserLocation={true}
+                  followUserLocation={true}
+                  showsMyLocationButton={true}
+                  // region={region}
+                  // onRegionChangeComplete={(location) => setLocation(location)}
+                />
+              ) : null}
+            </View>
+
+            <View>
+              <Button
+                color="rgb(27,67,136)"
+                title="Agregar"
+                disabled={disabled}
+                onPress={() => insertTienda()}
+              />
+              {/* <TouchableOpacity
           style={styles.btnSubmit}
           disabled={true}
           onPress={() => insertTienda()}>
           <Text style={styles.btnSubmitText}>Agregar</Text>
         </TouchableOpacity> */}
-      </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
