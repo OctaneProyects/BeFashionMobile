@@ -5,28 +5,26 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   Alert,
 } from 'react-native';
-
 import axios from 'axios';
 import {BASE_URL} from '../config';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {UserContext} from '../context/UserContext';
 import * as ImagePicker from 'react-native-image-picker';
 import {EstatusContext} from '../context/EstatusContext';
-import {getDeviceDate} from '../hooks/common';
+import {getDeviceDate} from '../hooks/common'
 
-export function FinalizaViaje({route, navigation}) {
+export function FinalizaViajeDirecta({route, navigation}) {
+  const contador = 0;
+
   const user = React.useContext(UserContext);
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
-  //variable id vijae por parametros
-  const {idViaje} = route.params;
-  // const [idViaje, setIdViaje] = useState(1)
-  //const [entMercancia, setEntMerc] = useState(0);
+  const forms = route.params;
+  const [pendingforms, setPendingForms] = useState(forms.unfinishedForms);
   const [entDevolucion, setEntDev] = useState(0);
 
   const [totalPz, setTotalPz] = useState(0);
@@ -34,6 +32,7 @@ export function FinalizaViaje({route, navigation}) {
   const [kmInicial, setKmInicial] = useState(0);
 
   const [kmFinal, setKmFinal] = useState('0');
+  const [reload, setReload] = useState(false);
 
   const [imagen64, setImagen64] = useState();
   const [contentType, setContentType] = useState();
@@ -46,9 +45,6 @@ export function FinalizaViaje({route, navigation}) {
   const [visitasDiarias, setVisitasDiarias] = useState(0);
   const [visitasEfectivas, setVisitasEfectivas] = useState(0);
   const [promocion, setPromocion] = useState(0);
-
-  //hook para deshabilitar boton
-  const [disabled, setDisabled] = useState(false);
 
   const insertFinalaViaje = async () => {
     var fechaDispositivo = getDeviceDate();
@@ -65,7 +61,7 @@ export function FinalizaViaje({route, navigation}) {
     }
 
     const viaje = {
-      IdViaje: parseInt(idViaje),
+      IdViaje: parseInt(forms.unfinishedForms[contador].Viaje),
       InventarioFinalPzs: parseInt(totalPz),
       KmInicial: parseInt(kmInicial),
       KMFinal: parseInt(kmFinal),
@@ -81,43 +77,56 @@ export function FinalizaViaje({route, navigation}) {
       usuarioRegistro: user.IdUsuario,
       // entMercancia: parseInt(entMercancia),
       devolucion: parseInt(entDevolucion),
-      fechaDispositivo: fechaDispositivo, //agregada fecha del dispositivo
+      fechaDispositivo: fechaDispositivo // agregada fecha del dispositivo
     };
+    console.log('viaje');
     console.log(viaje);
-    //deshabilita boton
-    setDisabled(true);
+
+    if (forms.unfinishedForms.length > 0) {
+      console.log;
+      // var pendingAux = forms.unfinishedForms.splice(0, 1);
+      forms.unfinishedForms.splice(0, 1);
+      // getFinalRuta
+      // console.log(pendingAux);
+      // setPendingForms(pendingAux);
+    }
 
     const result = await axios.post(
       `${BASE_URL}viajes/InsertFinalViaje`,
       viaje,
     );
+
+    console.log('result');
+    console.log(result.data);
     const res = JSON.parse(result.data);
     if (res[0].MENSAJE == 'ok') {
-      authFlow.setEstatus(6, 0, user.IdUsuario, estado.IdViaje).then(
-        authFlow.getEstatus(0, user.IdUsuario).then(
-          Alert.alert('Listo!', 'Haz terminado tu ruta por hoy', [
-            {
-              text: 'Terminar',
-              onPress: () => navigation.navigate('LandingScreen'),
-            },
-          ]),
-        ),
-      );
+    // if (result.data == 'ok') {
+      Alert.alert('Listo!', 'Haz terminado esta ruta', [
+        {
+          text: 'Terminar',
+          onPress: () => Finalizado(),
+        },
+      ]);
     } else {
       alert(result);
-      //habilita boton
-      setDisabled(false);
     }
-    console.log(res);
-    //habilita boton
-    setDisabled(false);
+    // console.log(res);
   };
+  function Finalizado() {
+    if (forms.unfinishedForms.length > 0) {
+      getFinalRuta();
+    } else {
+      navigation.navigate('SelectionMode');
+    }
+  }
 
   const getFinalRuta = async () => {
     console.log('IDVIAJE');
-    console.log(idViaje);
+    console.log(forms.unfinishedForms[contador].Viaje);
     await axios
-      .get(`${BASE_URL}viajes/GetFinalizaViaje?viaje=${idViaje}`)
+      .get(
+        `${BASE_URL}viajes/GetFinalizaViaje?viaje=${forms.unfinishedForms[contador].Viaje}`,
+      )
       .then((result) => {
         const res = JSON.parse(result.data)[0];
         console.log(res);
@@ -165,7 +174,7 @@ export function FinalizaViaje({route, navigation}) {
         alert(response.customButton);
       } else {
         const source = {uri: response.uri};
-        console.log('response', JSON.stringify(response));
+        // console.log('response', JSON.stringify(response));
 
         setImagen64(response.assets[0].base64);
         setContentType(response.assets[0].type);
@@ -174,14 +183,29 @@ export function FinalizaViaje({route, navigation}) {
   };
 
   useEffect(() => {
+    console.log('camvio forms');
+    console.log(forms.unfinishedForms);
+  }, [pendingforms]);
+
+  useEffect(() => {
     getFinalRuta();
+    console.log('pendingforms');
+    console.log(pendingforms);
+
+    setPendingForms(pendingforms);
   }, []);
   return (
     <SafeAreaView>
       <View style={styles.header}>
-        <Text style={[styles.headerText]}>Finalización de ruta</Text>
+        <Text style={[styles.headerText]}>
+          Finalización de ruta No terminada
+        </Text>
         <Text style={[styles.headerText]}>Ruta: </Text>
+        <Text style={{fontSize: 16}}>{forms.unfinishedForms[0].Ruta}</Text>
         <Text style={[styles.headerText]}>Fecha: </Text>
+        <Text style={{fontSize: 16}}>
+          {forms.unfinishedForms[0].FechaProgramada}
+        </Text>
       </View>
       <View style={{marginHorizontal: 10, paddingTop: 10}}>
         <View style={styles.checkboxContainer}>
@@ -280,37 +304,13 @@ export function FinalizaViaje({route, navigation}) {
             }}
           />
         </View>
-
-        {/* <View>
-
-                    <Text>
-                        {visitasDiarias} Visita diaria
-                    </Text>
-                </View>
-
-                <View>
-
-                    <Text>
-                        {visitasEfectivas} Visitas efectivas
-                    </Text>
-                </View> */}
-
-        {/*<View>
-          <Text style={{padding: 5}}>Promocion: {promocion}</Text>
-        </View>*/}
       </View>
       <View style={styles.btnSubmitContainer}>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => insertFinalaViaje()}>
           <Text style={styles.btnSubmitText}>Terminar mi ruta</Text>
-        </TouchableOpacity> */}
-        <Button
-          color="rgb(27,67,136)"
-          title="Terminar mi ruta"
-          disabled={disabled}
-          onPress={() => insertFinalaViaje()}
-        />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

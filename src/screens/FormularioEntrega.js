@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   AppState,
   Alert,
+  Button,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -18,6 +19,7 @@ import {UserContext} from '../context/UserContext';
 import {EstatusContext} from '../context/EstatusContext';
 import {LentesHandler} from '../components/LentesHandler';
 import {CommonActions} from '@react-navigation/native';
+import {getDeviceDate} from '../hooks/common';
 
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
@@ -29,8 +31,12 @@ export default function Formulario({route, navigation}) {
   const {idTienda, nombreTienda} = route.params;
   const user = React.useContext(UserContext);
 
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
+
   //asi se envia para POST (server recibe modelo)
   async function insertFormulario(navigation, cant) {
+    var fechaDispositivo = getDeviceDate();
     if (cant <= 0) {
       Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
         {text: 'Aceptar'},
@@ -44,10 +50,14 @@ export default function Formulario({route, navigation}) {
       idViaje: estado.IdViaje, //agregar
       cant: cant,
       idUsuario: user.IdUsuario,
+      fechaDispositivo: fechaDispositivo, // agregado para la fecha del dispositivo
+      idVisita: estado.Visita,
     };
 
     console.log(formulario);
-
+    //deshabilitar boton
+    setDisabled(true);
+    
     const result = await axios.post(
       `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
@@ -59,6 +69,8 @@ export default function Formulario({route, navigation}) {
     if (res[0].result == 'ok') {
       await authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje);
       await authFlow.getEstatus(0, user.IdUsuario);
+      //habilitar boton 
+      setDisabled(false);
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
           text: 'Aceptar',
@@ -72,7 +84,8 @@ export default function Formulario({route, navigation}) {
     } else {
       alert('error');
     }
-
+     //habilitar boton 
+    setDisabled(false);
     console.log(result.data);
     return result;
   }
@@ -103,7 +116,7 @@ export default function Formulario({route, navigation}) {
     try {
       await axios
         .get(`${BASE_URL}Articulos/GetArticulos`, {params})
-        .then(res => {
+        .then((res) => {
           const result = res.data;
           let jsonArticulos = JSON.parse(result);
 
@@ -117,6 +130,7 @@ export default function Formulario({route, navigation}) {
   useEffect(() => {
     entregas.length = 0;
     GetArticulos(idTienda);
+    console.log(`Este es el estado: ${estado}`);
 
     return () => {};
   }, []);
@@ -126,6 +140,7 @@ export default function Formulario({route, navigation}) {
     return () => {
       console.log('PANTALLA');
       console.log(estado.Modulo);
+      console.log(estado);
       if (estado.Modulo && estado.Modulo != 'FormularioEntrega') {
         //navega a la ultima pantalla en que se encontraba el usuario
         navigation.dispatch(
@@ -155,6 +170,7 @@ export default function Formulario({route, navigation}) {
           {/* <Text> idTienda: {idTienda}</Text> */}
           {/* <Text>nombreTienda: {nombreTienda}</Text> */}
           <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
 
         <Text style={{padding: 20, fontWeight: 'bold'}}>
@@ -187,13 +203,12 @@ export default function Formulario({route, navigation}) {
       </View>
 
       <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity
-          style={styles.btnSubmit}
+        <Button
+          color="rgb(27,67,136)"
+          title="Enviar"
+          disabled={disabled}
           onPress={() => insertFormulario(navigation)}
-          // onPress={() => navigation.navigate('MostradorDespues')}
-        >
-          <Text style={styles.btnSubmitText}>Siguiente</Text>
-        </TouchableOpacity>
+        />
       </View>
     </SafeAreaView>
   );

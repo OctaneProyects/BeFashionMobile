@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   Alert,
+  Button,
   SafeAreaView,
   View,
   StyleSheet,
@@ -18,6 +19,7 @@ import {BASE_URL} from '../config';
 import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
@@ -36,6 +38,9 @@ export function MostradorDespuesServicio({route, navigation}) {
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
+
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
 
   launchCamera = (tipo) => {
     let options = {
@@ -76,6 +81,7 @@ export function MostradorDespuesServicio({route, navigation}) {
   };
 
   async function guardarImagen() {
+    var fechaDispositivo = getDeviceDate();
     let img = {
       img: [
         {
@@ -85,6 +91,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita,
         },
         {
           idTipo: 5,
@@ -95,16 +103,22 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita,
         },
       ],
     };
 
     try {
       console.log(estado);
+      //deshabilitar boton
+      setDisabled(true);
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
       if (res) {
         await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
         authFlow.getEstatus(0, user.IdUsuario);
+        //habilitar boton
+        setDisabled(false);
         Alert.alert('Listo', 'Se han guardado las imagenes', [
           {
             text: 'Aceptar',
@@ -118,7 +132,11 @@ export function MostradorDespuesServicio({route, navigation}) {
       }
     } catch (error) {
       console.log(error);
+      //habilitar boton
+      setDisabled(false);
     }
+    //habilitar boton
+    setDisabled(false);
   }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
@@ -152,6 +170,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con las siguientes caracteristicas
@@ -192,20 +211,14 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{width: '10%', height: '50%', marginLeft: 20}}
             source={{uri: filePathM3}}></Image>
         </View>
-
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.btnSubmit}
-            onPress={
-              () => guardarImagen()
-              //enviar === 0
-              //  ? () => navigation.navigate('TerminaTienda')
-              //  : () => {
-              //Llamada api para guardar
-            }>
-            <Text style={styles.btnSubmitText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View style={{paddingHorizontal: 20}}>
+        <Button
+          color="rgb(27,67,136)"
+          title="Siguiente"
+          disabled={disabled}
+          onPress={() => guardarImagen()}
+        />
       </View>
     </SafeAreaView>
   );
