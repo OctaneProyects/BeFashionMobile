@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import {BASE_URL} from '../config';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import {getDistance, getPreciseDistance} from 'geolib';
@@ -67,7 +67,6 @@ export function LandingScreen({route, navigation}) {
   const [ruta, setRuta] = useState({});
   const [dataGraph, setDataGraph] = useState([]);
   const [tiendas, setTiendas] = useState([]);
-  // const [location, setLocation] = useState({ latitude: 0, longitude: 0 });
   const [cantTiendas, setCanTiendas] = useState(0);
   const [btnContinuar, setBtnContinuar] = useState(false);
   const isFocused = useIsFocused();
@@ -78,6 +77,36 @@ export function LandingScreen({route, navigation}) {
     latitudeDelta: 3,
     longitudeDelta: 3,
   });
+
+  //metodo nuevo v 1.4.4
+  useEffect(() => {
+    const _watcher = Geolocation.watchPosition(
+      (position) => {
+        const {latitude, longitude} = position.coords;
+        setLocation({latitude: latitude, longitude: longitude});
+      },
+      (error) => {
+        console.log(`Error al iniciar el watch: ${error}`);
+      },
+      {
+        enableHighAccuracy: true,
+        distanceFilter: 0,
+        interval: 5000,
+        fastestInterval: 2000,
+      },
+    );
+    return () => {
+      Geolocation.clearWatch(_watcher);
+    };
+  }, []);
+
+  //se ejecuta cada que cambia la ubicacion v1.4.4
+  useEffect(() => {
+    console.log('nueva region: ', location);
+    return () => {
+      console.log('Region actualizada');
+    };
+  }, [location]);
 
   useEffect(() => {
     if (isFocused === true) {
@@ -90,6 +119,7 @@ export function LandingScreen({route, navigation}) {
     }
     return () => {};
   }, [isFocused]);
+
   //Esta funcion valida la distancia entre el dispositivo y la tienda
   async function validateDistance(latTienda, longTienda, pos) {
     //si se presiona la tienda anterior()
@@ -112,7 +142,7 @@ export function LandingScreen({route, navigation}) {
         );
       }
     } else if (pos == estado.PasoActual) {
-      getLocation();
+      // getLocation();
       var dis = getDistance(
         {latitude: latTienda, longitude: longTienda},
         {latitude: location.latitude, longitude: location.longitude},
@@ -162,6 +192,7 @@ export function LandingScreen({route, navigation}) {
       }
     }
   }
+
   //FUNCION PARA RESETEAR LA ULTIMA VISITA
   async function resetUltimaTienda(pos) {
     try {
@@ -225,7 +256,7 @@ export function LandingScreen({route, navigation}) {
     setIsLoading(true); //cargando
     // setStepCant();
     await GetRuta();
-    await getLocation();
+    // await getLocation();
     console.log('ESTADO');
     console.log(estado);
     console.log('RUTA');
@@ -295,15 +326,16 @@ export function LandingScreen({route, navigation}) {
       console.log('Terminando con el estado');
     };
   }, [estado]);
+
   //Este useEffect se detona cuando se cambia se completa/omite una tienda
   //Construye la grafica y obtiene la ubicacion de la siguiente tienda
   useEffect(() => {
     chartConstructor();
-    //getLocation();
     return () => {
       console.log('Desmontado despues del cambio de paso');
     };
   }, [stepValue]);
+
   //Este Est para la cantiendas
   useEffect(() => {
     chartConstructor();
@@ -314,6 +346,7 @@ export function LandingScreen({route, navigation}) {
       console.log('Desmontado despues del cambio de cantidad de tiendas');
     };
   }, [cantTiendas]);
+
   function verificaCompletado() {
     setStep(estado.PasoActual);
     //verifica que si ya se completo la ultima tienda
@@ -330,6 +363,7 @@ export function LandingScreen({route, navigation}) {
       setBtnContinuar(false);
     }
   }
+
   //constructor de la grafica
   function chartConstructor() {
     console.log(`Terminados: ${stepValue}`);
@@ -370,6 +404,7 @@ export function LandingScreen({route, navigation}) {
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   }
+
   //fucnion para regresar las tiendas
   const GetTiendas = (idRuta) => {
     labels.length = 0;
@@ -469,6 +504,8 @@ export function LandingScreen({route, navigation}) {
       alert(error);
     }
   }
+
+  //nuevo metodo 1.4.4 Obtener Ubicacion constante
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -587,9 +624,9 @@ export function LandingScreen({route, navigation}) {
                         longitudeDelta: 0.0,
                       }}
                       showsUserLocation={true}
-                      onUserLocationChange={(locationChangedResult) =>
-                        getLocation()
-                      }
+                      // onUserLocationChange={(locationChangedResult) =>
+                      //   getLocation()
+                      // }
                     />
                   )}
                 </View>
@@ -634,8 +671,18 @@ export function LandingScreen({route, navigation}) {
                     latitudeDelta: 3,
                     longitudeDelta: 3,
                   }}
-                  showsUserLocation={true}
-                />
+                  showsUserLocation={true}>
+                  {tiendas.map((marker, index) => (
+                    <Marker
+                      key={index}
+                      title={marker.Nombre}
+                      coordinate={{
+                        latitude: marker.Latitud,
+                        longitude: marker.Longitud,
+                      }}
+                    />
+                  ))}
+                </MapView>
               )}
             </View>
           )}
