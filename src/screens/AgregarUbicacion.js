@@ -25,6 +25,8 @@ import {EstatusContext} from '../context/EstatusContext';
 import {useFocusEffect} from '@react-navigation/core';
 import {getDeviceDate} from '../hooks/common';
 import {globalStyles} from '../styles/styles';
+import {Loading} from '../components/Loading';
+
 // v1.4.4 maps
 export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
@@ -41,6 +43,7 @@ export function AgregarUbicacion({navigation}) {
   const [openSuc, setOpenSuc] = useState(false);
   const {authFlow} = React.useContext(EstatusContext);
   const {estado} = React.useContext(EstatusContext);
+  const [loading, setLoading] = useState(false);
 
   //disabled de button
   const [disabled, setDisabled] = useState(false);
@@ -62,7 +65,7 @@ export function AgregarUbicacion({navigation}) {
   const _mapView = React.createRef();
 
   useEffect(() => {
-    console.log('este hook si se esta haciendo');
+    
     const _watchId = Geolocation.watchPosition(
       (position) => {
         const {latitude, longitude} = position.coords;
@@ -75,6 +78,7 @@ export function AgregarUbicacion({navigation}) {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         });
+        
       },
       (error) => {
         console.log(`Error al iniciar el watch: ${error}`);
@@ -294,7 +298,9 @@ export function AgregarUbicacion({navigation}) {
                 zIndex={100}></DropDownPicker>
             </View>
             <View style={(styles.rowView, {paddingTop: 20})}>
-              <Text>Latitud: {latitudActual} Longitud: {longitudActual}</Text>
+              <Text>
+                Latitud: {latitudActual} Longitud: {longitudActual}
+              </Text>
             </View>
 
             <View
@@ -332,13 +338,14 @@ export function AgregarUbicacion({navigation}) {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      {/* <Loading loading={loading} /> */}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     margin: 10,
   },
   comentsContainer: {
