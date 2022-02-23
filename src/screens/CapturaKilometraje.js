@@ -22,6 +22,7 @@ import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {Loading} from '../components/Loading';
 import {getDeviceDate} from '../hooks/common';
 import {LogOutUser} from '../components/LogOutUser';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function CapturaKilometraje({route, navigation}) {
   const user = React.useContext(UserContext);
@@ -37,7 +38,7 @@ export default function CapturaKilometraje({route, navigation}) {
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
   const [loading, setLoading] = useState(false);
-
+  const isFocused = useIsFocused;
   //hook para deshabilitar boton
   const [disabled, setDisabled] = useState(false);
 
@@ -155,7 +156,7 @@ export default function CapturaKilometraje({route, navigation}) {
               [
                 {
                   text: 'Aceptar',
-                  onPress: () => navigation.goBack(),
+                  onPress: () => navigation.navigate('SelectionMode'),
                 },
               ],
             );
@@ -173,7 +174,7 @@ export default function CapturaKilometraje({route, navigation}) {
     await GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
     return () => {};
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (estado != null) {
@@ -203,7 +204,7 @@ export default function CapturaKilometraje({route, navigation}) {
         console.log('termina el estado');
       };
     }
-  }, [estado]);
+  }, [estado, isFocused]);
 
   const handleLocationPermission = async () => {
     let permissionCheck = '';
