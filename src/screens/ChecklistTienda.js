@@ -32,7 +32,7 @@ export default function TerminaViaje({route, navigation}) {
   const [isAlcance, setAlcance] = useState();
   const [comentarios, setComentarios] = useState('');
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda} = route.params;
+  // const {idTienda, nombreTienda} = route.params;
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
@@ -57,7 +57,7 @@ export default function TerminaViaje({route, navigation}) {
       const form = {
         // idVisita: 1,
         idViaje: estado.IdViaje,
-        idTienda: idTienda,
+        idTienda: estado.IdTienda,
         idUsuario: user.IdUsuario,
         isExhibido: isExhibido,
         isSurtido: isSurtido,
@@ -79,7 +79,7 @@ export default function TerminaViaje({route, navigation}) {
           if (result[0].result == 'okay') {
             await authFlow.setEstatus(
               6,
-              idTienda,
+              estado.IdTienda,
               user.IdUsuario,
               estado.IdViaje,
             );
@@ -133,7 +133,7 @@ export default function TerminaViaje({route, navigation}) {
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
-          <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>{estado.NombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{fontStyle: 'italic'}}>
