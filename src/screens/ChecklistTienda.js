@@ -106,15 +106,15 @@ export default function TerminaViaje({route, navigation}) {
   useEffect(() => {
     // return () => {
     //   if (estado) {
-        //navega a la ultima pantalla en que se encontraba el usuario
-        navigation.dispatch(
-          CommonActions.navigate({
-            name: estado.Modulo,
-            // params: {
-            //   user: 'jane',
-            // },
-          }),
-        );
+    //navega a la ultima pantalla en que se encontraba el usuario
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: estado.Modulo,
+        // params: {
+        //   user: 'jane',
+        // },
+      }),
+    );
     //   }
     // };
   }, [estado]);
@@ -239,11 +239,13 @@ export default function TerminaViaje({route, navigation}) {
           style={styles.checkbox}
         /> */}
       </View>
-      <View>
-        <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold'}}>
-          Boletos: {estado.Boletos}{' '}
-        </Text>
-      </View>
+      {isAlcance ? (
+        <View>
+          <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold'}}>
+            Boletos: {estado.Boletos}{' '}
+          </Text>
+        </View>
+      ) : null}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}>
