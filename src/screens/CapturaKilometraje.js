@@ -25,6 +25,7 @@ import {LogOutUser} from '../components/LogOutUser';
 import {useIsFocused} from '@react-navigation/native';
 
 export default function CapturaKilometraje({route, navigation}) {
+  const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
   const [ruta, setRuta] = useState([]);
   const [km, setkm] = useState(0);
@@ -38,7 +39,7 @@ export default function CapturaKilometraje({route, navigation}) {
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
   const [loading, setLoading] = useState(false);
-  const isFocused = useIsFocused;
+
   //hook para deshabilitar boton
   const [disabled, setDisabled] = useState(false);
 
@@ -129,9 +130,8 @@ export default function CapturaKilometraje({route, navigation}) {
     //habilita boton
     setDisabled(false);
   }
-
   //fucnion para regresar las tiendas
-  const GetRuta = async () => {
+  async function GetRuta() {
     const params = {
       opc: 3,
       idUsuario: user.IdUsuario,
@@ -165,18 +165,19 @@ export default function CapturaKilometraje({route, navigation}) {
     } catch (e) {
       alert(`Ocurrio un error ${e}`);
     }
-  };
-
-  useEffect(async () => {
+  }
+  useEffect(() => {
+    if (!isFocused) return;
     console.log('Validando permisos de ubicacion');
     handleLocationPermission();
     console.log('GetRuta');
-    await GetRuta();
+    GetRuta();
     authFlow.getEstatus(1, user.IdUsuario);
     return () => {};
   }, [isFocused]);
 
   useEffect(() => {
+    if (!isFocused) return;
     if (estado != null) {
       console.log('USE EFFECT DEL ESTADO');
       console.log(estado);
