@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   Alert,
+  Button,
   SafeAreaView,
   View,
   StyleSheet,
@@ -18,26 +19,30 @@ import {BASE_URL} from '../config';
 import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
+import {getDeviceDate} from '../hooks/common';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
   const [filePathM64, setFilePathM64] = useState();
   const [fileMContentType, setFileMContentType] = useState();
 
-  // const [filePathM364, setFilePathM364] = useState();
-  // const [filePathM3, setFilePathM3] = useState('FileM3');
-  // const [fileM3ContentType, setFileM3ContentType] = useState();
+  const [filePathM364, setFilePathM364] = useState();
+  const [filePathM3, setFilePathM3] = useState('FileM3');
+  const [fileM3ContentType, setFileM3ContentType] = useState();
 
   const ContentType = 'image/jpeg';
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
-  const {idTienda, nombreTienda, uri, base64} = route.params;
+  // const {idTienda, nombreTienda, uri, base64} = route.params;
 
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
 
-  launchCamera = tipo => {
+  //hook para deshabilitar boton
+  const [disabled, setDisabled] = useState(false);
+
+  launchCamera = (tipo) => {
     let options = {
       maxWidth: 1024,
       maxHeight: 768,
@@ -47,7 +52,7 @@ export function MostradorDespuesServicio({route, navigation}) {
         path: 'images',
       },
     };
-    ImagePicker.launchCamera(options, response => {
+    ImagePicker.launchCamera(options, (response) => {
       console.log('Response = ', response);
 
       if (response.didCancel) {
@@ -64,12 +69,19 @@ export function MostradorDespuesServicio({route, navigation}) {
           setFilePathM(response.assets[0].uri);
           setFilePathM64(response.assets[0].base64);
           setFileMContentType(response.assets[0].type);
+        } else if (tipo == 2) {
+          setFilePathM3(response.assets[0].uri);
+          setFilePathM364(response.assets[0].base64);
+          setFileM3ContentType(response.assets[0].type);
         }
+
+
       }
     });
   };
 
   async function guardarImagen() {
+    var fechaDispositivo = getDeviceDate();
     let img = {
       img: [
         {
@@ -79,54 +91,68 @@ export function MostradorDespuesServicio({route, navigation}) {
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita,
         },
         {
           idTipo: 5,
-          contenido: base64,
-          contentType: ContentType,
+          // contenido: base64,
+          // contentType: ContentType,
+          contenido: filePathM364,
+          contentType: fileM3ContentType,
           UsuarioRegistro: user.IdUsuario,
           IdViaje: estado.IdViaje,
           idTienda: estado.IdTienda,
+          fechaDispositivo: fechaDispositivo, //agregado para fecha del dispositivo
+          idVisita: estado.Visita,
         },
       ],
     };
 
     try {
       console.log(estado);
+      //deshabilitar boton
+      setDisabled(true);
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
       if (res) {
-        await authFlow.setEstatus(11, idTienda, user.IdUsuario, estado.IdViaje);
+        await authFlow.setEstatus(11, estado.IdTienda, user.IdUsuario, estado.IdViaje);
         authFlow.getEstatus(0, user.IdUsuario);
+        //habilitar boton
+        setDisabled(false);
         Alert.alert('Listo', 'Se han guardado las imagenes', [
           {
             text: 'Aceptar',
             onPress: () =>
               navigation.navigate('ChecklistTienda', {
-                idTienda,
-                nombreTienda,
+                idTienda: estado.IdTienda,
+                nombreTienda: estado.NombreTienda,
               }),
           },
         ]);
       }
     } catch (error) {
       console.log(error);
+      //habilitar boton
+      setDisabled(false);
     }
+    //habilitar boton
+    setDisabled(false);
   }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(() => {
-    if (estado) {
+    // if (estado) {
       //navega a la ultima pantalla en que se encontraba el usuario
       navigation.dispatch(
         CommonActions.navigate({
           name: estado.Modulo,
-          params: {idTienda, nombreTienda},
+          // params: {idTienda, nombreTienda},
         }),
       );
-    }
-    return () => {
-      console.log('SI ESTA RECARGANDO');
-    };
+    // }
+    // return () => {
+    //   console.log('SI ESTA RECARGANDO');
+    // };
   }, [estado]);
 
   React.useLayoutEffect(() => {
@@ -143,7 +169,8 @@ export function MostradorDespuesServicio({route, navigation}) {
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
-          <Text style={styles.headerText}>{nombreTienda}</Text>
+          <Text style={styles.headerText}>{estado.NombreTienda}</Text>
+          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
           Cuarto paso: Tomar capturar con las siguientes caracteristicas
@@ -171,33 +198,27 @@ export function MostradorDespuesServicio({route, navigation}) {
             style={{paddingLeft: 2}}
             size={20}
             name="camera"
-            // onPress={() => launchCamera(2)}
-            onPress={() =>
-              navigation.navigate('PictureScreenScan', {
-                screen: 'MostradorDespuesServicio',
-              })
-            }
+            onPress={() => launchCamera(2)}
+            //onPress={() =>
+            //  navigation.navigate('PictureScreenScan', {
+            //    screen: 'MostradorDespuesServicio',
+            //  })
+            //}
           />
           <Image
             resizeMode="cover"
             resizeMethod="scale"
             style={{width: '10%', height: '50%', marginLeft: 20}}
-            source={{uri: uri}}></Image>
+            source={{uri: filePathM3}}></Image>
         </View>
-
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.btnSubmit}
-            onPress={
-              () => guardarImagen()
-              //enviar === 0
-              //  ? () => navigation.navigate('TerminaTienda')
-              //  : () => {
-              //Llamada api para guardar
-            }>
-            <Text style={styles.btnSubmitText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View style={{paddingHorizontal: 20}}>
+        <Button
+          color="rgb(27,67,136)"
+          title="Siguiente"
+          disabled={disabled}
+          onPress={() => guardarImagen()}
+        />
       </View>
     </SafeAreaView>
   );
