@@ -22,12 +22,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.8)',
         alignItems: 'center',
         justifyContent: 'center',
+        zIndex:4
     },
     container: {
         backgroundColor: 'white',
         flexDirection: 'row',
         padding: 20,
-        borderRadius: 8
+        borderRadius: 8,
     },
     text: {
         margin: 16,
