@@ -19,6 +19,7 @@ import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common';
+import {Loading} from '../components/Loading'; //agregado fix 11153
 
 export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
@@ -32,6 +33,7 @@ export function MostradorAntesServicio({route, navigation}) {
   const user = React.useContext(UserContext);
   //hook para deshabilitar boton
   const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false); //agregado fix 11153
 
   const launchCamera = () => {
     let options = {
@@ -81,17 +83,22 @@ export function MostradorAntesServicio({route, navigation}) {
     try {
       //deshabilitar boton
       setDisabled(true);
+      //mostrar loader
+      setLoading(true); // agregado fix 11153
 
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagen`, img);
       if (res) {
         const result = res.data;
         let jsonMostradorResulto = JSON.parse(result);
         console.log(res);
-        await authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje);
+        // await authFlow.setEstatus(9, idTienda, user.IdUsuario, estado.IdViaje); // removido fix 1153
+        await authFlow.setEstatus(9, idTienda, user.IdUsuario, idViaje); //agregado fix 1153
         authFlow.getEstatus(0, user.IdUsuario);
         setIsLoading(false);
         //habilitar boton
         setDisabled(false);
+        //muestra loader
+        setLoading(true); // agregado fix 11153
 
         Alert.alert('Listo', 'Se ha guardado la imagen', [
           {
@@ -100,6 +107,7 @@ export function MostradorAntesServicio({route, navigation}) {
               navigation.navigate('FormularioEntrega', {
                 idTienda: idTienda,
                 nombreTienda: nombreTienda,
+                idViaje: idViaje, //agregado fix 11153
               });
             },
             // onPress: ()=> (console.log('ESTAD0'), console.log(idViaje),  console.log(estado.IdViaje))
@@ -109,6 +117,8 @@ export function MostradorAntesServicio({route, navigation}) {
     } catch (error) {
       //habilitar boton
       setDisabled(false);
+      //oculta loader
+      setLoading(false); // agregado fix 11153
       console.log(`Ocurrio un error`, error);
     }
   };
@@ -124,6 +134,7 @@ export function MostradorAntesServicio({route, navigation}) {
         params: {
           idTienda,
           nombreTienda,
+          idViaje, //agregado fix 11153
         },
       }),
     );
@@ -170,13 +181,11 @@ export function MostradorAntesServicio({route, navigation}) {
         </View>
       </View>
       <View style={{paddingHorizontal: 20}}>
-
-
         <Button
           color="rgb(27,67,136)"
           title="Enviar"
           disabled={disabled}
-          onPress={() =>  guardarImagen()}
+          onPress={() => guardarImagen()}
         />
         {/* 
         <TouchableOpacity
@@ -185,6 +194,7 @@ export function MostradorAntesServicio({route, navigation}) {
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity> */}
       </View>
+      <Loading loading={loading} />
     </SafeAreaView>
   );
 }

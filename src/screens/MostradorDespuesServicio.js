@@ -20,6 +20,7 @@ import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
 import {getDeviceDate} from '../hooks/common';
+import {Loading} from '../components/Loading'; //agregado fix 11153
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
@@ -34,6 +35,8 @@ export function MostradorDespuesServicio({route, navigation}) {
   const [enviar, setEnviar] = useState(0);
   const user = React.useContext(UserContext);
   // const {idTienda, nombreTienda, uri, base64} = route.params;
+  const {idTienda, nombreTienda, idViaje} = route.params; //agregado fix 11153
+  const [loading, setLoading] = useState(false); //agregado fix 11153
 
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
@@ -74,8 +77,6 @@ export function MostradorDespuesServicio({route, navigation}) {
           setFilePathM364(response.assets[0].base64);
           setFileM3ContentType(response.assets[0].type);
         }
-
-
       }
     });
   };
@@ -113,19 +114,23 @@ export function MostradorDespuesServicio({route, navigation}) {
       console.log(estado);
       //deshabilitar boton
       setDisabled(true);
+      //muestra el loader
+      setLoading(true); // agregado fix 11153
       const res = await axios.post(`${BASE_URL}Tiendas/InsertImagenes`, img);
       if (res) {
-        await authFlow.setEstatus(11, estado.IdTienda, user.IdUsuario, estado.IdViaje);
+        await authFlow.setEstatus(11, idTienda, user.IdUsuario, idViaje);// estado.IdTienda removido fix 11153
         authFlow.getEstatus(0, user.IdUsuario);
         //habilitar boton
         setDisabled(false);
+        //oculta el loader
+        setLoading(false); // agregado fix 11153
         Alert.alert('Listo', 'Se han guardado las imagenes', [
           {
             text: 'Aceptar',
             onPress: () =>
               navigation.navigate('ChecklistTienda', {
-                idTienda: estado.IdTienda,
-                nombreTienda: estado.NombreTienda,
+                idTienda: idTienda,
+                nombreTienda: nombreTienda,
               }),
           },
         ]);
@@ -134,21 +139,29 @@ export function MostradorDespuesServicio({route, navigation}) {
       console.log(error);
       //habilitar boton
       setDisabled(false);
+      //oculta el loader
+      setLoading(false); // agregado fix 11153
     }
     //habilitar boton
     setDisabled(false);
+    //oculta el loader
+    setLoading(false); // agregado fix 11153
   }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
   useEffect(() => {
     // if (estado) {
-      //navega a la ultima pantalla en que se encontraba el usuario
-      navigation.dispatch(
-        CommonActions.navigate({
-          name: estado.Modulo,
-          // params: {idTienda, nombreTienda},
-        }),
-      );
+    //navega a la ultima pantalla en que se encontraba el usuario
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: estado.Modulo,
+        params: {
+          idTienda,
+          nombreTienda,
+          idViaje, //agregado fix 11153
+        },
+      }),
+    );
     // }
     // return () => {
     //   console.log('SI ESTA RECARGANDO');
@@ -156,6 +169,12 @@ export function MostradorDespuesServicio({route, navigation}) {
   }, [estado]);
 
   React.useLayoutEffect(() => {
+    console.log('idViajeeeeeeeeeeeee')
+    console.log(idViaje)
+    console.log('ESTADOIDVIAJE')
+
+    console.log(estado.IdViaje)
+
     navigation.setOptions({
       headerRight: () => (
         <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
@@ -169,7 +188,9 @@ export function MostradorDespuesServicio({route, navigation}) {
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
-          <Text style={styles.headerText}>{estado.NombreTienda}</Text>
+          {/* <Text style={styles.headerText}>{estado.NombreTienda}</Text> removidos fix 1153 */}
+          {/* <Text style={styles.headerText}>Visita número: {estado.Visita}</Text> */}
+          <Text style={styles.headerText}>{nombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
@@ -212,7 +233,7 @@ export function MostradorDespuesServicio({route, navigation}) {
             source={{uri: filePathM3}}></Image>
         </View>
       </View>
-      <View style={{paddingHorizontal: 20}}>
+      <View style={{paddingHorizontal: 20, elevation: 0}}>
         <Button
           color="rgb(27,67,136)"
           title="Siguiente"
@@ -220,6 +241,8 @@ export function MostradorDespuesServicio({route, navigation}) {
           onPress={() => guardarImagen()}
         />
       </View>
+      <Loading loading={loading} />
+      {/*agregado fix 11153*/}
     </SafeAreaView>
   );
 }

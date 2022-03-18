@@ -24,6 +24,7 @@ import axios from 'axios';
 import {BASE_URL} from '../config';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {getDeviceDate} from '../hooks/common';
+import {Loading} from '../components/Loading'; //agregado fix 11153
 
 export default function TerminaViaje({route, navigation}) {
   const [isExhibido, setExhibido] = useState();
@@ -41,8 +42,10 @@ export default function TerminaViaje({route, navigation}) {
   const [openAlcance, setOpenAlcance] = useState(false);
   const [openSurtido, setOpenSurtido] = useState(false);
 
+  const {idTienda, nombreTienda, idViaje} = route.params; //agregado fix 11153
   //hook para deshabilitar boton
   const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false); //agregado fix 11153
 
   async function terminaTienda() {
     var fechaDispositivo = getDeviceDate();
@@ -53,6 +56,8 @@ export default function TerminaViaje({route, navigation}) {
     } else {
       //deshabilitar boton
       setDisabled(true);
+      //muestra loader
+      setLoading(true); // agregado fix 11153
 
       const form = {
         // idVisita: 1,
@@ -79,13 +84,15 @@ export default function TerminaViaje({route, navigation}) {
           if (result[0].result == 'okay') {
             await authFlow.setEstatus(
               6,
-              estado.IdTienda,
+              idTienda, //estado.IdTienda, //removido fix 11153
               user.IdUsuario,
-              estado.IdViaje,
+              idViaje, //estado.IdViaje, //removido fix 11153
             );
             await authFlow.getEstatus(0, user.IdUsuario);
             //habilitar boton
             setDisabled(false);
+            //oculta loader
+            setLoading(false); // agregado fix 11153
             Alert.alert('Listo', 'Se ha guardado el checklist', [
               {
                 text: 'Aceptar',
@@ -97,6 +104,8 @@ export default function TerminaViaje({route, navigation}) {
       } catch (error) {
         //habilitar boton
         setDisabled(false);
+        //oculta loader
+        setLoading(false); // agregado fix 11153
         alert(error);
       }
     }
@@ -166,7 +175,7 @@ export default function TerminaViaje({route, navigation}) {
             {label: 'Si', value: true},
             {label: 'No', value: false},
           ]}
-          zIndex={300}
+          zIndex={3}
         />
       </View>
       <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
@@ -191,7 +200,7 @@ export default function TerminaViaje({route, navigation}) {
             {label: 'Si', value: true},
             {label: 'No', value: false},
           ]}
-          zIndex={250}
+          zIndex={2}
         />
       </View>
       <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
@@ -228,7 +237,7 @@ export default function TerminaViaje({route, navigation}) {
             {label: 'Si', value: true},
             {label: 'No', value: false},
           ]}
-          zIndex={200}
+          zIndex={2}
         />
 
         {/* <CheckBox
@@ -279,6 +288,7 @@ export default function TerminaViaje({route, navigation}) {
           onPress={() => terminaTienda()}
         />
       </View>
+      <Loading loading={loading} />
     </ScrollView>
   );
 }
@@ -286,7 +296,7 @@ export default function TerminaViaje({route, navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
+    // marginTop: 50,
     alignContent: 'space-around',
   },
   comentsContainer: {
@@ -321,6 +331,7 @@ const styles = StyleSheet.create({
   },
   btnSubmitContainer: {
     padding: 20,
+    elevation:0
   },
   btnSubmitText: {
     fontSize: 18,

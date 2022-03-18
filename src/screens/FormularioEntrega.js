@@ -20,7 +20,7 @@ import {EstatusContext} from '../context/EstatusContext';
 import {LentesHandler} from '../components/LentesHandler';
 import {CommonActions} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common';
-
+import {Loading} from '../components/Loading'; //agregado fix 11153
 export default function Formulario({route, navigation}) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
@@ -33,6 +33,7 @@ export default function Formulario({route, navigation}) {
 
   //hook para deshabilitar boton
   const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false); //agregado fix 11153
 
   //asi se envia para POST (server recibe modelo)
   async function insertFormulario(navigation, cant) {
@@ -57,7 +58,9 @@ export default function Formulario({route, navigation}) {
     console.log(formulario);
     //deshabilitar boton
     setDisabled(true);
-    
+    //muestra loader
+    setLoading(true); // agregado fix 11153
+
     const result = await axios.post(
       `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
@@ -67,10 +70,12 @@ export default function Formulario({route, navigation}) {
 
     var res = JSON.parse(result.data);
     if (res[0].result == 'ok') {
-      await authFlow.setEstatus(10, idTienda, user.IdUsuario, estado.IdViaje);
+      await authFlow.setEstatus(10, idTienda, user.IdUsuario, idViaje);
       await authFlow.getEstatus(0, user.IdUsuario);
-      //habilitar boton 
+      //habilitar boton
       setDisabled(false);
+      //oculta loader
+      setLoading(false); // agregado fix 11153
       Alert.alert('Listo', 'Se han registrado correctamente', [
         {
           text: 'Aceptar',
@@ -84,8 +89,10 @@ export default function Formulario({route, navigation}) {
     } else {
       alert('error');
     }
-     //habilitar boton 
+    //habilitar boton
     setDisabled(false);
+    //oculta loader
+    setLoading(false); // agregado fix 11153
     console.log(result.data);
     return result;
   }
@@ -146,7 +153,7 @@ export default function Formulario({route, navigation}) {
         navigation.dispatch(
           CommonActions.navigate({
             name: estado.Modulo,
-            params: {idTienda, nombreTienda},
+            params: {idTienda, nombreTienda, idViaje},
           }),
         );
       }
@@ -210,6 +217,7 @@ export default function Formulario({route, navigation}) {
           onPress={() => insertFormulario(navigation)}
         />
       </View>
+      <Loading loading={loading} /> 
     </SafeAreaView>
   );
 }
@@ -242,6 +250,7 @@ const styles = StyleSheet.create({
   btnSubmitContainer: {
     flex: 0.5,
     padding: 20,
+    elevation: 0,
   },
   btnSubmitText: {
     fontSize: 18,
