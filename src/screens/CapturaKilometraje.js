@@ -167,17 +167,18 @@ export default function CapturaKilometraje({route, navigation}) {
     }
   }
   useEffect(() => {
-    if (!isFocused) return;
-    console.log('Validando permisos de ubicacion');
-    handleLocationPermission();
-    console.log('GetRuta');
-    GetRuta();
-    authFlow.getEstatus(1, user.IdUsuario);
+    if (isFocused) {
+      console.log('Validando permisos de ubicacion');
+      handleLocationPermission();
+      console.log('GetRuta');
+      GetRuta();
+      authFlow.getEstatus(1, user.IdUsuario);
+    }
     return () => {};
   }, [isFocused]);
 
   useEffect(() => {
-    if (!isFocused) return;
+   
     if (estado != null) {
       console.log('USE EFFECT DEL ESTADO');
       console.log(estado);
@@ -205,7 +206,7 @@ export default function CapturaKilometraje({route, navigation}) {
         console.log('termina el estado');
       };
     }
-  }, [estado, isFocused]);
+  }, [estado]);
 
   const handleLocationPermission = async () => {
     let permissionCheck = '';
