@@ -13,7 +13,7 @@ import {Icon} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 
 export function LentesHandler(props) {
-  const [cantidad, setCantidad] = useState(0);
+  const [cantidad, setCantidad] = useState('');
   const {handleCant} = props;
 
   function aumentaCant() {
@@ -51,12 +51,11 @@ export function LentesHandler(props) {
           onPress={() => disminuyeCant()}
         />
         <TextInput
-          style={{fontSize: 20, marginHorizontal: 20}}
+          style={{fontSize: 16, marginHorizontal: 20}}
           value={cantidad.toString()}
           placeholder="0"
           keyboardType="number-pad"
-          onChangeText={(cant) => setCantidad(cant)}
-          keyboardType="number-pad"></TextInput>
+          onChangeText={(cant) => setCantidad(cant)}></TextInput>
         <Icon
           raised
           name="plus"
