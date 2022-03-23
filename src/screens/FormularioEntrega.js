@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppState,
   Alert,
@@ -7,28 +7,30 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
-  KeyboardAvoidingViewBase,
+  KeyboardAvoidingView,
+  Keyboard,
+  ScrollView
 } from 'react-native';
 import axios from 'axios';
-import {BASE_URL} from '../config';
-import {Icon} from 'react-native-elements';
-import {TextInput} from 'react-native-gesture-handler';
-import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext';
-import {LentesHandler} from '../components/LentesHandler';
-import {CommonActions} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common';
+import { BASE_URL } from '../config';
+import { Icon } from 'react-native-elements';
 
-export default function Formulario({route, navigation}) {
+import { UserContext } from '../context/UserContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { LentesHandler } from '../components/LentesHandler';
+import { CommonActions } from '@react-navigation/native';
+import { getDeviceDate } from '../hooks/common';
+
+export default function Formulario({ route, navigation }) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
   const [entregas] = useState([]);
   //AuthFlow
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
-  const {idTienda, nombreTienda} = route.params;
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
+  const { idTienda, nombreTienda } = route.params;
   const user = React.useContext(UserContext);
 
   //hook para deshabilitar boton
@@ -39,7 +41,7 @@ export default function Formulario({route, navigation}) {
     var fechaDispositivo = getDeviceDate();
     if (cant <= 0) {
       Alert.alert('Verifique datos', 'Ingrese cantidad valida', [
-        {text: 'Aceptar'},
+        { text: 'Aceptar' },
       ]);
       return;
     }
@@ -54,16 +56,16 @@ export default function Formulario({route, navigation}) {
       idVisita: estado.Visita,
     };
 
-    console.log(formulario);
+    //console.log(formulario);
     //deshabilitar boton
     setDisabled(true);
-    
+
     const result = await axios.post(
       `${BASE_URL}Tiendas/InsertaFormCapt`,
       formulario,
     );
-    console.log('RESULT DATA');
-    console.log(result.data);
+    //console.log('RESULT DATA');
+    //console.log(result.data);
 
     var res = JSON.parse(result.data);
     if (res[0].result == 'ok') {
@@ -84,9 +86,9 @@ export default function Formulario({route, navigation}) {
     } else {
       alert('error');
     }
-     //habilitar boton 
+    //habilitar boton 
     setDisabled(false);
-    console.log(result.data);
+    //console.log(result.data);
     return result;
   }
 
@@ -102,7 +104,7 @@ export default function Formulario({route, navigation}) {
       }
     } else {
       for (let i = 0; i < articulos.length; i++) {
-        entregas.push({id: articulos[i].Id, cant: 0});
+        entregas.push({ id: articulos[i].Id, cant: 0 });
       }
       console.log(entregas);
     }
@@ -115,7 +117,7 @@ export default function Formulario({route, navigation}) {
 
     try {
       await axios
-        .get(`${BASE_URL}Articulos/GetArticulos`, {params})
+        .get(`${BASE_URL}Articulos/GetArticulos`, { params })
         .then((res) => {
           const result = res.data;
           let jsonArticulos = JSON.parse(result);
@@ -132,7 +134,7 @@ export default function Formulario({route, navigation}) {
     GetArticulos(idTienda);
     console.log(`Este es el estado: ${estado}`);
 
-    return () => {};
+    return () => { };
   }, []);
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
@@ -146,7 +148,7 @@ export default function Formulario({route, navigation}) {
         navigation.dispatch(
           CommonActions.navigate({
             name: estado.Modulo,
-            params: {idTienda, nombreTienda},
+            params: { idTienda, nombreTienda },
           }),
         );
       }
@@ -159,58 +161,67 @@ export default function Formulario({route, navigation}) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <Text style={{color: 'white'}}>{user.name}</Text>,
+      headerRight: () => <Text style={{ color: 'white' }}>{user.name}</Text>,
     });
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.header}>
-          {/* <Text> idTienda: {idTienda}</Text> */}
-          {/* <Text>nombreTienda: {nombreTienda}</Text> */}
-          <Text style={styles.headerText}>{nombreTienda}</Text>
-          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
-        </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <TouchableWithoutFeedback
+          onPress={Keyboard.dismiss}
+        >
+      <ScrollView  
+      style={styles.container}
+      >
+        
+          <View style={styles.headerContainer}>
+            <View style={styles.header}>
+              <Text style={styles.headerText}>{nombreTienda}</Text>
+              <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
+            </View>
+            <Text style={{ paddingHorizontal: '5%', fontWeight: 'bold' }}>
+              Tercer paso: Deja productos a tienda
+            </Text>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontStyle: 'italic' }}>
+                <Icon
+                  name="info-circle"
+                  type="font-awesome"
 
-        <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Tercer paso: Deja productos a tienda
-        </Text>
+                  color="blue"></Icon>{' '}
+                Captura las cantidades entregadas de cada modelo
+              </Text>
+            </View>
+          </View>
 
-        <View style={{alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic'}}>
-            <Icon
-              name="info-circle"
-              type="font-awesome"
-              size={15}
-              color="blue"></Icon>{' '}
-            Captura las cantidades entregadas de cada modelo
-          </Text>
-        </View>
-      </View>
+          <View style={styles.articulosContainer}>
+            <FlatList
+              data={articulos}
+              keyExtractor={({ id }, index) => id}
+              renderItem={({ item }) => (
+                <LentesHandler
+                  handleCant={handleCant}
+                  key={item.id}
+                  id={item.Id}
+                  nombre={item.Nombre}></LentesHandler>
+              )}></FlatList>
+          </View>
 
-      <View style={styles.articulosContainer}>
-        <FlatList
-          data={articulos}
-          keyExtractor={({id}, index) => id}
-          renderItem={({item}) => (
-            <LentesHandler
-              handleCant={handleCant}
-              key={item.id}
-              id={item.Id}
-              nombre={item.Nombre}></LentesHandler>
-          )}></FlatList>
-      </View>
-
-      <View style={styles.btnSubmitContainer}>
-        <Button
-          color="rgb(27,67,136)"
-          title="Enviar"
-          disabled={disabled}
-          onPress={() => insertFormulario(navigation)}
-        />
-      </View>
-    </SafeAreaView>
+          <View style={styles.btnSubmitContainer}>
+            <Button
+              color="rgb(27,67,136)"
+              title="Enviar"
+              disabled={disabled}
+              onPress={() => insertFormulario(navigation)}
+            />
+          </View>
+        
+      </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -220,6 +231,7 @@ const styles = StyleSheet.create({
   },
   articulosContainer: {
     flex: 2,
+    paddingTop: '10%',
   },
   headerContainer: {
     flex: 1,
