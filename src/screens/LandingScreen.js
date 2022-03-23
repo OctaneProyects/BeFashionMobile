@@ -559,13 +559,6 @@ export function LandingScreen({route, navigation}) {
                   />
                 </View>
                 <View>
-                  <Text>
-                    {estado.Articulos ? estado.Articulos : user.Articulos}{' '}
-                    PIEZAS EN CARRO
-                  </Text>
-                </View>
-
-                <View>
                   <View style={{alignItems: 'flex-end', marginVertical: '3%'}}>
                     <TouchableOpacity
                       style={styles.skipTienda}
