@@ -28,7 +28,7 @@ export default function Formulario({route, navigation}) {
   //AuthFlow
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
-  const {idTienda, nombreTienda} = route.params;
+  const {idTienda, nombreTienda, idViaje} = route.params;
   const user = React.useContext(UserContext);
 
   //hook para deshabilitar boton
