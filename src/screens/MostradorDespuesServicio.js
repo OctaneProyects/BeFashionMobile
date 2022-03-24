@@ -149,24 +149,24 @@ export function MostradorDespuesServicio({route, navigation}) {
   }
 
   //Este Este useEffect se detona cuando se modifica el estado del viaje
-  useEffect(() => {
-    // if (estado) {
-    //navega a la ultima pantalla en que se encontraba el usuario
-    navigation.dispatch(
-      CommonActions.navigate({
-        name: estado.Modulo,
-        params: {
-          idTienda,
-          nombreTienda,
-          idViaje, //agregado fix 11153
-        },
-      }),
-    );
-    // }
-    // return () => {
-    //   console.log('SI ESTA RECARGANDO');
-    // };
-  }, [estado]);
+  // useEffect(() => {
+  //   // if (estado) {
+  //   //navega a la ultima pantalla en que se encontraba el usuario
+  //   navigation.dispatch(
+  //     CommonActions.navigate({
+  //       name: estado.Modulo,
+  //       params: {
+  //         idTienda,
+  //         nombreTienda,
+  //         idViaje, //agregado fix 11153
+  //       },
+  //     }),
+  //   );
+  //   // }
+  //   // return () => {
+  //   //   console.log('SI ESTA RECARGANDO');
+  //   // };
+  // }, [estado]);
 
   React.useLayoutEffect(() => {
     console.log('idViajeeeeeeeeeeeee')
