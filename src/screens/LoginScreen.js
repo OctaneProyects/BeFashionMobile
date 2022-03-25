@@ -5,6 +5,7 @@ import { Error } from '../components/Error';
 import { Input } from '../components/Input';
 import { AuthContext } from '../context/AuthContext';
 import { Loading } from '../components/Loading';
+import { AppVersion } from '../config';
 
 export function LoginScreen({ navigation }) {
   const { login } = useContext(AuthContext);
@@ -53,7 +54,7 @@ export function LoginScreen({ navigation }) {
         }}
       />
       <Text>
-        V 1.5
+       {AppVersion}
       </Text>
 
       <Loading loading={loading} />
