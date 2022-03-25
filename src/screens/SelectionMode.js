@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  Dimensions 
 } from 'react-native';
 import {UserContext} from '../context/UserContext';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -18,6 +19,10 @@ import {Loading} from '../components/Loading';
 import { LogOutUser } from '../components/LogOutUser';
 
 export function SelectionMode({navigation}) {
+  const { 
+    width: SCREEN_WIDTH, 
+    height: SCREEN_HEIGHT 
+    } = Dimensions.get('window');
   const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
   const [havePendingTrips, setPendingTrips] = useState(true);
@@ -188,7 +193,6 @@ export function SelectionMode({navigation}) {
                   },
                 },
               ]);
-              // getPendingTrips(2, user.Usuario);
             } else {
               getPendingTrips(2, user.Usuario);
             }
@@ -272,6 +276,7 @@ export function SelectionMode({navigation}) {
   );
 }
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     padding: 32,
@@ -287,11 +292,9 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
-    padding: 10,
-    height: '30%',
+    height: '33%',
+    paddingVertical: 2,
     borderRadius: 10,
   },
-  btnText: {
-    fontSize: 16,
-  },
+  
 });
