@@ -20,6 +20,7 @@ import {UserContext} from '../context/UserContext';
 import {CommonActions} from '@react-navigation/native';
 import {EstatusContext} from '../context/EstatusContext';
 import {getDeviceDate} from '../hooks/common';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export function MostradorDespuesServicio({route, navigation}) {
   const [filePathM, setFilePathM] = useState('FileM');
@@ -165,9 +166,8 @@ export function MostradorDespuesServicio({route, navigation}) {
 
   return (
     <SafeAreaView>
+      <ScrollView>
       <View style={styles.container}>
-        {/* <Text> idTienda: {idTienda}</Text>
-        <Text>nombreTienda: {nombreTienda}</Text> */}
         <View style={styles.header}>
           <Text style={styles.headerText}>{estado.NombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
@@ -220,6 +220,7 @@ export function MostradorDespuesServicio({route, navigation}) {
           onPress={() => guardarImagen()}
         />
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -227,7 +228,6 @@ export function MostradorDespuesServicio({route, navigation}) {
 const styles = StyleSheet.create({
   container: {
     padding: 32,
-    paddingTop: 120,
     alignItems: 'center',
   },
   row: {
