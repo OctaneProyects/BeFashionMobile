@@ -33,9 +33,7 @@ export default function CapturaKilometraje({route, navigation}) {
   // const [contentType, setContentType] = useState();
   const [imagen64, setImagen64] = useState();
   const [IdUsuario, setIdUsuario] = useState(user.IdUsuario);
-  const [IdRuta, setIdRuta] = useState(null);
   const [IdVehiculo, setIdVehiculo] = useState(user.idvehiculo);
-  const [IdEstatus, setIdEstatus] = useState(null);
   const {estado} = React.useContext(EstatusContext);
   const {authFlow} = React.useContext(EstatusContext);
   const [loading, setLoading] = useState(false);
@@ -132,6 +130,7 @@ export default function CapturaKilometraje({route, navigation}) {
   }
   //fucnion para regresar las tiendas
   async function GetRuta() {
+    setLoading(true);
     const params = {
       opc: 3,
       idUsuario: user.IdUsuario,
@@ -141,14 +140,47 @@ export default function CapturaKilometraje({route, navigation}) {
       await axios
         .get(`${BASE_URL}rutas/GetRutaUsuario`, {params})
         .then((res) => {
+          setLoading(false);
           const result = res.data;
           let jsonRuta = JSON.parse(result);
-          if (jsonRuta[0] != null) {
+          if(Array.isArray(jsonRuta) && jsonRuta.length >0){
+            if(jsonRuta[0].Id <= 0){
+              Alert.alert(
+                'Aviso',
+                'No tienes ruta asignada el día de hoy, contacta a un administrador',
+                [
+                  {
+                    text: 'Aceptar',
+                    onPress: () => navigation.navigate('SelectionMode'),
+                  },
+                ],
+              );
+            }
+            if(jsonRuta[0].ArticulosTotales <= 0){
+              Alert.alert(
+                'Aviso',
+                'No tienes artículos asignados el día de hoy, contacta a un administrador',
+                [
+                  {
+                    text: 'Aceptar',
+                    onPress: () => navigation.navigate('SelectionMode'),
+                  },
+                ],
+              );
+            }
+            if(jsonRuta[0].IdVehiculo <= 0){
+              Alert.alert(
+                'Aviso',
+                'No tienes vehículo asignado, contacta a un administrador',
+                [
+                  {
+                    text: 'Aceptar',
+                    onPress: () => navigation.navigate('SelectionMode'),
+                  },
+                ],
+              );
+            }
             setRuta(jsonRuta[0]);
-            console.log('ruta');
-            console.log(jsonRuta);
-            console.log('Ruta obj');
-            console.log(ruta);
           } else {
             Alert.alert(
               'Aviso',
@@ -163,7 +195,15 @@ export default function CapturaKilometraje({route, navigation}) {
           }
         });
     } catch (e) {
-      alert(`Ocurrio un error ${e}`);
+      setLoading(false);
+      Alert.alert(`Ocurrio un error al obtener la ruta, revisa tu conexión a internet o contacta a un administrador.`,
+      [
+        {
+          text: 'Aceptar',
+          onPress: () => navigation.navigate('SelectionMode'),
+        },
+      ]);
+      console.log(e);
     }
   }
   useEffect(() => {
@@ -250,7 +290,7 @@ export default function CapturaKilometraje({route, navigation}) {
           <Text>Placas: </Text>
           <Text style={styles.placasText}>{user.vehiculo}</Text>
           <Text>Articulos:</Text>
-          <Text style={styles.placasText}>{user.articulos}</Text>
+          <Text style={styles.placasText}>{ruta.ArticulosTotales}</Text>
         </View>
         <Text style={{paddingHorizontal: 20, fontWeight: 'bold'}}>
           Primer paso: Captura kilometraje inicial
