@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   Button,
@@ -17,15 +17,15 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext';
-import {CommonActions} from '@react-navigation/native';
+import { UserContext } from '../context/UserContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions } from '@react-navigation/native';
 import axios from 'axios';
-import {BASE_URL} from '../config';
+import { BASE_URL } from '../config';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {getDeviceDate} from '../hooks/common';
+import { getDeviceDate } from '../hooks/common';
 
-export default function TerminaViaje({route, navigation}) {
+export default function TerminaViaje({ route, navigation }) {
   const [isExhibido, setExhibido] = useState();
   const [isSurtido, setSurtido] = useState();
   const [cantNoFashion, setCantNoFashion] = useState('');
@@ -34,8 +34,8 @@ export default function TerminaViaje({route, navigation}) {
   const user = React.useContext(UserContext);
   // const {idTienda, nombreTienda} = route.params;
   //AuthFlow
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
 
   const [openExibido, setOpenExibido] = useState(false);
   const [openAlcance, setOpenAlcance] = useState(false);
@@ -122,21 +122,19 @@ export default function TerminaViaje({route, navigation}) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={{color: 'white', paddingHorizontal: 15}}>{user.name}</Text>
+        <Text style={{ color: 'white', paddingHorizontal: 15 }}>{user.name}</Text>
       ),
     });
   }, []);
 
   return (
     <ScrollView nestedScrollEnabled={true} style={styles.container}>
-      <View style={{alignItems: 'center', padding: 10}}>
-        {/* <Text> idTienda: {idTienda}</Text>
-        <Text>nombreTienda: {nombreTienda}</Text> */}
+      <View style={{ alignItems: 'center' }}>
         <View style={styles.header}>
           <Text style={styles.headerText}>{estado.NombreTienda}</Text>
           <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
         </View>
-        <Text style={{fontStyle: 'italic'}}>
+        <Text style={{ fontStyle: 'italic' }}>
           <Icon
             name="info-circle"
             type="font-awesome-5"
@@ -145,14 +143,14 @@ export default function TerminaViaje({route, navigation}) {
           Completa el checklist para finalizar esta Visita
         </Text>
       </View>
-      <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Exh, colocado al alcance publico
       </Text>
       <View
         style={[
           Platform.OS === 'ios'
-            ? {zIndex: 3000, zIndexInverse: 1000}
-            : {width: '20%'},
+            ? { zIndex: 3000, zIndexInverse: 1000 }
+            : { width: '20%' },
           styles.dropdown,
         ]}>
         <DropDownPicker
@@ -163,20 +161,20 @@ export default function TerminaViaje({route, navigation}) {
           setValue={setExhibido}
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={300}
         />
       </View>
-      <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         No permitido surtir al 100%
       </Text>
       <View
         style={[
           Platform.OS === 'ios'
-            ? {zIndex: 2000, zIndexInverse: 2000}
-            : {width: '20%'},
+            ? { zIndex: 2000, zIndexInverse: 2000 }
+            : { width: '20%' },
           styles.dropdown,
         ]}>
         <DropDownPicker
@@ -188,16 +186,16 @@ export default function TerminaViaje({route, navigation}) {
           position="relative"
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={250}
         />
       </View>
-      <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Lentes no fashion en el exh Cantidad
       </Text>
-      <View style={{padding: 10}}>
+      <View style={{ padding: 10 }}>
         <TextInput
           keyboardType="numeric"
           //textAlign="center"
@@ -207,14 +205,14 @@ export default function TerminaViaje({route, navigation}) {
           onChangeText={(text) => setCantNoFashion(text)}
         />
       </View>
-      <Text style={{marginHorizontal: 10, fontWeight: 'bold'}}>
+      <Text style={{ marginHorizontal: 10, fontWeight: 'bold' }}>
         Lentes al alcance para el cliente S/N
       </Text>
       <View
         style={[
           Platform.OS === 'ios'
-            ? {zIndex: 1000, zIndexInverse: 3000, margin: 10}
-            : {width: '20%'},
+            ? { zIndex: 1000, zIndexInverse: 3000, margin: 10 }
+            : { width: '20%' },
           styles.dropdown,
         ]}>
         <DropDownPicker
@@ -225,8 +223,8 @@ export default function TerminaViaje({route, navigation}) {
           setOpen={setOpenAlcance}
           listMode="SCROLLVIEW"
           items={[
-            {label: 'Si', value: true},
-            {label: 'No', value: false},
+            { label: 'Si', value: true },
+            { label: 'No', value: false },
           ]}
           zIndex={200}
         />
@@ -241,7 +239,7 @@ export default function TerminaViaje({route, navigation}) {
       </View>
       {isAlcance ? (
         <View>
-          <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold'}}>
+          <Text style={{ margin: 10, fontSize: 18, fontWeight: 'bold' }}>
             Promociones: {estado.Boletos}{' '}
           </Text>
         </View>
@@ -253,24 +251,17 @@ export default function TerminaViaje({route, navigation}) {
           <View style={styles.comentsContainer}>
             <Text style={styles.label}>Comentarios:</Text>
             <TextInput
-              style={styles.textInput}
+              style={styles.textInputMultiLine}
               multiline
               numberOfLines={5}
+              maxLength={1000}
               value={comentarios}
               placeholder="Agregue comentarios"
-              placeholderTextColor="#000"
+              scrollEnabled={true}
               onChangeText={setComentarios}></TextInput>
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-      {/* <View style={styles.btnSubmitContainer}>
-        <TouchableOpacity
-          style={styles.btnSubmit}
-          onPress={() => terminaTienda()}>
-          <Text style={styles.btnSubmitText}>Finalizar</Text>
-        </TouchableOpacity>
-      </View> */}
-
       <View style={styles.btnSubmitContainer}>
         <Button
           color="rgb(27,67,136)"
@@ -286,7 +277,6 @@ export default function TerminaViaje({route, navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
     alignContent: 'space-around',
   },
   comentsContainer: {
@@ -312,6 +302,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     height: 40,
   },
+  textInputMultiLine: {
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    borderWidth: 2,
+    fontSize: 15,
+    textAlignVertical: 'top',
+    placeholderTextColor: 'gray',
+    height: 120
+  },
   btnSubmit: {
     marginTop: 40,
     padding: 10,
@@ -320,6 +319,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(27,67,136)',
   },
   btnSubmitContainer: {
+    margin: 20,
     padding: 20,
   },
   btnSubmitText: {
@@ -329,8 +329,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    marginVertical: '5%',
   },
   headerText: {
     fontSize: 24,
@@ -339,6 +338,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   ipCantNoFashion: {
+    backgroundColor: 'white',
     borderColor: 'gray',
     borderWidth: 2,
     fontSize: 18,
