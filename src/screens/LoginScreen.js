@@ -53,7 +53,7 @@ export function LoginScreen({ navigation }) {
         }}
       />
       <Text>
-        V 1.4.4
+        V 1.5
       </Text>
 
       <Loading loading={loading} />
@@ -86,8 +86,10 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     resizeMode: 'stretch',
-    width: '80%',
+    width: '75%',
     height: '15%',
+    minHeight:'15%',
+    minWidth:'30%',
     marginBottom: '15%',
   },
 });
