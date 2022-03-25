@@ -19,6 +19,7 @@ import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export function MostradorAntesServicio({route, navigation}) {
   const [filePath, setFilePath] = useState(null);
@@ -141,10 +142,9 @@ export function MostradorAntesServicio({route, navigation}) {
   }, []);
   return (
     <SafeAreaView>
+      <ScrollView>
       <View style={styles.container}>
         <View style={styles.header}>
-          {/* <Text> idTienda: {idTienda}</Text> */}
-          {/* <Text>nombreTienda: {nombreTienda}</Text> */}
           <Text style={styles.headerText}>{nombreTienda}</Text>
         </View>
         <Text style={{padding: 20, fontWeight: 'bold'}}>
@@ -185,6 +185,7 @@ export function MostradorAntesServicio({route, navigation}) {
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity> */}
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -192,7 +193,6 @@ export function MostradorAntesServicio({route, navigation}) {
 const styles = StyleSheet.create({
   container: {
     padding: 32,
-    paddingTop: 120,
     alignItems: 'center',
   },
   row: {
