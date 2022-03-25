@@ -138,7 +138,7 @@ export default function TerminaViaje({route, navigation}) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView nestedScrollEnabled={true}>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <View style={{alignItems: 'center'}}>
           <View style={styles.header}>
             <Text style={styles.headerText}>{estado.NombreTienda}</Text>
@@ -282,9 +282,10 @@ export default function TerminaViaje({route, navigation}) {
               onPress={() => terminaTienda()}
             />
           </View>
-          <Loading loading={loading} />
+          
         </KeyboardAvoidingView>
       </ScrollView>
+      <Loading loading={loading} />
     </SafeAreaView>
   );
 }
@@ -325,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlignVertical: 'top',
     placeholderTextColor: 'gray',
-    height: 120,
+    height: 60,
   },
   btnSubmit: {
     marginTop: 40,
