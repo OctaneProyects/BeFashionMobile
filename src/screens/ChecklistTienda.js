@@ -128,7 +128,7 @@ export default function TerminaViaje({route, navigation}) {
   }, []);
 
   return (
-    <ScrollView estedScrollEnabled={true} style={styles.container}>
+    <ScrollView nestedScrollEnabled={true} style={styles.container}>
       <View style={{alignItems: 'center', padding: 10}}>
         {/* <Text> idTienda: {idTienda}</Text>
         <Text>nombreTienda: {nombreTienda}</Text> */}
@@ -242,7 +242,7 @@ export default function TerminaViaje({route, navigation}) {
       {isAlcance ? (
         <View>
           <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold'}}>
-            Boletos: {estado.Boletos}{' '}
+            Promociones: {estado.Boletos}{' '}
           </Text>
         </View>
       ) : null}
