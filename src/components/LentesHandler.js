@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   FlatList,
@@ -9,26 +9,36 @@ import {
   View,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import {Icon} from 'react-native-elements';
-import {TextInput} from 'react-native-gesture-handler';
+import { Icon } from 'react-native-elements';
+import { TextInput } from 'react-native-gesture-handler';
 
 export function LentesHandler(props) {
   const [cantidad, setCantidad] = useState('');
-  const {handleCant} = props;
+  const { handleCant } = props;
 
   function aumentaCant() {
+    if (cantidad == '' || isNaN(cantidad)) {
+      setCantidad(1);
+    }
+    else{
     setCantidad(parseInt(cantidad) + 1);
+    }
   }
 
   const disminuyeCant = () => {
+    if (cantidad == '' || isNaN(cantidad)) {
+      setCantidad(-1);
+    }
+    else{
     setCantidad(cantidad - 1);
+    }
   };
 
   useEffect(() => {
     // handleCant(props.id, cantidad);
 
   }, [])
-  
+
   useEffect(() => {
     handleCant(props.id, cantidad);
   }, [cantidad]);
@@ -51,7 +61,7 @@ export function LentesHandler(props) {
           onPress={() => disminuyeCant()}
         />
         <TextInput
-          style={{fontSize: 16, marginHorizontal: 20}}
+          style={{ fontSize: 16, marginHorizontal: 20 }}
           value={cantidad.toString()}
           placeholder="0"
           keyboardType="number-pad"
