@@ -371,6 +371,10 @@ const styles = StyleSheet.create({
   btnSubmitContainer: {
     marginVertical: 10,
     paddingVertical: 10,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   btnSubmitText: {
     fontSize: 18,
