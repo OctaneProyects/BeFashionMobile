@@ -14,23 +14,23 @@ import {
   ScrollView
 } from 'react-native';
 import axios from 'axios';
-import {BASE_URL} from '../config';
-import {Icon} from 'react-native-elements';
-import {TextInput} from 'react-native-gesture-handler';
-import {UserContext} from '../context/UserContext';
-import {EstatusContext} from '../context/EstatusContext';
-import {LentesHandler} from '../components/LentesHandler';
-import {CommonActions} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common';
-import {Loading} from '../components/Loading'; //agregado fix 11153
-export default function Formulario({route, navigation}) {
+import { BASE_URL } from '../config';
+import { Icon } from 'react-native-elements';
+import { TextInput } from 'react-native-gesture-handler';
+import { UserContext } from '../context/UserContext';
+import { EstatusContext } from '../context/EstatusContext';
+import { LentesHandler } from '../components/LentesHandler';
+import { CommonActions } from '@react-navigation/native';
+import { getDeviceDate } from '../hooks/common';
+import { Loading } from '../components/Loading'; //agregado fix 11153
+export default function Formulario({ route, navigation }) {
   // const [cantidad, setCantidad] = useState(0);
   const [articulos, setArticulos] = useState([]);
   const [entregas] = useState([]);
   //AuthFlow
-  const {estado} = React.useContext(EstatusContext);
-  const {authFlow} = React.useContext(EstatusContext);
-  const {idTienda, nombreTienda, idViaje} = route.params;
+  const { estado } = React.useContext(EstatusContext);
+  const { authFlow } = React.useContext(EstatusContext);
+  const { idTienda, nombreTienda, idViaje } = route.params;
   const user = React.useContext(UserContext);
 
   //hook para deshabilitar boton
@@ -155,7 +155,7 @@ export default function Formulario({route, navigation}) {
         navigation.dispatch(
           CommonActions.navigate({
             name: estado.Modulo,
-            params: {idTienda, nombreTienda, idViaje},
+            params: { idTienda, nombreTienda, idViaje },
           }),
         );
       }
@@ -174,52 +174,54 @@ export default function Formulario({route, navigation}) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.header}>
-          {/* <Text> idTienda: {idTienda}</Text> */}
-          {/* <Text>nombreTienda: {nombreTienda}</Text> */}
-          <Text style={styles.headerText}>{nombreTienda}</Text>
-          <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
-        </View>
+      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{flexGrow: 1}}>
+        <View style={styles.headerContainer}>
+          <View style={styles.header}>
+            {/* <Text> idTienda: {idTienda}</Text> */}
+            {/* <Text>nombreTienda: {nombreTienda}</Text> */}
+            <Text style={styles.headerText}>{nombreTienda}</Text>
+            <Text style={styles.headerText}>Visita número: {estado.Visita}</Text>
+          </View>
 
-        <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Tercer paso: Deja productos a tienda
-        </Text>
-
-        <View style={{alignItems: 'center'}}>
-          <Text style={{fontStyle: 'italic'}}>
-            <Icon
-              name="info-circle"
-              type="font-awesome"
-              size={15}
-              color="blue"></Icon>{' '}
-            Captura las cantidades entregadas de cada modelo
+          <Text style={{ padding: 20, fontWeight: 'bold' }}>
+            Tercer paso: Deja productos a tienda
           </Text>
+
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{ fontStyle: 'italic' }}>
+              <Icon
+                name="info-circle"
+                type="font-awesome"
+                size={15}
+                color="blue"></Icon>{' '}
+              Captura las cantidades entregadas de cada modelo
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.articulosContainer}>
-        <FlatList
-          data={articulos}
-          keyExtractor={({id}, index) => id}
-          renderItem={({item}) => (
-            <LentesHandler
-              handleCant={handleCant}
-              key={item.id}
-              id={item.Id}
-              nombre={item.Nombre}></LentesHandler>
-          )}></FlatList>
-      </View>
+        <View style={styles.articulosContainer}>
+          <FlatList
+            data={articulos}
+            keyExtractor={({ id }, index) => id}
+            renderItem={({ item }) => (
+              <LentesHandler
+                handleCant={handleCant}
+                key={item.id}
+                id={item.Id}
+                nombre={item.Nombre}></LentesHandler>
+            )}></FlatList>
+        </View>
 
-      <View style={styles.btnSubmitContainer}>
-        <Button
-          color="rgb(27,67,136)"
-          title="Enviar"
-          disabled={disabled}
-          onPress={() => insertFormulario(navigation)}
-        />
-      </View>
-      <Loading loading={loading} /> 
+        <View style={styles.btnSubmitContainer}>
+          <Button
+            color="rgb(27,67,136)"
+            title="Enviar"
+            disabled={disabled}
+            onPress={() => insertFormulario(navigation)}
+          />
+        </View>
+      </ScrollView>
+      <Loading loading={loading} />
     </SafeAreaView>
   );
 }

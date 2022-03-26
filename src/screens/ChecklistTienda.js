@@ -251,7 +251,7 @@ export default function TerminaViaje({route, navigation}) {
         </View>
         {isAlcance ? (
           <View>
-            <Text style={{margin: 10, fontSize: 18, fontWeight: 'bold'}}>
+            <Text style={{marginHorizontal: 10, fontSize: 16, fontWeight: 'bold'}}>
               Promociones: {estado.Boletos}{' '}
             </Text>
           </View>
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // marginTop: 50,
-    alignContent: 'space-around',
+    
   },
   comentsContainer: {
     paddingHorizontal: 10,
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     marginVertical: '5%',
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 20,
   },
   dropdown: {
     marginHorizontal: 10,

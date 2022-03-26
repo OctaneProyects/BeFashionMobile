@@ -7,6 +7,7 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  ScrollView,
   Alert,
 } from 'react-native';
 
@@ -178,6 +179,7 @@ export function FinalizaViaje({route, navigation}) {
   }, []);
   return (
     <SafeAreaView>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.header}>
         <Text style={[styles.headerText]}>Finalización de ruta</Text>
         <Text style={[styles.headerText]}>Ruta: </Text>
@@ -312,6 +314,7 @@ export function FinalizaViaje({route, navigation}) {
           onPress={() => insertFinalaViaje()}
         />
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
