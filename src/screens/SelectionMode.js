@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
     height: '33%',
-    paddingVertical: '5%',
+    paddingVertical: '2%',
     borderRadius: 10,
   },
 });
