@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
-  Dimensions 
+  Dimensions,
 } from 'react-native';
 import {UserContext} from '../context/UserContext';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -16,13 +16,10 @@ import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common';
 import {Loading} from '../components/Loading';
-import { LogOutUser } from '../components/LogOutUser';
+import {LogOutUser} from '../components/LogOutUser';
 
 export function SelectionMode({navigation}) {
-  const { 
-    width: SCREEN_WIDTH, 
-    height: SCREEN_HEIGHT 
-    } = Dimensions.get('window');
+  const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
   const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
   const [havePendingTrips, setPendingTrips] = useState(true);
@@ -242,9 +239,7 @@ export function SelectionMode({navigation}) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-       <LogOutUser></LogOutUser>
-      ),
+      headerRight: () => <LogOutUser></LogOutUser>,
     });
   }, []);
 
@@ -276,7 +271,6 @@ export function SelectionMode({navigation}) {
   );
 }
 const styles = StyleSheet.create({
-  
   container: {
     flex: 1,
     padding: 32,
@@ -293,8 +287,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
     height: '33%',
-    paddingVertical: 2,
+    paddingVertical: '5%',
     borderRadius: 10,
   },
-  
 });
