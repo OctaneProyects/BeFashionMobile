@@ -286,7 +286,8 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     backgroundColor: '#DDDDDD',
-    height: '33%',
+    //height: '33%',
+    //minHeight:18,
     paddingVertical: '2%',
     borderRadius: 10,
   },
