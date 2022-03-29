@@ -19,7 +19,7 @@ import {BASE_URL} from '../config';
 import {EstatusContext} from '../context/EstatusContext';
 import {CommonActions} from '@react-navigation/native';
 import {getDeviceDate} from '../hooks/common';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import {Loading} from '../components/Loading'; //agregado fix 11153
 
 export function MostradorAntesServicio({route, navigation}) {
@@ -153,49 +153,49 @@ export function MostradorAntesServicio({route, navigation}) {
   }, []);
   return (
     <SafeAreaView>
+      <Loading loading={loading} />
       <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>{nombreTienda}</Text>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>{nombreTienda}</Text>
+          </View>
+          <Text style={{padding: 20, fontWeight: 'bold'}}>
+            Segundo paso: Al llegar a la tienda tomar foto con caracteristicas
+          </Text>
+          <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
+          <View style={styles.row}>
+            <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
+            <Icon
+              name="camera"
+              size={25}
+              color="gray"
+              padding={20}
+              onPress={() => launchCamera()}
+            />
+          </View>
+          <View style={styles.row}>
+            <Image
+              resizeMode="cover"
+              resizeMethod="scale"
+              style={{justifyContent: 'center', width: 100, height: 100}}
+              source={{uri: filePath}}></Image>
+          </View>
         </View>
-        <Text style={{padding: 20, fontWeight: 'bold'}}>
-          Segundo paso: Al llegar a la tienda tomar foto con caracteristicas
-        </Text>
-        <Text>Tome una foto antes de comenzar a surtir el exibidor</Text>
-        <View style={styles.row}>
-          <Text style={{paddingRight: 8}}>Imagen mostrador:</Text>
-          <Icon
-            name="camera"
-            size={25}
-            color="gray"
-            padding={20}
-            onPress={() => launchCamera()}
+        <View style={{paddingHorizontal: 20}}>
+          <Button
+            color="rgb(27,67,136)"
+            title="Enviar"
+            disabled={disabled}
+            onPress={() => guardarImagen()}
           />
-        </View>
-        <View style={styles.row}>
-          <Image
-            resizeMode="cover"
-            resizeMethod="scale"
-            style={{justifyContent: 'center', width: 100, height: 100}}
-            source={{uri: filePath}}></Image>
-        </View>
-      </View>
-      <View style={{paddingHorizontal: 20}}>
-        <Button
-          color="rgb(27,67,136)"
-          title="Enviar"
-          disabled={disabled}
-          onPress={() => guardarImagen()}
-        />
-        {/* 
+          {/* 
         <TouchableOpacity
           style={styles.btnSubmit}
           onPress={() => guardarImagen()}>
           <Text style={styles.btnSubmitText}>Enviar</Text>
         </TouchableOpacity> */}
-      </View>
+        </View>
       </ScrollView>
-      <Loading loading={loading} />
     </SafeAreaView>
   );
 }

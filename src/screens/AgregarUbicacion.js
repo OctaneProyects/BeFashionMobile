@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BASE_URL } from '../config';
+import React, {useState, useEffect} from 'react';
+import {BASE_URL} from '../config';
 import {
   AppState,
   View,
@@ -12,24 +12,25 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import Geolocation, { watchPosition } from 'react-native-geolocation-service';
-import { Input } from '../components/Input';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import Geolocation, {watchPosition} from 'react-native-geolocation-service';
+import {Input} from '../components/Input';
 import axios from 'axios';
-import { UserContext } from '../context/UserContext';
-import { AuthContext } from '../context/AuthContext';
-import { EstatusContext } from '../context/EstatusContext';
-import { useFocusEffect } from '@react-navigation/core';
-import { getDeviceDate } from '../hooks/common';
-import { globalStyles } from '../styles/styles';
-import { Loading } from '../components/Loading';
-import { ScrollView } from 'react-native-gesture-handler';
+import {UserContext} from '../context/UserContext';
+import {AuthContext} from '../context/AuthContext';
+import {EstatusContext} from '../context/EstatusContext';
+import {useFocusEffect} from '@react-navigation/core';
+import {getDeviceDate} from '../hooks/common';
+import {globalStyles} from '../styles/styles';
+import {Loading} from '../components/Loading';
+import {ScrollView} from 'react-native-gesture-handler';
 
 // v1.4.4 maps
-export function AgregarUbicacion({ navigation }) {
+export function AgregarUbicacion({navigation}) {
   const [latitudActual, setLatitud] = useState(0);
   const [longitudActual, setLongitud] = useState(0);
   const [clientes, setClientes] = useState([]);
@@ -42,8 +43,8 @@ export function AgregarUbicacion({ navigation }) {
   const user = React.useContext(UserContext);
   const [openCli, setOpenCli] = useState(false);
   const [openSuc, setOpenSuc] = useState(false);
-  const { authFlow } = React.useContext(EstatusContext);
-  const { estado } = React.useContext(EstatusContext);
+  const {authFlow} = React.useContext(EstatusContext);
+  const {estado} = React.useContext(EstatusContext);
   const [loading, setLoading] = useState(false);
 
   //disabled de button
@@ -68,10 +69,10 @@ export function AgregarUbicacion({ navigation }) {
   useEffect(() => {
     const _watchId = Geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
+        const {latitude, longitude} = position.coords;
         setLatitud(latitude);
         setLongitud(longitude);
-        setLocation({ latitude: latitude, longitude: longitude });
+        setLocation({latitude: latitude, longitude: longitude});
         setRegion({
           latitude: location.latitude,
           longitude: location.longitude,
@@ -139,7 +140,7 @@ export function AgregarUbicacion({ navigation }) {
         let jsonClientes = JSON.parse(result);
         setClientes(
           jsonClientes.map((cli) => {
-            return { label: cli.Nombre, value: cli.Id };
+            return {label: cli.Nombre, value: cli.Id};
           }),
         );
       });
@@ -160,7 +161,7 @@ export function AgregarUbicacion({ navigation }) {
 
           setSucursales(
             jsonSucursal.map((suc) => {
-              return { label: suc.Nombre, value: suc.Id };
+              return {label: suc.Nombre, value: suc.Id};
             }),
           );
           console.log('Sucursales');
@@ -184,7 +185,7 @@ export function AgregarUbicacion({ navigation }) {
       Alert.alert(
         'Verifique datos',
         'Verifique que todos los campos contengan datos validos',
-        [{ text: 'Aceptar' }],
+        [{text: 'Aceptar'}],
       );
       return;
     }
@@ -193,8 +194,10 @@ export function AgregarUbicacion({ navigation }) {
       setDisabled(true);
       await axios
         .post(
-          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${user.IdUsuario
-          }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${estado.PasoActual + 1
+          `${BASE_URL}Tiendas/InsertTienda?Nombre=${nombreTienda}&ClaveTienda=${cr}&IdCliente=${cliente}&Latitud=${latitudActual}&Longitud=${longitudActual}&UsuarioRegistro=${
+            user.IdUsuario
+          }&IdSucursal=${sucursal}&IdRuta=${estado.Ruta}&Orden=${
+            estado.PasoActual + 1
           }&fechaDispositivo=${fechaDispositivo}`,
           {},
         )
@@ -243,9 +246,9 @@ export function AgregarUbicacion({ navigation }) {
     };
   }, [location]);
   return (
-    <SafeAreaView style={styles.container} >
+    <SafeAreaView style={styles.container}>
       <View>
-        <View style={({ flex: 1 }, styles.containermap)}>
+        <View style={({flex: 1}, styles.containermap)}>
           <StatusBar barStyle="dark-content" />
           {location ? (
             <MapView
@@ -256,8 +259,8 @@ export function AgregarUbicacion({ navigation }) {
               showsUserLocation={true}
               followUserLocation={true}
               showsMyLocationButton={true}
-            // region={region}
-            // onRegionChangeComplete={(location) => setLocation(location)}
+              // region={region}
+              // onRegionChangeComplete={(location) => setLocation(location)}
             />
           ) : null}
         </View>
@@ -267,9 +270,7 @@ export function AgregarUbicacion({ navigation }) {
           </Text>
         </View>
         <View
-          style={
-            (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
-          }>
+          style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 300} : {})}>
           <DropDownPicker
             placeholder="Selecciona un cliente"
             value={cliente}
@@ -287,7 +288,7 @@ export function AgregarUbicacion({ navigation }) {
         </View>
         <View style={styles.rowView}>
           <Input
-            style={{ borderWidth: 1.3 }}
+            style={{borderWidth: 1.3}}
             placeholder="Nombre"
             onChangeText={setnombreTienda}
           />
@@ -297,7 +298,7 @@ export function AgregarUbicacion({ navigation }) {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.rowView}>
               <Input
-                style={{ borderWidth: 1.3 }}
+                style={{borderWidth: 1.3}}
                 placeholder="CR"
                 onChangeText={setCR}
               />
@@ -305,10 +306,7 @@ export function AgregarUbicacion({ navigation }) {
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
         <View
-          style={
-            (styles.rowView,
-              Platform.OS === 'ios' ? { zIndex: 100 } : {})
-          }>
+          style={(styles.rowView, Platform.OS === 'ios' ? {zIndex: 100} : {})}>
           <DropDownPicker
             placeholder="Selecciona un sucursal"
             value={sucursal}
@@ -317,7 +315,7 @@ export function AgregarUbicacion({ navigation }) {
             setOpen={setOpenSuc}
             setValue={setSucursal}
             setItems={setSucursales}
-            dropDownDirection="TOP"
+            dropDownDirection={Platform.OS === 'ios' ? 'BOTTOM' : 'TOP'}
             zIndex={100}></DropDownPicker>
         </View>
         <View style={styles.btnSubmitContainer}>
@@ -328,7 +326,6 @@ export function AgregarUbicacion({ navigation }) {
             onPress={() => insertTienda()}
           />
         </View>
-
       </View>
 
       {/* <Loading loading={loading} /> */}
@@ -364,7 +361,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     backgroundColor: 'rgb(27,67,136)',
-
   },
   btnSubmitContainer: {
     //marginTop: '30%',
@@ -393,6 +389,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     minHeight: '20%',
     maxHeight: '70%',
-    paddingVertical: '2%'
-  }
+    paddingVertical: '2%',
+  },
 });
