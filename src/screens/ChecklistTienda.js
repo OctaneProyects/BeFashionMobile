@@ -249,7 +249,7 @@ export default function TerminaViaje({route, navigation}) {
           style={styles.checkbox}
         /> */}
         </View>
-        {isAlcance ? (
+        {isExhibido ? (
           <View>
             <Text style={{marginHorizontal: 10, fontSize: 16, fontWeight: 'bold'}}>
               Promociones: {estado.Boletos}{' '}

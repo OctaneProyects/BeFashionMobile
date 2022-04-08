@@ -556,29 +556,39 @@ export function LandingScreen({ route, navigation }) {
                   />
                 </View>
                 <View>
-                  <View style={{ alignItems: 'flex-end', marginVertical: '3%' }}>
-                    <TouchableOpacity
-                      style={styles.skipTienda}
-                      onPress={() =>
-                        Alert.alert(
-                          'Omitir tienda',
-                          `Esta seguro de omitir esta tienda? ${tiendas[stepValue].Nombre}`,
-                          [
-                            {
-                              text: 'Aceptar',
-                              onPress: () => {
-                                skipTienda();
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View>
+                      <Text>Artículos:
+                        {ruta ? (
+                          <> {ruta.ArticulosTotales}</>
+                        ) : (
+                          <>0</>
+                        )}
+                      </Text></View>
+                    <View style={{ alignItems: 'flex-end', marginVertical: '3%' }}>
+                      <TouchableOpacity
+                        style={styles.skipTienda}
+                        onPress={() =>
+                          Alert.alert(
+                            'Omitir tienda',
+                            `Esta seguro de omitir esta tienda? ${tiendas[stepValue].Nombre}`,
+                            [
+                              {
+                                text: 'Aceptar',
+                                onPress: () => {
+                                  skipTienda();
+                                },
                               },
-                            },
-                            { text: 'cancelar' },
-                          ],
-                        )
-                      }>
-                      <Text style={{ fontSize: 12, color: 'black' }}>
-                        Omitir tienda{' '}
-                        <Icon name="ban" size={15} color="red"></Icon>
-                      </Text>
-                    </TouchableOpacity>
+                              { text: 'cancelar' },
+                            ],
+                          )
+                        }>
+                        <Text style={{ fontSize: 12, color: 'black' }}>
+                          Omitir tienda{' '}
+                          <Icon name="ban" size={15} color="red"></Icon>
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                   <ScrollView horizontal={true}>
                     <View style={{ alignContent: 'center' }}>
@@ -690,7 +700,7 @@ const styles = StyleSheet.create({
   containermap: {
     flex: 1,
     paddingBottom: 10,
-    maxHeight:'40%',
+    maxHeight: '40%',
     // ...StyleSheet.absoluteFillObject,
   },
   map: {

@@ -289,8 +289,6 @@ export default function CapturaKilometraje({route, navigation}) {
           <Text style={styles.header}>Iniciar Ruta</Text>
           <Text>Placas: </Text>
           <Text style={styles.placasText}>{user.vehiculo}</Text>
-          <Text>Articulos:</Text>
-          <Text style={styles.placasText}>{ruta.ArticulosTotales}</Text>
         </View>
         <Text style={{paddingHorizontal: 20, fontWeight: 'bold'}}>
           Primer paso: Captura kilometraje inicial
