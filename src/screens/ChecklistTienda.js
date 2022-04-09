@@ -244,14 +244,14 @@ export default function TerminaViaje({route, navigation}) {
           {/* <CheckBox
           value={isAlcance}
           onValueChange={setAlcance}
-
           tintColors={{ true: 'rgb(27,67,136)' }}
           style={styles.checkbox}
         /> */}
         </View>
-        {isAlcance ? (
+        {isExhibido ? (
           <View>
-            <Text style={{marginHorizontal: 10, fontSize: 16, fontWeight: 'bold'}}>
+            <Text
+              style={{marginHorizontal: 10, fontSize: 16, fontWeight: 'bold'}}>
               Promociones: {estado.Boletos}{' '}
             </Text>
           </View>
@@ -282,7 +282,6 @@ export default function TerminaViaje({route, navigation}) {
               onPress={() => terminaTienda()}
             />
           </View>
-          
         </KeyboardAvoidingView>
       </ScrollView>
       <Loading loading={loading} />
@@ -294,7 +293,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // marginTop: 50,
-    
   },
   comentsContainer: {
     paddingHorizontal: 10,

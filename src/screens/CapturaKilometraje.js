@@ -143,8 +143,8 @@ export default function CapturaKilometraje({route, navigation}) {
           setLoading(false);
           const result = res.data;
           let jsonRuta = JSON.parse(result);
-          if(Array.isArray(jsonRuta) && jsonRuta.length >0){
-            if(jsonRuta[0].Id <= 0){
+          if (Array.isArray(jsonRuta) && jsonRuta.length > 0) {
+            if (jsonRuta[0].Id <= 0) {
               Alert.alert(
                 'Aviso',
                 'No tienes ruta asignada el día de hoy, contacta a un administrador',
@@ -156,7 +156,7 @@ export default function CapturaKilometraje({route, navigation}) {
                 ],
               );
             }
-            if(jsonRuta[0].ArticulosTotales <= 0){
+            if (jsonRuta[0].ArticulosTotales <= 0) {
               Alert.alert(
                 'Aviso',
                 'No tienes artículos asignados el día de hoy, contacta a un administrador',
@@ -168,7 +168,7 @@ export default function CapturaKilometraje({route, navigation}) {
                 ],
               );
             }
-            if(jsonRuta[0].IdVehiculo <= 0){
+            if (jsonRuta[0].IdVehiculo <= 0) {
               Alert.alert(
                 'Aviso',
                 'No tienes vehículo asignado, contacta a un administrador',
@@ -196,13 +196,15 @@ export default function CapturaKilometraje({route, navigation}) {
         });
     } catch (e) {
       setLoading(false);
-      Alert.alert(`Ocurrio un error al obtener la ruta, revisa tu conexión a internet o contacta a un administrador.`,
-      [
-        {
-          text: 'Aceptar',
-          onPress: () => navigation.navigate('SelectionMode'),
-        },
-      ]);
+      Alert.alert(
+        `Ocurrio un error al obtener la ruta, revisa tu conexión a internet o contacta a un administrador.`,
+        [
+          {
+            text: 'Aceptar',
+            onPress: () => navigation.navigate('SelectionMode'),
+          },
+        ],
+      );
       console.log(e);
     }
   }
@@ -289,8 +291,6 @@ export default function CapturaKilometraje({route, navigation}) {
           <Text style={styles.header}>Iniciar Ruta</Text>
           <Text>Placas: </Text>
           <Text style={styles.placasText}>{user.vehiculo}</Text>
-          <Text>Articulos:</Text>
-          <Text style={styles.placasText}>{ruta.ArticulosTotales}</Text>
         </View>
         <Text style={{paddingHorizontal: 20, fontWeight: 'bold'}}>
           Primer paso: Captura kilometraje inicial
