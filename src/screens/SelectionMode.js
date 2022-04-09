@@ -1,5 +1,6 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
+  SafeAreaView,
   StyleSheet,
   View,
   Text,
@@ -8,18 +9,18 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import {UserContext} from '../context/UserContext';
+import { UserContext } from '../context/UserContext';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
-import {BASE_URL} from '../config';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {useIsFocused} from '@react-navigation/native';
-import {getDeviceDate} from '../hooks/common';
-import {Loading} from '../components/Loading';
-import {LogOutUser} from '../components/LogOutUser';
+import { BASE_URL } from '../config';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { useIsFocused } from '@react-navigation/native';
+import { getDeviceDate } from '../hooks/common';
+import { Loading } from '../components/Loading';
+import { LogOutUser } from '../components/LogOutUser';
 
-export function SelectionMode({navigation}) {
-  const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
+export function SelectionMode({ navigation }) {
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
   const isFocused = useIsFocused();
   const user = React.useContext(UserContext);
   const [havePendingTrips, setPendingTrips] = useState(true);
@@ -35,7 +36,7 @@ export function SelectionMode({navigation}) {
         usr: usr,
       };
       axios
-        .get(`${BASE_URL}viajes/GetViajesPendientes`, {params})
+        .get(`${BASE_URL}viajes/GetViajesPendientes`, { params })
         .then((result) => {
           let res = JSON.parse(result.data);
           switch (opc) {
@@ -133,8 +134,7 @@ export function SelectionMode({navigation}) {
       if (Array.isArray(unstartedTrips) && unstartedTrips.length > 0) {
         Alert.alert(
           'Tienes viajes sin realizar',
-          `No realizaste ${unstartedTrips.length} ${
-            unstartedTrips.length > 1 ? 'viajes' : 'viaje'
+          `No realizaste ${unstartedTrips.length} ${unstartedTrips.length > 1 ? 'viajes' : 'viaje'
           }. Haz click en aceptar para marcarlos como no realizados y continuar.`,
           [
             {
@@ -215,8 +215,7 @@ export function SelectionMode({navigation}) {
       if (Array.isArray(unfinishedForms) && unfinishedForms.length > 0) {
         Alert.alert(
           'Tienes Formularios sin terminar',
-          `No terminaste ${unfinishedForms.length} ${
-            unfinishedForms.length > 1 ? ' Formularios' : ' Formulario'
+          `No terminaste ${unfinishedForms.length} ${unfinishedForms.length > 1 ? ' Formularios' : ' Formulario'
           }. Haz click en aceptar para llenarlo/s.`,
           [
             {
@@ -244,7 +243,7 @@ export function SelectionMode({navigation}) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/*<View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -263,32 +262,33 @@ export function SelectionMode({navigation}) {
           }}>
           <Text style={styles.btnText}>
             Iniciar viaje{' '}
-            <Icon name="car" size={25} color="gray" padding={50} />
           </Text>
+          <Icon name="car" size={22} color="gray"/>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 32,
-    paddingTop: 120,
+    paddingHorizontal: 32,
     alignItems: 'center',
     backgroundColor: 'rgb(27,67,136)',
     justifyContent: 'center',
-    // backgroundColor: '#0F212E',
   },
   buttonContainer: {
-    width: '80%',
+    width: '100%',
   },
   button: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#DDDDDD',
     //height: '33%',
     //minHeight:18,
     paddingVertical: '2%',
     borderRadius: 10,
+    fontWeight:'300',    
   },
 });
