@@ -18,7 +18,7 @@ export function LoginScreen({ navigation }) {
   const [error, setError] = useState('');
 
   return (
-    <KeyboardAvoidingView style={{flex:1,backgroundColor: 'rgb(27,67,136)'}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container}>
@@ -70,12 +70,13 @@ export function LoginScreen({ navigation }) {
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 32,
-    paddingTop: 120,
-    alignItems: 'center',
+  keyboardContainer:{
+    flex:1,
     backgroundColor: 'rgb(27,67,136)',
+  },
+  container: {
+    alignItems: 'center',
+    padding:32,
     // backgroundColor: '#0F212E',
   },
   title: {
