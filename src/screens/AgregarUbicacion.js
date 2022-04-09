@@ -243,96 +243,99 @@ export function AgregarUbicacion({ navigation }) {
     };
   }, [location]);
   return (
-    <SafeAreaView style={styles.container} >
-      <View>
-        <View style={({ flex: 1 }, styles.containermap)}>
-          <StatusBar barStyle="dark-content" />
-          {location ? (
-            <MapView
-              ref={_mapView}
-              style={styles.map}
-              provider={PROVIDER_GOOGLE}
-              initialRegion={location}
-              showsUserLocation={true}
-              followUserLocation={true}
-              showsMyLocationButton={true}
-            // region={region}
-            // onRegionChangeComplete={(location) => setLocation(location)}
-            />
-          ) : null}
-        </View>
-        <View style={styles.rowView}>
-          <Text>
-            Latitud: {latitudActual} , Longitud: {longitudActual}
-          </Text>
-        </View>
-        <View
-          style={
-            (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
-          }>
-          <DropDownPicker
-            placeholder="Selecciona un cliente"
-            value={cliente}
-            open={openCli}
-            dropDownDirection="AUTO"
-            maxHeight={100}
-            //searchable={true}
-            items={clientes}
-            setItems={setClientes}
-            setOpen={setOpenCli}
-            setValue={(value) => {
-              setCliente(value);
-            }}
-            zIndex={300}></DropDownPicker>
-        </View>
-        <View style={styles.rowView}>
-          <Input
-            style={{ borderWidth: 1.3 }}
-            placeholder="Nombre"
-            onChangeText={setnombreTienda}
-          />
-        </View>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.rowView}>
-              <Input
-                style={{ borderWidth: 1.3 }}
-                placeholder="CR"
-                onChangeText={setCR}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-        <View
-          style={
-            (styles.rowView,
-              Platform.OS === 'ios' ? { zIndex: 100 } : {})
-          }>
-          <DropDownPicker
-            placeholder="Selecciona un sucursal"
-            value={sucursal}
-            open={openSuc}
-            items={sucursales}
-            setOpen={setOpenSuc}
-            setValue={setSucursal}
-            setItems={setSucursales}
-            dropDownDirection="TOP"
-            zIndex={100}></DropDownPicker>
-        </View>
-        <View style={styles.btnSubmitContainer}>
-          <Button
-            color="rgb(27,67,136)"
-            title="Agregar"
-            disabled={disabled}
-            onPress={() => insertTienda()}
-          />
-        </View>
-
-      </View>
-
-      {/* <Loading loading={loading} /> */}
-    </SafeAreaView>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 2 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <SafeAreaView style={styles.container} >
+            
+              
+              <View
+                style={
+                  (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
+                }>
+                <DropDownPicker
+                  placeholder="Selecciona un cliente"
+                  value={cliente}
+                  open={openCli}
+                  dropDownDirection="AUTO"
+                  maxHeight={100}
+                  //searchable={true}
+                  items={clientes}
+                  setItems={setClientes}
+                  setOpen={setOpenCli}
+                  setValue={(value) => {
+                    setCliente(value);
+                  }}
+                  zIndex={300}></DropDownPicker>
+              </View>
+              <View style={styles.rowView}>
+                <Input
+                  style={{ borderWidth: 1.3 }}
+                  placeholder="Nombre"
+                  onChangeText={setnombreTienda}
+                />
+              </View>
+              <View style={styles.rowView}>
+                <Input
+                  style={{ borderWidth: 1.3 }}
+                  placeholder="CR"
+                  onChangeText={setCR}
+                />
+              </View>
+              <View
+                style={
+                  (styles.rowView,
+                    Platform.OS === 'ios' ? { zIndex: 100 } : {})
+                }>
+                <DropDownPicker
+                  placeholder="Selecciona un sucursal"
+                  value={sucursal}
+                  open={openSuc}
+                  items={sucursales}
+                  maxHeight={100}
+                  setOpen={setOpenSuc}
+                  setValue={setSucursal}
+                  setItems={setSucursales}
+                  dropDownDirection="TOP"
+                  zIndex={100}></DropDownPicker>
+              </View>
+              <View style={styles.btnSubmitContainer}>
+                <Button
+                  color="rgb(27,67,136)"
+                  title="Agregar"
+                  disabled={disabled}
+                  onPress={() => insertTienda()}
+                />
+              </View>
+              <View style={styles.rowView}>
+                <Text>
+                  Latitud: {latitudActual} , Longitud: {longitudActual}
+                </Text>
+              </View>
+              <View style={({ flex: 1 }, styles.containermap)}>
+                <StatusBar barStyle="dark-content" />
+                {location ? (
+                  <MapView
+                    ref={_mapView}
+                    style={styles.map}
+                    provider={PROVIDER_GOOGLE}
+                    initialRegion={location}
+                    showsUserLocation={true}
+                    followUserLocation={true}
+                    showsMyLocationButton={true}
+                  // region={region}
+                  // onRegionChangeComplete={(location) => setLocation(location)}
+                  />
+                ) : null}
+              </View>
+              
+            
+            {/* <Loading loading={loading} /> */}
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+      <Loading loading={loading} />
+    </KeyboardAvoidingView>
   );
 }
 
@@ -381,11 +384,10 @@ const styles = StyleSheet.create({
   },
   containermap: {
     marginVertical: 8,
-    paddingTop: 8,
-    minHeight: '25%',
-    maxHeight: '40%',
+    minHeight:'25%',
+    maxHeight: '30%',
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'center', 
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -393,6 +395,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     minHeight: '20%',
     maxHeight: '70%',
-    paddingVertical: '2%'
+    paddingVertical: '2%',
   }
 });
