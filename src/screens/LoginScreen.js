@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard} from 'react-native';
+import {SafeAreaView, StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { FilledButton } from '../components/Button';
 import { Error } from '../components/Error';
 import { Input } from '../components/Input';
@@ -19,9 +19,9 @@ export function LoginScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.container}>
+          <SafeAreaView style={styles.container}>
             {/* <Heading style={styles.title}>BeFashion</Heading> */}
             <Image
               style={styles.tinyLogo}
@@ -49,7 +49,6 @@ export function LoginScreen({ navigation }) {
                   await login(usr, pass);
                 } catch (e) {
                   console.log(e);
-                  //setError(e.message);
                   Alert.alert("Uy, algo salio mal.",
                     "Verifica tus datos y tu conexión a internet",
                     [{ text: 'Aceptar' }])
@@ -57,26 +56,26 @@ export function LoginScreen({ navigation }) {
                 }
               }}
             />
-            <Text>
-              Version:{AppVersion}
-            </Text>
-            
-          </View>
+          </SafeAreaView>
+          
         </TouchableWithoutFeedback>
       </ScrollView>
       <Loading loading={loading} />
+      <Text style={styles.versionText}>
+              {AppVersion}
+            </Text>
     </KeyboardAvoidingView>
-    
+
   );
 }
 const styles = StyleSheet.create({
-  keyboardContainer:{
-    flex:1,
+  keyboardContainer: {
+    flex: 1,
     backgroundColor: 'rgb(27,67,136)',
   },
   container: {
     alignItems: 'center',
-    padding:32,
+    padding: 32,
     // backgroundColor: '#0F212E',
   },
   title: {
@@ -98,8 +97,16 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: '75%',
     height: '15%',
-    minHeight: '15%',
     minWidth: '30%',
+    minHeight: '15%',
     marginBottom: '15%',
   },
+  versionText:{
+    fontStyle:'italic',
+    textTransform:'uppercase',
+    fontWeight:'200',
+    color:'#FFF',
+    textAlign: 'right',
+    justifyContent:'flex-end',
+  }
 });
