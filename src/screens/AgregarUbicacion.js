@@ -56,13 +56,6 @@ export function AgregarUbicacion({ navigation }) {
     longitudeDelta: 3,
   });
 
-  const [region, setRegion] = useState({
-    latitude: location.latitude,
-    longitude: location.longitude,
-    latitudeDelta: 0.09,
-    longitudeDelta: 0.04,
-  });
-
   const _mapView = React.createRef();
 
   useEffect(() => {
@@ -71,13 +64,7 @@ export function AgregarUbicacion({ navigation }) {
         const { latitude, longitude } = position.coords;
         setLatitud(latitude);
         setLongitud(longitude);
-        setLocation({ latitude: latitude, longitude: longitude });
-        setRegion({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
+        setLocation({ latitude: latitude, longitude: longitude, latitudeDelta: 0.001, longitudeDelta: 0.001 });
       },
       (error) => {
         console.log(`Error al iniciar el watch: ${error}`);
@@ -229,108 +216,94 @@ export function AgregarUbicacion({ navigation }) {
   }, [cliente]);
 
   useEffect(() => {
-    setRegion({
-      latitude: location.latitude,
-      longitude: location.longitude,
-      latitudeDelta: 0.001,
-      longitudeDelta: 0.001,
-    });
-
-    console.log('nueva region: ', location);
+    console.log('nueva locación: ', location);
     //_mapView.current.animateToRegion(region);
     return () => {
-      console.log('Region actualizada');
+      console.log('Locación actualizada');
     };
   }, [location]);
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 2 }}>
+    <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1 }}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <SafeAreaView style={styles.container} >
-            
-              
-              <View
-                style={
-                  (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
-                }>
-                <DropDownPicker
-                  placeholder="Selecciona un cliente"
-                  value={cliente}
-                  open={openCli}
-                  dropDownDirection="AUTO"
-                  maxHeight={100}
-                  //searchable={true}
-                  items={clientes}
-                  setItems={setClientes}
-                  setOpen={setOpenCli}
-                  setValue={(value) => {
-                    setCliente(value);
-                  }}
-                  zIndex={300}></DropDownPicker>
-              </View>
-              <View style={styles.rowView}>
-                <Input
-                  style={{ borderWidth: 1.3 }}
-                  placeholder="Nombre"
-                  onChangeText={setnombreTienda}
+            <View
+              style={
+                (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
+              }>
+              <DropDownPicker
+                placeholder="Selecciona un cliente"
+                value={cliente}
+                open={openCli}
+                dropDownDirection="AUTO"
+                maxHeight={100}
+                //searchable={true}
+                items={clientes}
+                setItems={setClientes}
+                setOpen={setOpenCli}
+                setValue={(value) => {
+                  setCliente(value);
+                }}
+                zIndex={300}></DropDownPicker>
+            </View>
+            <View style={styles.rowView}>
+              <Input
+                style={{ borderWidth: 1.3 }}
+                placeholder="Nombre"
+                onChangeText={setnombreTienda}
+              />
+            </View>
+            <View style={styles.rowView}>
+              <Input
+                style={{ borderWidth: 1.3 }}
+                placeholder="CR"
+                onChangeText={setCR}
+              />
+            </View>
+            <View
+              style={
+                (styles.rowView,
+                  Platform.OS === 'ios' ? { zIndex: 100 } : {})
+              }>
+              <DropDownPicker
+                placeholder="Selecciona un sucursal"
+                value={sucursal}
+                open={openSuc}
+                items={sucursales}
+                maxHeight={100}
+                setOpen={setOpenSuc}
+                setValue={setSucursal}
+                setItems={setSucursales}
+                dropDownDirection="TOP"
+                zIndex={100}></DropDownPicker>
+            </View>
+            <View style={styles.btnSubmitContainer}>
+              <Button
+                color="rgb(27,67,136)"
+                title="Agregar"
+                disabled={disabled}
+                onPress={() => insertTienda()}
+              />
+            </View>
+            <View style={(styles.containermap)}>
+              <StatusBar barStyle="dark-content" />
+              {location ? (
+                <MapView
+                  ref={_mapView}
+                  style={styles.map}
+                  provider={PROVIDER_GOOGLE}
+                  initialRegion={location}
+                  showsUserLocation={true}
+                  followUserLocation={true}
+                  showsMyLocationButton={true}
                 />
-              </View>
-              <View style={styles.rowView}>
-                <Input
-                  style={{ borderWidth: 1.3 }}
-                  placeholder="CR"
-                  onChangeText={setCR}
-                />
-              </View>
-              <View
-                style={
-                  (styles.rowView,
-                    Platform.OS === 'ios' ? { zIndex: 100 } : {})
-                }>
-                <DropDownPicker
-                  placeholder="Selecciona un sucursal"
-                  value={sucursal}
-                  open={openSuc}
-                  items={sucursales}
-                  maxHeight={100}
-                  setOpen={setOpenSuc}
-                  setValue={setSucursal}
-                  setItems={setSucursales}
-                  dropDownDirection="TOP"
-                  zIndex={100}></DropDownPicker>
-              </View>
-              <View style={styles.btnSubmitContainer}>
-                <Button
-                  color="rgb(27,67,136)"
-                  title="Agregar"
-                  disabled={disabled}
-                  onPress={() => insertTienda()}
-                />
-              </View>
-              <View style={styles.rowView}>
-                <Text>
-                  Latitud: {latitudActual} , Longitud: {longitudActual}
-                </Text>
-              </View>
-              <View style={({ flex: 1 }, styles.containermap)}>
-                <StatusBar barStyle="dark-content" />
-                {location ? (
-                  <MapView
-                    ref={_mapView}
-                    style={styles.map}
-                    provider={PROVIDER_GOOGLE}
-                    initialRegion={location}
-                    showsUserLocation={true}
-                    followUserLocation={true}
-                    showsMyLocationButton={true}
-                  // region={region}
-                  // onRegionChangeComplete={(location) => setLocation(location)}
-                  />
-                ) : null}
-              </View>
-              
-            
-            {/* <Loading loading={loading} /> */}
+              ) : null}
+            </View>
+            <View style={styles.rowView}>
+              <Text>
+                Latitud: {latitudActual} , Longitud: {longitudActual}
+              </Text>
+            </View>
           </SafeAreaView>
         </TouchableWithoutFeedback>
       </ScrollView>
@@ -340,10 +313,19 @@ export function AgregarUbicacion({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+    height:'100%'
+  },
   container: {
+    alignItems: 'center',
+    margin: 10,
+    // backgroundColor: '#0F212E',
+  },
+  /*container: {
     flex: 1,
     margin: 10,
-  },
+  },*/
   comentsContainer: {
     paddingHorizontal: '7%',
   },
@@ -370,8 +352,9 @@ const styles = StyleSheet.create({
 
   },
   btnSubmitContainer: {
+    width: '100%',
     //marginTop: '30%',
-    padding: 10,
+    paddingVertical: 10,
   },
   btnSubmitText: {
     fontSize: 18,
@@ -384,10 +367,10 @@ const styles = StyleSheet.create({
   },
   containermap: {
     marginVertical: 8,
-    minHeight:'25%',
+    minHeight: '25%',
     maxHeight: '30%',
     width: '100%',
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
