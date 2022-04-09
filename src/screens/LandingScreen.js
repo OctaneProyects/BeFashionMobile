@@ -560,7 +560,7 @@ export function LandingScreen({ route, navigation }) {
                     <View>
                       <Text>Artículos:
                         {ruta ? (
-                          <> {ruta.ArticulosTotales}</>
+                          <> {estado.ArticulosTotales}</>
                         ) : (
                           <>0</>
                         )}
