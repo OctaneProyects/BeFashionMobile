@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BASE_URL } from '../config';
 import {
   AppState,
@@ -222,6 +222,13 @@ export function AgregarUbicacion({ navigation }) {
       console.log('Locación actualizada');
     };
   }, [location]);
+
+  const onCliOpen = useCallback(() => {
+    setOpenSuc(false);
+  },[]);
+  const onSucOpen = useCallback(() => {
+    setOpenCli(false);
+  },[]);
   return (
     <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1 }}>
@@ -241,6 +248,7 @@ export function AgregarUbicacion({ navigation }) {
                 items={clientes}
                 setItems={setClientes}
                 setOpen={setOpenCli}
+                onOpen={onCliOpen}
                 setValue={(value) => {
                   setCliente(value);
                 }}
@@ -274,6 +282,7 @@ export function AgregarUbicacion({ navigation }) {
                 setOpen={setOpenSuc}
                 setValue={setSucursal}
                 setItems={setSucursales}
+                onOpen={onSucOpen}
                 dropDownDirection="TOP"
                 zIndex={100}></DropDownPicker>
             </View>
