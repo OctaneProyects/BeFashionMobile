@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {SafeAreaView, StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { FilledButton } from '../components/Button';
 import { Error } from '../components/Error';
 import { Input } from '../components/Input';
@@ -19,8 +19,8 @@ export function LoginScreen({ navigation }) {
 
   return (
     <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback style={styles.touchable} onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
           <SafeAreaView style={styles.container}>
             {/* <Heading style={styles.title}>BeFashion</Heading> */}
             <Image
@@ -57,26 +57,34 @@ export function LoginScreen({ navigation }) {
               }}
             />
           </SafeAreaView>
-          
-        </TouchableWithoutFeedback>
-      </ScrollView>
+        </ScrollView>
+        <Text style={styles.versionText}>
+          {AppVersion}
+        </Text>
+      </TouchableWithoutFeedback>
       <Loading loading={loading} />
-      <Text style={styles.versionText}>
-              {AppVersion}
-            </Text>
     </KeyboardAvoidingView>
 
   );
 }
 const styles = StyleSheet.create({
+  touchable: {
+    height: '100%',
+  },
+  scrollContainer: {
+    //flex:1,
+    flexGrow: 1,
+    //backgroundColor:'red',
+    justifyContent: 'space-around'
+  },
   keyboardContainer: {
     flex: 1,
     backgroundColor: 'rgb(27,67,136)',
   },
   container: {
+    flex: 1,
     alignItems: 'center',
     padding: 32,
-    // backgroundColor: '#0F212E',
   },
   title: {
     paddingBottom: 50,
@@ -87,7 +95,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(201,202,206)',
   },
   loginButton: {
-    marginVertical: 20,
+    marginTop:8,
+    marginBottom: 50,
     backgroundColor: 'white',
     color: 'black',
     borderWidth: 4,
@@ -97,16 +106,16 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: '75%',
     height: '15%',
-    minWidth: '30%',
-    minHeight: '15%',
-    marginBottom: '15%',
+    maxHeight:'25%',
+    marginBottom: 15,
   },
-  versionText:{
-    fontStyle:'italic',
-    textTransform:'uppercase',
-    fontWeight:'200',
-    color:'#FFF',
+  versionText: {
+    fontStyle: 'italic',
+    textTransform: 'uppercase',
+    fontWeight: '200',
+    color: '#FFF',
     textAlign: 'right',
-    justifyContent:'flex-end',
+    justifyContent: 'flex-end',
+
   }
 });
