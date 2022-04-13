@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
     //flex:1,
     flexGrow: 1,
     //backgroundColor:'red',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    padding:32
   },
   keyboardContainer: {
     flex: 1,
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     textAlign: 'right',
     justifyContent: 'flex-end',
+    margin:32,
 
   }
 });
