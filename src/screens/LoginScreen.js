@@ -20,7 +20,7 @@ export function LoginScreen({ navigation }) {
   return (
     <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <TouchableWithoutFeedback style={styles.touchable} onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={Platform.OS === 'ios' ? styles.scrollContainerIOS : styles.scrollContainer}>
           <SafeAreaView style={styles.container}>
             {/* <Heading style={styles.title}>BeFashion</Heading> */}
             <Image
@@ -83,6 +83,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(27,67,136)',
   },
   container: {
+    flex: 1,
+    alignItems: 'center',
+    //padding: 32,
+  },
+  containerIOS: {
     flex: 1,
     alignItems: 'center',
     padding: 32,
