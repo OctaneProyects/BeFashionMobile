@@ -225,66 +225,95 @@ export function AgregarUbicacion({ navigation }) {
 
   const onCliOpen = useCallback(() => {
     setOpenSuc(false);
-  },[]);
+  }, []);
   const onSucOpen = useCallback(() => {
     setOpenCli(false);
-  },[]);
+  }, []);
   return (
     <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1 }}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <SafeAreaView style={styles.container} >
-            <View
-              style={
-                (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
-              }>
-              <DropDownPicker
-                placeholder="Selecciona un cliente"
-                value={cliente}
-                open={openCli}
-                dropDownDirection="AUTO"
-                maxHeight={100}
-                //searchable={true}
-                items={clientes}
-                setItems={setClientes}
-                setOpen={setOpenCli}
-                onOpen={onCliOpen}
-                setValue={(value) => {
-                  setCliente(value);
-                }}
-                zIndex={300}></DropDownPicker>
+      <TouchableWithoutFeedback style={styles.touchable} onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} nestedScrollEnabled={true} >
+          <SafeAreaView style={styles.container}>
+            <View style={styles.sectionForm}>
+              <View
+                style={
+                  (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
+                }>
+                <DropDownPicker
+                  placeholder="Selecciona un cliente"
+                  value={cliente}
+                  open={openCli}
+                  dropDownDirection="AUTO"
+                  maxHeight={100}
+                  //searchable={true}
+                  items={clientes}
+                  setItems={setClientes}
+                  setOpen={setOpenCli}
+                  onOpen={onCliOpen}
+                  listMode="MODAL"
+                  modalTitle='Selecciona un cliente'
+                  animationType='slide'
+                  setValue={(value) => {
+                    setCliente(value);
+                  }}
+                  zIndex={300}></DropDownPicker>
+              </View>
+              <View style={styles.rowView}>
+                <Input
+                  style={{ borderWidth: 1.3 }}
+                  placeholder="Nombre"
+                  onChangeText={setnombreTienda}
+                />
+              </View>
+              <View style={styles.rowView}>
+                <Input
+                  style={{ borderWidth: 1.3 }}
+                  placeholder="CR"
+                  onChangeText={setCR}
+                />
+              </View>
+              <View
+                style={
+                  (styles.rowView,
+                    Platform.OS === 'ios' ? { zIndex: 100 } : {})
+                }>
+                <DropDownPicker
+                  placeholder="Selecciona un sucursal"
+                  value={sucursal}
+                  open={openSuc}
+                  items={sucursales}
+                  maxHeight={100}
+                  setOpen={setOpenSuc}
+                  setValue={setSucursal}
+                  setItems={setSucursales}
+                  onOpen={onSucOpen}
+                  dropDownDirection="AUTO"
+                  listMode="MODAL"
+                  animationType='slide'
+                  modalTitle='Selecciona una sucursal'
+                  zIndex={100}></DropDownPicker>
+              </View>
             </View>
-            <View style={styles.rowView}>
-              <Input
-                style={{ borderWidth: 1.3 }}
-                placeholder="Nombre"
-                onChangeText={setnombreTienda}
-              />
-            </View>
-            <View style={styles.rowView}>
-              <Input
-                style={{ borderWidth: 1.3 }}
-                placeholder="CR"
-                onChangeText={setCR}
-              />
-            </View>
-            <View
-              style={
-                (styles.rowView,
-                  Platform.OS === 'ios' ? { zIndex: 100 } : {})
-              }>
-              <DropDownPicker
-                placeholder="Selecciona un sucursal"
-                value={sucursal}
-                open={openSuc}
-                items={sucursales}
-                maxHeight={100}
-                setOpen={setOpenSuc}
-                setValue={setSucursal}
-                setItems={setSucursales}
-                onOpen={onSucOpen}
-                dropDownDirection="TOP"
-                zIndex={100}></DropDownPicker>
+            <View style={(styles.sectionMap)}>
+              <View style={(styles.containermap)}>
+                <StatusBar barStyle="dark-content" />
+                {location ? (
+                  <MapView
+                    ref={_mapView}
+                    style={styles.map}
+                    provider={PROVIDER_GOOGLE}
+                    initialRegion={location}
+                    showsUserLocation={true}
+                    followUserLocation={true}
+                    showsMyLocationButton={true}
+                  />
+                ) : null}
+              </View>
+              
+                <Text>
+                  Latitud: {latitudActual} , Longitud: {longitudActual}
+                </Text>
+              
             </View>
             <View style={styles.btnSubmitContainer}>
               <Button
@@ -294,47 +323,33 @@ export function AgregarUbicacion({ navigation }) {
                 onPress={() => insertTienda()}
               />
             </View>
-            <View style={(styles.containermap)}>
-              <StatusBar barStyle="dark-content" />
-              {location ? (
-                <MapView
-                  ref={_mapView}
-                  style={styles.map}
-                  provider={PROVIDER_GOOGLE}
-                  initialRegion={location}
-                  showsUserLocation={true}
-                  followUserLocation={true}
-                  showsMyLocationButton={true}
-                />
-              ) : null}
-            </View>
-            <View style={styles.rowView}>
-              <Text>
-                Latitud: {latitudActual} , Longitud: {longitudActual}
-              </Text>
-            </View>
           </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
       <Loading loading={loading} />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  touchable: {
+    height: '100%',
+    backgroundColor: 'pink',
+  },
   keyboardContainer: {
     flex: 1,
-    height:'100%'
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-around',
   },
   container: {
-    alignItems: 'center',
-    margin: 10,
-    // backgroundColor: '#0F212E',
-  },
-  /*container: {
     flex: 1,
-    margin: 10,
-  },*/
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 8,
+  },
   comentsContainer: {
     paddingHorizontal: '7%',
   },
@@ -361,9 +376,10 @@ const styles = StyleSheet.create({
 
   },
   btnSubmitContainer: {
+    flex: 1,
     width: '100%',
     //marginTop: '30%',
-    paddingVertical: 10,
+    paddingVertical: 40,
   },
   btnSubmitText: {
     fontSize: 18,
@@ -371,22 +387,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rowView: {
-    flexDirection: 'row',
+    //flex:1,
+    //flexDirection: 'row',
     paddingVertical: 8,
+    
+
   },
   containermap: {
+    flex: 4,
+    flexGrow:1,
     marginVertical: 8,
-    minHeight: '25%',
-    maxHeight: '30%',
+    height: '85%',
     width: '100%',
     alignItems: 'center',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  scrollContainer: {
-    minHeight: '20%',
-    maxHeight: '70%',
-    paddingVertical: '2%',
+  sectionForm: {
+    width: '100%',
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingTop:8,
+    //backgroundColor: 'red',
+  },
+  sectionMap: {
+    flex:4,
+    alignItems: 'center',
+    //margin: 20,
+    width: '100%',
+    flexGrow: 4,
+    paddingHorizontal: 8,
+    //backgroundColor: 'green',
   }
+
 });
