@@ -334,7 +334,7 @@ export function AgregarUbicacion({ navigation }) {
 const styles = StyleSheet.create({
   touchable: {
     height: '100%',
-    backgroundColor: 'pink',
+    //backgroundColor: 'pink',
   },
   keyboardContainer: {
     flex: 1,
