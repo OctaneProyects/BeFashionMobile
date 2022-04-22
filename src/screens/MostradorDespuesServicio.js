@@ -184,8 +184,8 @@ export function MostradorDespuesServicio({route, navigation}) {
   }, []);
 
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={styles.mainFlex}>
+      <ScrollView style={styles.mainFlex}>
       <View style={styles.container}>
         <View style={styles.header}>
           {/* <Text style={styles.headerText}>{estado.NombreTienda}</Text> removidos fix 1153 */}
@@ -249,6 +249,9 @@ export function MostradorDespuesServicio({route, navigation}) {
 }
 
 const styles = StyleSheet.create({
+  mainFlex: {
+    flex: 1
+  },
   container: {
     padding: 32,
     alignItems: 'center',
