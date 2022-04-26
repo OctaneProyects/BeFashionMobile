@@ -1,5 +1,6 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {
+  Button,
   AppState,
   View,
   StyleSheet,
@@ -17,16 +18,16 @@ import StepIndicator from 'react-native-step-indicator';
 import {FilledButton} from '../components/Button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
-import {BASE_URL} from '../config';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import Geolocation from 'react-native-geolocation-service';
-import {getDistance, getPreciseDistance} from 'geolib';
-import {EstatusContext} from '../context/EstatusContext';
-import {CommonActions, useIsFocused} from '@react-navigation/native';
-import {IconButton} from '../components/IconButton';
-import {LogOutUser} from '../components/LogOutUser';
+import { BASE_URL } from '../config';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import Geolocation,{watchPosition} from 'react-native-geolocation-service';
+import { getDistance, getPreciseDistance } from 'geolib';
+import { EstatusContext } from '../context/EstatusContext';
+import { CommonActions, useIsFocused } from '@react-navigation/native';
+import { IconButton } from '../components/IconButton';
+import { LogOutUser } from '../components/LogOutUser';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -93,7 +94,7 @@ export function LandingScreen({route, navigation}) {
         distanceFilter: 0,
         interval: 5000,
         fastestInterval: 2000,
-      },
+      }, 
     );
     return () => {
       Geolocation.clearWatch(_watcher);
@@ -526,6 +527,7 @@ export function LandingScreen({route, navigation}) {
                   {ruta ? <> {ruta.Nombre}!</> : <>Sin ruta Asignada!</>}
                 </Text>
               </View>
+
               <View style={styles.rightText}>
                 <TouchableOpacity
                   onPress={() => {
@@ -552,19 +554,22 @@ export function LandingScreen({route, navigation}) {
                   />
                 </View>
                 <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View>
-                      <Text>
-                        Artículos:
-                        {ruta ? <> {estado.ArticulosTotales}</> : <>0</>}
-                      </Text>
-                    </View>
-                    <View
-                      style={{alignItems: 'flex-end', marginVertical: '3%'}}>
+                      <Text>Artículos:
+                        {ruta ? (
+                          <> {estado.ArticulosTotales}</>
+                        ) : (
+                          <>0</>
+                        )}
+                      </Text></View>
+                    <Button
+                      color="rgb(27,67,136)"
+                      title="Reporte diario"
+                      onPress={() =>
+                        navigation.navigate('MisVentas')
+                      } />
+                    <View style={{ alignItems: 'flex-end', marginVertical: '3%' }}>
                       <TouchableOpacity
                         style={styles.skipTienda}
                         onPress={() =>
@@ -578,11 +583,11 @@ export function LandingScreen({route, navigation}) {
                                   skipTienda();
                                 },
                               },
-                              {text: 'cancelar'},
+                              { text: 'cancelar' },
                             ],
                           )
                         }>
-                        <Text style={{fontSize: 12, color: 'black'}}>
+                        <Text style={{ fontSize: 12, color: 'black' }}>
                           Omitir tienda{' '}
                           <Icon name="ban" size={15} color="red"></Icon>
                         </Text>

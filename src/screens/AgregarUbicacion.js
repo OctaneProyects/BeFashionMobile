@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BASE_URL } from '../config';
 import {
   AppState,
@@ -56,13 +56,6 @@ export function AgregarUbicacion({ navigation }) {
     longitudeDelta: 3,
   });
 
-  const [region, setRegion] = useState({
-    latitude: location.latitude,
-    longitude: location.longitude,
-    latitudeDelta: 0.09,
-    longitudeDelta: 0.04,
-  });
-
   const _mapView = React.createRef();
 
   useEffect(() => {
@@ -71,13 +64,7 @@ export function AgregarUbicacion({ navigation }) {
         const { latitude, longitude } = position.coords;
         setLatitud(latitude);
         setLongitud(longitude);
-        setLocation({ latitude: latitude, longitude: longitude });
-        setRegion({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
+        setLocation({ latitude: latitude, longitude: longitude, latitudeDelta: 0.001, longitudeDelta: 0.001 });
       },
       (error) => {
         console.log(`Error al iniciar el watch: ${error}`);
@@ -229,26 +216,25 @@ export function AgregarUbicacion({ navigation }) {
   }, [cliente]);
 
   useEffect(() => {
-    setRegion({
-      latitude: location.latitude,
-      longitude: location.longitude,
-      latitudeDelta: 0.001,
-      longitudeDelta: 0.001,
-    });
-
-    console.log('nueva region: ', location);
+    console.log('nueva locación: ', location);
     //_mapView.current.animateToRegion(region);
     return () => {
-      console.log('Region actualizada');
+      console.log('Locación actualizada');
     };
   }, [location]);
+
+  const onCliOpen = useCallback(() => {
+    setOpenSuc(false);
+  }, []);
+  const onSucOpen = useCallback(() => {
+    setOpenCli(false);
+  }, []);
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 2 }}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <SafeAreaView style={styles.container} >
-            
-              
+    <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback style={styles.touchable} onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} nestedScrollEnabled={true} >
+          <SafeAreaView style={styles.container}>
+            <View style={styles.sectionForm}>
               <View
                 style={
                   (styles.rowView, Platform.OS === 'ios' ? { zIndex: 300 } : {})
@@ -263,6 +249,10 @@ export function AgregarUbicacion({ navigation }) {
                   items={clientes}
                   setItems={setClientes}
                   setOpen={setOpenCli}
+                  onOpen={onCliOpen}
+                  listMode="MODAL"
+                  modalTitle='Selecciona un cliente'
+                  animationType='slide'
                   setValue={(value) => {
                     setCliente(value);
                   }}
@@ -296,23 +286,16 @@ export function AgregarUbicacion({ navigation }) {
                   setOpen={setOpenSuc}
                   setValue={setSucursal}
                   setItems={setSucursales}
-                  dropDownDirection="TOP"
+                  onOpen={onSucOpen}
+                  dropDownDirection="AUTO"
+                  listMode="MODAL"
+                  animationType='slide'
+                  modalTitle='Selecciona una sucursal'
                   zIndex={100}></DropDownPicker>
               </View>
-              <View style={styles.btnSubmitContainer}>
-                <Button
-                  color="rgb(27,67,136)"
-                  title="Agregar"
-                  disabled={disabled}
-                  onPress={() => insertTienda()}
-                />
-              </View>
-              <View style={styles.rowView}>
-                <Text>
-                  Latitud: {latitudActual} , Longitud: {longitudActual}
-                </Text>
-              </View>
-              <View style={({ flex: 1 }, styles.containermap)}>
+            </View>
+            <View style={(styles.sectionMap)}>
+              <View style={(styles.containermap)}>
                 <StatusBar barStyle="dark-content" />
                 {location ? (
                   <MapView
@@ -323,26 +306,49 @@ export function AgregarUbicacion({ navigation }) {
                     showsUserLocation={true}
                     followUserLocation={true}
                     showsMyLocationButton={true}
-                  // region={region}
-                  // onRegionChangeComplete={(location) => setLocation(location)}
                   />
                 ) : null}
               </View>
               
-            
-            {/* <Loading loading={loading} /> */}
+                <Text>
+                  Latitud: {latitudActual} , Longitud: {longitudActual}
+                </Text>
+              
+            </View>
+            <View style={styles.btnSubmitContainer}>
+              <Button
+                color="rgb(27,67,136)"
+                title="Agregar"
+                disabled={disabled}
+                onPress={() => insertTienda()}
+              />
+            </View>
           </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
       <Loading loading={loading} />
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  touchable: {
+    height: '100%',
+    backgroundColor: 'pink',
+  },
+  keyboardContainer: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-around',
+  },
   container: {
     flex: 1,
-    margin: 10,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 8,
   },
   comentsContainer: {
     paddingHorizontal: '7%',
@@ -370,8 +376,10 @@ const styles = StyleSheet.create({
 
   },
   btnSubmitContainer: {
+    flex: 1,
+    width: '100%',
     //marginTop: '30%',
-    padding: 10,
+    paddingVertical: 40,
   },
   btnSubmitText: {
     fontSize: 18,
@@ -379,22 +387,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rowView: {
-    flexDirection: 'row',
+    //flex:1,
+    //flexDirection: 'row',
     paddingVertical: 8,
+    
+
   },
   containermap: {
+    flex: 4,
+    flexGrow:1,
     marginVertical: 8,
-    minHeight:'25%',
-    maxHeight: '30%',
+    height: '85%',
     width: '100%',
     alignItems: 'center', 
   },
   map: {
     ...StyleSheet.absoluteFillObject,
   },
-  scrollContainer: {
-    minHeight: '20%',
-    maxHeight: '70%',
-    paddingVertical: '2%',
+  sectionForm: {
+    width: '100%',
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingTop:8,
+    //backgroundColor: 'red',
+  },
+  sectionMap: {
+    flex:4,
+    alignItems: 'center',
+    //margin: 20,
+    width: '100%',
+    flexGrow: 4,
+    paddingHorizontal: 8,
+    //backgroundColor: 'green',
   }
+
 });

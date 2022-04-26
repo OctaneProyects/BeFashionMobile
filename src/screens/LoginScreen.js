@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard} from 'react-native';
+import { SafeAreaView, StyleSheet, View, Image, Alert, Text, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { FilledButton } from '../components/Button';
 import { Error } from '../components/Error';
 import { Input } from '../components/Input';
@@ -18,10 +18,10 @@ export function LoginScreen({ navigation }) {
   const [error, setError] = useState('');
 
   return (
-    <KeyboardAvoidingView style={{flex:1,backgroundColor: 'rgb(27,67,136)'}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.keyboardContainer} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback style={styles.touchable} onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={Platform.OS === 'ios' ? styles.scrollContainerIOS : styles.scrollContainer}>
+          <SafeAreaView style={styles.container}>
             {/* <Heading style={styles.title}>BeFashion</Heading> */}
             <Image
               style={styles.tinyLogo}
@@ -49,7 +49,6 @@ export function LoginScreen({ navigation }) {
                   await login(usr, pass);
                 } catch (e) {
                   console.log(e);
-                  //setError(e.message);
                   Alert.alert("Uy, algo salio mal.",
                     "Verifica tus datos y tu conexión a internet",
                     [{ text: 'Aceptar' }])
@@ -57,26 +56,41 @@ export function LoginScreen({ navigation }) {
                 }
               }}
             />
-            <Text>
-              Version:{AppVersion}
-            </Text>
-            
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+          </SafeAreaView>
+        </ScrollView>
+        <Text style={styles.versionText}>
+          {AppVersion}
+        </Text>
+      </TouchableWithoutFeedback>
       <Loading loading={loading} />
     </KeyboardAvoidingView>
-    
+
   );
 }
 const styles = StyleSheet.create({
+  touchable: {
+    height: '100%',
+  },
+  scrollContainer: {
+    //flex:1,
+    flexGrow: 1,
+    //backgroundColor:'red',
+    justifyContent: 'space-around',
+    padding:32
+  },
+  keyboardContainer: {
+    flex: 1,
+    backgroundColor: 'rgb(27,67,136)',
+  },
   container: {
     flex: 1,
-    padding: 32,
-    paddingTop: 120,
     alignItems: 'center',
-    backgroundColor: 'rgb(27,67,136)',
-    // backgroundColor: '#0F212E',
+    //padding: 32,
+  },
+  containerIOS: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 32,
   },
   title: {
     paddingBottom: 50,
@@ -87,7 +101,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(201,202,206)',
   },
   loginButton: {
-    marginVertical: 20,
+    marginTop:8,
+    marginBottom: 50,
     backgroundColor: 'white',
     color: 'black',
     borderWidth: 4,
@@ -97,8 +112,17 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: '75%',
     height: '15%',
-    minHeight: '15%',
-    minWidth: '30%',
-    marginBottom: '15%',
+    maxHeight:'25%',
+    marginBottom: 15,
   },
+  versionText: {
+    fontStyle: 'italic',
+    textTransform: 'uppercase',
+    fontWeight: '200',
+    color: '#FFF',
+    textAlign: 'right',
+    justifyContent: 'flex-end',
+    margin:32,
+
+  }
 });
